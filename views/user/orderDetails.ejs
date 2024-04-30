@@ -1,0 +1,355 @@
+<%- include("../layouts/user/header.ejs") %>
+     
+
+<div class="breadcumb-area ptb--100 ptb_md--100 ptb_sm--100  bg_image bg_image--3">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner text-center">
+                    <h2 class="font--40 mb--0">order details</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <div class="content  " style="margin-top: 10rem;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-body">
+                               
+
+                                <h4 class="header-title mb-3"></h4>
+                                <div class="table-responsive">
+                                    <table
+                                        class="table table-bordered table-centered mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Product name</th>
+                                                <th>Image</th>
+                                                <th>Quantity</th>
+                                                <th>Product Price</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% order.forEach( orderItem => { %>
+                                            <% orderItem.products.forEach(
+                                            product => { %>
+                                            <tr>
+
+                                                <td><%= product.productId.name %></td>
+                                                <td><img
+                                                        src="/<%= product.productId.images[0] %>"
+                                                        alt="Product Image"
+                                                        width="50"
+                                                        height="50"></td>
+
+                                                <td><%= product.count %></td>
+                                                <td>₹<%= product.productPrice
+                                                    %>.00</td>
+                                                <td>₹<%= product.totalPrice
+                                                    %>.00</td>
+                                                <td><%= product.status %></td>
+                                                <td>
+
+                                                    <% if (product.status !==
+                                                    "Cancelled" &&
+                                                    product.status !==
+                                                    "Delivered"
+                                                    && product.status !==
+                                                    "requested" && product.status
+                                                    !== "accepted" &&
+                                                    product.status !=="Pending" &&product.status !=="Out for Delivery" &&  product.status !=="Shipped" && product.status!=='rejected' )
+                                                    { %>
+                                                    <button type="button"
+                                                        onclick="cancelProduct('<%= product._id %>', '<%= orderItem._id %>')"
+                                                        class="btn"
+                                                        style="color: rgb(249, 249, 249); background-color:  #ce3f3f;">Cancel</button>
+                                                    <% } else if (product.status
+                                                    == "Delivered") { %>
+                                                    <button type="button"
+                                                        class="btn "
+                                                        id="requestStatus"
+                                                        onclick="returnRequest('<%= product._id %>','<%= orderItem._id %>')"
+                                                        style="background-color: #e66a35; color: rgb(239, 190, 167)">Return</button>
+                                                    <% } else if (product.status
+                                                    == "accepted") { %>
+                                                    <label
+                                                        style="color: red;">OrderReturned</label>
+                                                    <% } else if (product.status
+                                                    == "rejected") { %>
+                                                    <label
+                                                        style="color: blue;">rejected</label>
+                        
+                                                    <% } else if (product.status
+                                                    == "Shipped") { %>
+                                                    <label
+                                                        style="color: blue;">shipped</label>
+                        
+                                                    <% } else if (product.status
+                                                    
+                                                    == "Out for Delivery") { %>
+                                                    <label
+                                                        style="color: blue;">out of delivery</label>
+                                                    <% } else if (product.status
+                                                    == "requested") { %>
+                                                    <label
+                                                        style="color: rgb(221, 221, 27);">Requested</label>
+                                                    <% } else if (product.status
+                                                    == "Cancelled") { %>
+                                                    <label
+                                                        style="color: rgb(221, 27, 27);">Cancelled</label>
+                                                    <% } else if (product.status
+                                                    == "Pending") { %>
+                                                    <label
+                                                        style="color: red;">Failed</label>
+
+                                                    <% } else { %>
+                                                    <label
+                                                        style="color: red;">Requested</label>
+                                                    <% } %>
+                                                </td>
+                                             
+                                            </tr>
+                                            <% }); %>
+                                            <% }); %>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="6"
+                                                    class="text-right">Shipping
+                                                    Charge :</th>
+                                                <td>₹<%= order[0].shippingAmount
+                                                    %>.00</td>
+
+                                            </tr>
+                                            <tr>
+                                                <th colspan="6"
+                                                    class="text-right">Total
+                                                    :</th>
+                                                <td>₹<%= order[0].totalAmount
+                                                    %>.00</td>
+
+                                            </tr>
+                                        </tfoot>
+                                     
+                                    </table>
+                                    
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- return modal -->
+
+                    <div class="modal fade" id="returnReasonModal" tabindex="-1"
+                        role="dialog" aria-labelledby="returnReasonModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"
+                                        id="returnReasonModalLabel">Enter Return
+                                        Reason</h5>
+                                    <button type="button" class="close"
+                                        data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="returnReasonForm">
+                                        <div class="form-group">
+                                            <label for="returnReason">Reason for
+                                                Return:</label>
+                                            <textarea class="form-control"
+                                                name="returnReason"
+                                                id="returnReason" rows="3"
+                                                required></textarea>
+                                        </div>
+                                        <button type="button" class="btn "
+                                            style="background-color: #21ABA5; color: #fff;"
+                                            id="submitReturnReason">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="header-title mb-3">Shipping
+                                            Information</h4>
+                                        <h5
+                                            class="font-family-primary fw-semibold"><%=
+                                            order[0].deliveryDetails.fullName
+                                            %></h5>
+                                        <p>Address: <%=
+                                            order[0].deliveryDetails.houseName
+                                            %>, <%=
+                                            order[0].deliveryDetails.city %>,
+                                            <%= order[0].deliveryDetails.state
+                                            %>, <%= order[0].deliveryDetails.pin
+                                            %></p>
+                                        <p>Phone: <%=
+                                            order[0].deliveryDetails.mobile
+                                            %></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 mt-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <% order.forEach(function(orderItem) {
+                                        %>
+                                        <h4 class="header-title mb-3">Order
+                                            Summary</h4>
+                                        <ul>
+                                            <li>Order ID : <%= orderItem.orderId
+                                                %></li>
+                                            <li>Date : <%= new
+                                                Date(orderItem.date).toLocaleDateString()
+                                                %></li>
+                                            <li>Payment Method : <%=
+                                                orderItem.paymentMethod %></li>
+                                            <li>Total Amount: <%=
+                                                orderItem.totalAmount %></li>
+                                        </ul>
+                                        <% }); %>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+       
+
+        <script
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+
+           
+            
+            
+            function cancelProduct(orderProductId, orderId) {
+                    console.log('orderProductId',orderProductId,orderId);
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to cancel this Order?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "Not now",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                           $.ajax({
+                                url: "/cancel-order",
+                                data: { productId: orderProductId, orderId: orderId },
+                                method: "post",
+                                success: (response) => {
+                                    console.log("jksdnckjs");
+                                    if (response.success) {
+            
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Order Cancelled.',
+                                            showConfirmButton: false,
+                                            timer: 2000
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    }
+                                }
+                            })
+                        };
+                        });
+                    }
+            
+            
+                    function returnRequest(id, order) {
+                console.log('moopare ethis x', id, order);
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: 'Do you want return the for this order? ',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#7ac093',
+                    confirmButtonText: 'Yes!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#returnReasonModal').modal('show');
+            
+                        $('#returnReasonModal').on('hidden.bs.modal', function () {
+                            location.reload();
+                        });
+            
+                        $('#returnReason').on('input', function () {
+                            const returnReason = $(this).val();
+                            $('#submitReturnReason').data('returnReason', returnReason);
+                        });
+                    }
+                });
+            
+                $('#submitReturnReason').on('click', function () {
+                    const returnReason = $(this).data('returnReason');
+                    console.log('Return Reason:', returnReason);
+            
+                    $.ajax({
+                        url: '/return-request',
+                        data: { order, id, returnReason: returnReason },
+                        method: 'POST',
+                        success: (response) => {
+                            if (response.success) {
+                                console.log('success');
+                                Swal.fire({
+                                    title: 'Return request sent!',
+                                    text: "We'll review your request and get back to you shortly.",
+                                    icon: 'success'
+                                }).then(() => {
+                                    $('#refundRequestModal').modal('hide');
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Oops!',
+                                    text: response.message || 'There was an error processing your request. Please try again.',
+                                    icon: 'error'
+                                });
+                                
+                            }
+                        }
+                    });
+                });
+            }
+            
+            
+            </script>
+            
+                </script>
+        
+
+    
+
+    <%- include('../layouts/user/footer.ejs') %>

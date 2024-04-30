@@ -1,0 +1,170 @@
+
+<%- include('./layouts/header.ejs')%>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order detail</h2>
+            <p>Details for Order ID: <%= orderData.orderId %></p>
+        </div>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                    <span> <i class="material-icons md-calendar_today"></i> <b><%= orderData.date.toDateString() %></b> </span> <br />
+                    <small class="text-muted">Order ID:<%= orderData.orderId %> </small>
+                </div>
+                <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                    <select class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
+                        <option>Change status</option>
+                        <option>Awaiting payment</option>
+                        <option>Confirmed</option>
+                        <option>Shipped</option>
+                        <option>Delivered</option>
+                    </select>
+                    <a class="btn btn-primary" href="#">Save</a>
+                    <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
+                </div>
+            </div>
+        </header>
+        <!-- card-header end// -->
+        <div class="card-body">
+            <div class="row mb-50 mt-20 order-info-wrap">
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-person"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">orderData</h6>
+                            <p class="mb-1">
+                                <%= orderData.deliveryDetails.fullName %><br />
+                                <%= orderData.deliveryDetails.email %> <br />
+                                <%= orderData.deliveryDetails.mobile %>
+                            </p>
+                            <a href="#">View profile</a>
+                        </div>
+                    </article>
+                </div>
+                <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-local_shipping"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Order info</h6>
+                            <p class="mb-1">
+                            <br />
+                               order ID:<%= orderData.orderId%>,<br> 
+                                Pay method: <%= orderData.paymentMethod%>  <br />
+                              
+                                totalAmount:<%= orderData.totalAmount%>
+                            <a href="#"></a>
+                        </div>
+                    </article>
+                </div>
+                <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-place"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Shipping Address</h6>
+                            <p class="mb-1">
+                                Name:<%= orderData.deliveryDetails.fullName%><br>
+                                houseName:<%= orderData.deliveryDetails. houseName%><br>
+
+                                City:  <%= orderData.deliveryDetails.city%><br /> 
+                                State:<%= orderData.deliveryDetails.state%>, <br>
+                                 Pincode:<%= orderData.deliveryDetails.pin%>,<br />
+                                
+                            </p>
+                            <a href=""></a>
+                        </div>
+                    </article>
+                </div>
+                <!-- col// -->
+            </div>
+            <!-- row // -->
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+
+                                    <th width="40%">image</th>
+                                    <th width="40%">Product name</th>
+                                    <th width="20%">product Price</th>
+                                    <th width="20%">count</th>
+                                    <th width="20%" class="text-end">Total</th>
+                                    <th width="20%" class="text-end">status</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% order.forEach( orderItem => { %>
+                                    <% orderItem.products.forEach(
+                                    product => { %>
+                                <tr>
+                                    <td>
+                                        <a class="itemside" href="#">
+                                            <% if (product.productId && product.productId.images && product.productId.images.length > 0) { %>
+                                                <img src="/<%= product.productId.images[0] %>" width="70" height="70" class="img-xs" alt="Item"  style="height: 80px"/>
+                                            <% } else { %>
+                                                <img src="/path/to/default/image.jpg" width="40" height="40" class="img-xs" alt="Default Item" />
+                                            <% } %>
+                                        </a>
+                                    </td>
+                                    <td><%= product.name%></td>
+                                    <td>₹<%= product.productPrice%></td>
+                                    <td><%= product.count%></td>
+                                    <td class="text-end">₹<%= product.
+                                        totalPrice %></td>
+                                        <td><%= product.status%></td>
+                                </tr>
+                                <% }); %>
+                              
+                                <tr>
+                                    <td colspan="4">
+                                        <article class="float-end">
+                                            <dl class="dlist">
+                                                <dt>Subtotal:</dt>
+                                                <dd>₹<%= subtotal.toFixed(2) %></dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt>Shipping cost:</dt>
+                                                <dd>₹<%= orderData.shippingAmount %></dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt>Grand total:</dt>
+                                                <dd><b class="h5">₹ <%= orderData.totalAmount%></b></dd>
+                                            </dl>
+                                            <!-- <dl class="dlist">
+                                                <dt class="text-muted"><b></b>Status:</dt>
+                                                <dd>
+                                                    <span class="badge rounded-pill alert-success text-success"><b><%= %></b></span>
+                                                </dd>
+                                            </dl> -->
+                                        </article>
+                                    </td>
+                                </tr>
+                                
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- table-responsive// -->
+                </div>
+                <!-- col// -->
+                
+                <!-- col// -->
+            </div>
+        </div>
+        <!-- card-body end// -->
+    </div>
+    <!-- card end// -->
+</section>
+<%- include('./layouts/footer.ejs')%>

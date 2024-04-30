@@ -1,0 +1,76 @@
+<%- include('./layouts/header')%>
+
+<div class="container">
+  <div class="row justify-content-center center-content">
+    <div class="col-lg-4">
+      <form action="/admin/updateCategory" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+
+        <input type="hidden" name="id" value="<%= category._id %>">
+
+        <div class="mb-4">
+          <label for="product_name" class="form-label">Name</label>
+          <input
+            type="text"
+            placeholder="Type here"
+            class="form-control"
+            id="product_name"
+            name="name"
+            value="<%= category.name %>"
+          />
+          <div class="error-message" id="name-error"></div>
+        </div>
+
+        <div class="mb-4">
+          <label for="product_image" class="form-label">Images</label>
+          <input
+            type="file"
+            class="form-control"
+            id="image"
+            accept="image/*"
+            name="image"
+          />
+          <div class="error-message" id="image-error"></div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Description</label>
+          <textarea placeholder="Type here" class="form-control" name="description"><%= category.description %></textarea>
+          <div class="error-message" id="description-error"></div>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Edit category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function validateForm() {
+    // Reset previous error messages
+    document.getElementById('name-error').innerHTML = '';
+    document.getElementById('image-error').innerHTML = '';
+    document.getElementById('description-error').innerHTML = '';
+
+    // Validate Name
+    var name = document.getElementById('product_name').value.trim();
+    if (name === '') {
+      document.getElementById('name-error').innerHTML = 'Name is required.';
+      return false;
+    }
+
+    // Validate Image
+    var image = document.getElementById('image').value;
+    if (image === '') {
+      document.getElementById('image-error').innerHTML = 'Image is required.';
+      return false;
+    }
+
+    // Add additional validations for other fields if needed
+
+    // Form is valid
+    return true;
+  }
+</script>
+
+<!-- <%- include('./layouts/footer')%> -->

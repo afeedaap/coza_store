@@ -1,0 +1,458 @@
+<%- include("../layouts/user/header.ejs") %>
+<style>
+ /* Styling for cart summary table */
+    /* Cart summary table styling */
+    .cart-summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .cart-summary-table th,
+    .cart-summary-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .cart-summary-table th {
+        background-color: #f2f2f2;
+    }
+
+    .cart-summary-table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .address-item {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        padding: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .address-item:hover {
+        background-color: #e9ecef;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+    }
+
+    /* Styling for radio input */
+    .address-item input[type="radio"] {
+        margin-right: 10px;
+    }
+
+    /* Styling for card title */
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    /* Styling for card text */
+    .card-text {
+        margin-bottom: 5px;
+    }
+    .shipping
+    {
+width:250px
+    }
+</style>
+<br>
+<br>
+<br><br>
+<br>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/shop">products</a></li>
+        <li class="breadcrumb-item"><a href="/cart">cart</a></li>
+        <li class="breadcrumb-item active" aria-current="page">checkout</li>
+    </ol>
+</nav>
+
+<div id="checkout-container">
+<form id="checkout-form">
+    <div class="main-wrapper">
+        <div class="checkout_area pt--120 pt_md--80 pt_sm--80 pb--60 bg-color"
+            data-bg-color="#ffffff">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h3>your Address</h3>
+                        <div class="row">
+
+                            <% if (addressData && addressData.address &&
+                            addressData.address.length > 0) { %>
+                            <% addressData.address.forEach((address, index) => {
+                            %>
+                            <div class="col-lg-6 ">
+                                <div class="card address-item">
+                                    <input type="radio" class="pl-4 ml-3 mr-1"
+                                        name="address"
+                                        value='<%= JSON.stringify(address) %>'
+                                        <%=index === 0 ? 'checked' : '' %> />
+                                    <div class="card-body">
+                                        <h5 class="card-title">Address <%=
+                                            index+1 %></h5>
+                                        <p
+                                            class="card-text"><strong>Name:</strong>
+                                            <%= address.fullName %></p>
+                                        <p
+                                            class="card-text"><strong>Email:</strong>
+                                            <%= address.email %></p>
+                                        <p
+                                            class="card-text"><strong>Mobile:</strong>
+                                            <%= address.mobile %></p>
+                                        <p
+                                            class="card-text"><strong>State:</strong>
+                                            <%= address.state %></p>
+                                        <p
+                                            class="card-text"><strong>City:</strong>
+                                            <%= address.city %></p>
+                                        <p
+                                            class="card-text"><strong>Pincode:</strong>
+                                            <%= address.pin %></p>
+                                        <p class="card-text"><strong>House
+                                                Name:</strong> <%=
+                                            address.houseName %></p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <% }) %>
+                            <% } else { %>
+                            <div class="col-lg-12 mb-4">
+                                <button id="addAddressButton">Add
+                                    Address</button>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="mb--60">
+                            <h4 class="checkout-title">Cart Total</h4>
+                            <div class="checkout-cart-total">
+                                <div class="card">
+                                    <table class="cart-summary-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Product</th>
+                                                <th scope="col">Total</th>
+                                                <th scope="col">quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% cart.products.forEach((product,index) => { %>
+                                                <tr>
+                                                    <td><%= product.productId.name %></td>
+                                                    <td>₹<%= eachTotal[index].toFixed(2) %></td>
+                                                    <td><%=  eachQuantity[index] %></td>
+                                                </tr>
+                                            <% }); %>
+                                            <tr >
+                                                <td >Sub Total</td>
+                                                <td class="shipping">₹<%= subTotal.toFixed(2) %></td> <!-- Format subTotal to two decimal places -->
+                                            </tr>
+                                            <tr>
+                                                <td>Shipping Fee</td>
+                                                <td>₹<%= shippingAmount.toFixed(2) %></td> <!-- Format shippingAmount to two decimal places -->
+                                            </tr>
+                                            <tr>
+                                                <td>Grand Total</td>
+                                                <td>₹<%= total.toFixed(2) %></td> <!-- Format total to two decimal places -->
+                                            </tr>
+                                        </tbody>
+                                        
+                                    </table>
+                                    <div style="padding: 15px;">
+                                        <h4 class="checkout-title ">Payment
+                                            Method</h4>
+                                        <div class="single-method">
+                                            <!-- Payment method options go here -->
+                                            <input type="radio" id="COD"
+                                                name="payment" value="COD"
+                                                checked>
+                                            <label for="payment_cash">Cash on
+                                                Delivery</label>
+                                            <p data-method="cash">Please send a
+                                                Check to Store name with Store
+                                                Street, Store Town,
+                                                Store State, Store Postcode,
+                                                Store Country.</p>
+                                                <!-- <input type="radio" name="paypal" id="paypal" value="paypal" >
+                                                <label for="payment_cash">paypal</label> -->
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <button type="submit" 
+                                                class="place-order-button">Place
+                                                Order</button>
+                                               
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+   
+
+                  
+    <a href="/place-order"></a>
+    <!-- Quick View Modal -->
+    <div class="quick-view-modal">
+        <div class="quick-view-modal-inner">
+            <div class="container">
+                <div class="product-details">
+                    <!-- Product Details Left -->
+                    <div class="product-details-left">
+                        <div
+                            class="product-details-images slider-navigation-2">
+                            <a href="#">
+                                <img class="w-100"
+                                    src="assets/images/product/product-01.jpg"
+                                    alt="product image">
+                            </a>
+                            <a href="#">
+                                <img class="w-100"
+                                    src="assets/images/product/product-02.jpg"
+                                    alt="product image">
+                            </a>
+                            <a href="#">
+                                <img class="w-100"
+                                    src="assets/images/product/product-03.jpg"
+                                    alt="product image">
+                            </a>
+                            <a href="#">
+                                <img class="w-100"
+                                    src="assets/images/product/product-04.jpg"
+                                    alt="product image">
+                            </a>
+                            <a href="#">
+                                <img class="w-100"
+                                    src="assets/images/product/product-05.jpg"
+                                    alt="product image">
+                            </a>
+                        </div>
+                        <div
+                            class="product-details-thumbs slider-navigation-2">
+                            <img
+                                src="assets/images/product/product-01.jpg"
+                                alt="product image thumb">
+                            <img
+                                src="assets/images/product/product-02.jpg"
+                                alt="product image thumb">
+                            <img
+                                src="assets/images/product/product-03.jpg"
+                                alt="product image thumb">
+                            <img
+                                src="assets/images/product/product-04.jpg"
+                                alt="product image thumb">
+                            <img
+                                src="assets/images/product/product-05.jpg"
+                                alt="product image thumb">
+                        </div>
+                    </div>
+                    <!--// Product Details Left -->
+
+                    <!-- Product Details Right -->
+                    <div class="product-details-right">
+                        <h5 class="product-title">Demo Product
+                            Name</h5>
+
+                        <div class="ratting-stock-availbility">
+                            <div class="ratting-box">
+                                <span><i
+                                        class="fa fa-star"></i></span>
+                                <span><i
+                                        class="fa fa-star"></i></span>
+                                <span><i
+                                        class="fa fa-star"></i></span>
+                                <span><i
+                                        class="fa fa-star"></i></span>
+                                <span><i
+                                        class="fa fa-star"></i></span>
+                            </div>
+                            <span class="stock-available">In
+                                stock</span>
+                        </div>
+
+                        <p>Lorem ipsum dolor sit amet, consectetur
+                            adipiscing elit. Nam fringilla augue nec
+                            est
+                            tristique auctor. Donec non est at
+                            libero vulputate rutrum. Morbi ornare
+                            lectus quis
+                            justo gravida semper. Nulla tellus mi,
+                            vulputate adipiscing cursus eu, suscipit
+                            id
+                            nulla. adipiscing cursus eu, suscipit id
+                            nulla.</p>
+
+                        <div class="price-box">
+                            <span
+                                class="pricebox-price">£80.00</span>
+                        </div>
+
+                        <div class="product-details-quantity">
+                            <div class="quantity-select">
+                                <div class="pro-quantity">
+                                    <div class="pro-qty"><input
+                                            type="text"
+                                            value="1"></div>
+                                </div>
+                            </div>
+                            <a href="#" class="add-to-cart-button">
+                                <span>ADD TO CART</span>
+                            </a>
+                        </div>
+
+                        <div class="product-details-color">
+                            <span>Color :</span>
+                            <ul>
+                                <li class="red"><span></span></li>
+                                <li
+                                    class="green checked"><span></span></li>
+                                <li class="blue"><span></span></li>
+                                <li class="black"><span></span></li>
+                            </ul>
+                        </div>
+
+                        <div class="product-details-size">
+                            <span>Size :</span>
+                            <ul>
+                                <li
+                                    class="checked"><span>S</span></li>
+                                <li><span>M</span></li>
+                                <li><span>L</span></li>
+                                <li><span>XL</span></li>
+                                <li><span>XXL</span></li>
+                            </ul>
+                        </div>
+
+                        <div class="product-details-categories">
+                            <span>Categories :</span>
+                            <ul>
+                                <li><a
+                                        href="shop.html">Accessories</a></li>
+                                <li><a
+                                        href="shop.html">Kids</a></li>
+                                <li><a
+                                        href="shop.html">Women</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="product-details-tags">
+                            <span>Tags :</span>
+                            <ul>
+                                <li><a
+                                        href="shop.html">Electronic</a></li>
+                                <li><a
+                                        href="shop.html">Television</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="product-details-socialshare">
+                            <span>Share :</span>
+                            <ul>
+                                <li><a class="facebook" href="#"><i
+                                            class="fa fa-facebook"></i></a></li>
+                                <li><a class="twitter" href="#"><i
+                                            class="fa fa-twitter"></i></a></li>
+                                <li><a class="google-plus"
+                                        href="#"><i
+                                            class="fa fa-google-plus"></i></a></li>
+                                <li><a class="linkedin" href="#"><i
+                                            class="fa fa-linkedin"></i></a></li>
+                                <li><a class="instagram" href="#"><i
+                                            class="fa fa-instagram"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--// Product Details Right -->
+
+                </div>
+            </div>
+        </div>
+        <button class="close-quickview-modal"><i
+                class="fa fa-close"></i></button>
+    </div>
+
+</div>
+
+
+
+    <!--// Quick View Modal -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script>
+     
+
+         $("#checkout-form").submit(function (e) {
+            e.preventDefault();
+            const selectedAddress = $("input[name='address']:checked").val();
+            if (!selectedAddress) {
+   
+        swal.fire({
+            title: "Please add an address using the profile page",
+            icon: "info",
+            button: false,
+            timer: 3000
+        }).then(function() {
+            window.location.href = "/profile";
+        });
+    } else {
+
+            const address = selectedAddress ? JSON.parse(selectedAddress) : {};
+            const paymentMethod = $("input[name='payment']:checked").val();
+    
+console.log('address',address);
+
+            formData   = {
+                address: address,
+                payment: paymentMethod,
+            };
+console.log(formData,"haaiiiiiiii");
+            $.ajax({
+                url: "/place-order",
+                method: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({ formData }),
+                success: (response) => {
+                    console.log('rs',response);
+                    if(response.quantity){
+                        swal.fire({
+                          title: "info",
+                          icon: "warning",
+                          title:"product is out of stock,better luck next timecart",
+                          button: false,
+                          timer: 3000
+                           })               
+                    }else if (response.codsuccess == true) {
+                          swal.fire({
+                          icon: "success",
+                          title:"order is success",
+                          timer: 3000
+                           }).then(()=> {        
+                            window.location.href = `/order-success`;
+
+                        })
+                       
+                    }
+                },
+            });
+        }
+        });
+
+
+    
+        
+    </script>
+
+    <%- include("../layouts/user/footer.ejs") %>

@@ -1,0 +1,250 @@
+<%- include('./layouts/header.ejs')%>
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-6">
+            <div class="content-header">
+                <h2 class="content-title">Edit the Product</h2>
+                
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form action="/admin/productEdited" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>1. General info</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <label class="form-label">Product name</label>
+                                <input type="text" id="name" placeholder="Type here" class="form-control" value="<%= product.name %>" name="name">
+                                <div class="error-message text-danger" id="name-error"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" id="description" placeholder="Type here" class="form-control" rows="4" ><%= product.description %></textarea>
+                                <div class="error-message text-danger" id="description-error"></div>
+                            </div>
+                            <input type="hidden" name="id" value="<%= product._id %>">
+                            <div class="mb-4">
+                                <label class="form-label">size </label>
+                                <input value="<%=product.size%>" name="size" id="size" type="text" placeholder="Type here" class="form-control">
+                                <div class="error-message text-danger" id="size-error"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Quantity</label>
+                                <input value="<%= product.quantity %>" name="quantity" id="quantity" type="number"  class="form-control">
+                                <div class="error-message text-danger" id="quantity-error"></div>
+                            </div>
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                    <hr class="mb-4 mt-0">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>2. Pricing</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <label class="form-label">Cost </label>
+                                <input type="text" value="<%= product.price %>" id="price" name="price" class="form-control">
+                                <div class="error-message text-danger" id="price-error"></div>
+                            </div>
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                    <hr class="mb-4 mt-0">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>3. Category</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                                <% category.forEach((categ) => { %>
+                                    <label class="mb-2 form-check form-check-inline" style="width: 45%;">
+                                        <input class="form-check-input" name="category" type="radio" value="<%= categ._id %>" <%= product.category._id.toString() === categ._id.toString() ? 'checked' : '' %>>
+                                        <span class="form-check-label"> <%= categ.name %> </span>
+                                    </label>
+                                <% }) %>
+                            </div>
+                        </div>
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                    <hr class="mb-4 mt-0">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>4. Media</h6>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="mb-4">
+                             
+                                <label class="form-label">Images</label>
+                                <input id="images" name="images" class="form-control" type="file"  multiple>
+
+                                <% product.images.forEach((image, index) => { %>
+                                    <input id="hiddenImage" type="hidden" name="existingImages" value="<%= image %>">
+                                <% }) %>
+                                <!-- Display filenames -->
+                                <div>
+                                    <% product.images.forEach((image, index) => { %>
+                                        <span id="imageValidationTest"><%= image %></span>
+                                       
+                                       
+                                    <% }) %>
+                                </div>
+
+
+                                <div class="error-message text-danger" id="image-error"></div>
+                            </div>
+                        </div> <!-- col.// -->
+
+
+
+                        <div class="mb-4">
+                            <label class="form-label">Images</label>
+
+
+                            <% product.images.forEach((image, index) => { %>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <img src="/<%= image %>" alt="Product Image" style="width: 30px; height: 30px; margin-right: 10px;">
+                                        <span><%= image %></span>
+                                    </div>
+                                    <a href="#" onclick="confirmDelete('<%= index %>', '<%= product._id %>', event)" class="btn btn-danger btn-sm">Delete</a>
+
+                                </div>
+                            <% }) %>
+                        </div>
+                        
+
+
+
+                    </div> <!-- .row end// -->
+                    <div>
+                   
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section> <!-- content-main end// -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+
+
+
+
+    function validateForm() {
+        // Reset any existing error messages
+        clearErrorMessages();
+
+        const name = document.getElementById('name').value;
+        const description = document.getElementById('description').value;
+        const brand = document.getElementById('brand').value;
+        const quantity = document.getElementById('quantity').value;
+        const price = document.getElementById('price').value;
+        const images = document.getElementById('imageValidationTest').value;
+
+        
+        let isValid = true;
+
+        // General Info Validation
+        if (!name.trim()) {
+            displayErrorMessage('name-error', 'Please enter a product name.');
+            isValid = false;
+        }
+
+        if (!description.trim()) {
+            displayErrorMessage('description-error', 'Please enter a product description.');
+            isValid = false;
+        }
+
+        if (!brand.trim()) {
+            displayErrorMessage('brand-error', 'Please enter a brand name.');
+            isValid = false;
+        }
+
+        if (!quantity.trim() || isNaN(quantity) || quantity < 0) {
+            displayErrorMessage('quantity-error', 'Please enter a valid product quantity.');
+            isValid = false;
+        }
+
+        // Pricing Validation
+        if (!price.trim() || isNaN(price) || price < 0) {
+            displayErrorMessage('price-error', 'Please enter a valid product price.');
+            isValid = false;
+        }
+
+        // Category Validation
+        const selectedCategory = document.querySelector('input[name="category"]:checked');
+        if (!selectedCategory) {
+            displayErrorMessage('category-error', 'Please select a category.');
+            isValid = false;
+        }
+
+        // Media Validation
+        if (images.length === 0) {
+            displayErrorMessage('image-error', 'Please select at least one image.');
+            isValid = false;
+        } else {
+            // Validate image types (JPG or PNG)
+            const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            for (const image of images) {
+                if (!allowedImageTypes.includes(image.type)) {
+                    displayErrorMessage('image-error', 'Please select images with JPG or PNG formats.');
+                    isValid = false;
+                    break; // Stop checking once an invalid image type is found
+                }
+            }
+        }
+
+        return isValid;
+    }
+
+    function clearErrorMessages() {
+        const errorMessages = document.querySelectorAll('.error-message');
+        errorMessages.forEach((errorMessage) => {
+            errorMessage.innerText = '';
+        });
+    }
+
+    function displayErrorMessage(errorId, message) {
+        const errorDiv = document.getElementById(errorId);
+        errorDiv.innerText = message;
+    }
+
+
+
+// delete image===============================
+function confirmDelete(index, productId, event) {
+    event.preventDefault(); // Prevent the default action of the anchor tag
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete this image!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `/admin/deleteimage?index=${index}&id=${productId}`;
+        }
+    });
+}
+
+
+    </script>
+
+
+
+
+
+<%- include('./layouts/footer.ejs')%>
