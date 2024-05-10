@@ -1,0 +1,181 @@
+<%- include('./layouts/header') %>
+
+<!-- iziToast CSS -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css"
+/>
+<!-- iziToast JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+<section class="content-main">
+  <div class="row">
+    <div class="col-9">
+      <div class="content-header">
+        <h2 class="content-title">Add Coupon</h2>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-header"></div>
+        <div class="card-body">
+          <form id="couponForm" method="post" action="/admin/addCoupon" onsubmit="return validateForm()">
+            <div class="mb-4">
+              <label for="coupon_name" class="form-label">Coupon Name</label>
+              <input
+                type="text"
+                name="couponName"
+                placeholder="Type here"
+                class="form-control"
+                id="coupon_name"
+              />
+              <p
+                id="couponNameErr"
+                class="error-message"
+                style="color: red"
+              ></p>
+            </div>
+            
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="mb-4">
+                  <label class="form-label">Coupon code</label>
+                  <input
+                    name="couponCode"
+                    placeholder="Type here"
+                    type="text"
+                    class="form-control"
+                    id="coupon_code"
+                  />
+                  <p
+                    id="couponCodeErr"
+                    class="error-message"
+                    style="color: red"
+                  ></p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="mb-4">
+                  <label class="form-label">Minimum amount</label>
+                  <input
+                    name="minAmount"
+                    placeholder="Type here"
+                    type="text"
+                    class="form-control"
+                    id="min_amount"
+                  />
+                  <p
+                    id="minAmountErr"
+                    class="error-message"
+                    style="color: red"
+                  ></p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <label class="form-label">Discount Amount</label>
+                <input
+                  name="discount"
+                  placeholder="Type here"
+                  type="text"
+                  class="form-control"
+                  id="discount_amount"
+                />
+                <p
+                  id="discountErr"
+                  class="error-message"
+                  style="color: red"
+                ></p>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="row">
+                  <div class="col-md-6 mb-4">
+                      <label for="startDate" class="form-label">Starting Date</label>
+                      <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate" />
+                      <p id="couponStartDateErr" class="error-message" style="color: red;"></p>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                      <label for="endDate" class="form-label">Ending Date</label>
+                      <input name="expireDate" type="date" placeholder="Type here" class="form-control" id="endDate" />
+                      <p id="couponEndDateErr" class="error-message" style="color: red;"></p>
+                  </div>
+              </div>
+          </div>
+          
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script>
+  function validateForm() {
+    var couponName = document.getElementById("coupon_name").value;
+    var couponCode = document.getElementById("coupon_code").value;
+    var minAmount = document.getElementById("min_amount").value;
+    var discount = document.getElementById("discount_amount").value;
+    var startDate = document.getElementById("startDate").value;
+    var endDate = document.getElementById("endDate").value;
+    var isValid = true;
+
+    if (couponName.trim() == "") {
+      document.getElementById("couponNameErr").innerHTML = "Coupon Name is required";
+      isValid = false;
+    } else {
+      document.getElementById("couponNameErr").innerHTML = "";
+    }
+
+    if (couponCode.trim() == "") {
+      document.getElementById("couponCodeErr").innerHTML = "Coupon Code is required";
+      isValid = false;
+    } else {
+      document.getElementById("couponCodeErr").innerHTML = "";
+    }
+
+    if (minAmount.trim() == "") {
+      document.getElementById("minAmountErr").innerHTML = "Minimum Amount is required";
+      isValid = false;
+    } else if (isNaN(minAmount) || minAmount <= 0) {
+      document.getElementById("minAmountErr").innerHTML = "Minimum Amount must be a positive number";
+      isValid = false;
+    } else {
+      document.getElementById("minAmountErr").innerHTML = "";
+    }
+
+
+    if (discount.trim() == "") {
+      document.getElementById("discountErr").innerHTML = "Discount Amount is required";
+      isValid = false;
+    } else if (isNaN(discount)) {
+      document.getElementById("discountErr").innerHTML = "Discount Amount must be a number";
+      isValid = false;
+    } else {
+      document.getElementById("discountErr").innerHTML = "";
+    }
+
+    if (startDate.trim() == "") {
+      document.getElementById("couponStartDateErr").innerHTML = "Starting Date is required";
+      isValid = false;
+    } else {
+      document.getElementById("couponStartDateErr").innerHTML = "";
+    }
+
+    if (endDate.trim() == "") {
+      document.getElementById("couponEndDateErr").innerHTML = "Ending Date is required";
+      isValid = false;
+    } else if (endDate <= startDate) {
+      document.getElementById("couponEndDateErr").innerHTML = "Ending Date must be greater than Starting Date";
+      isValid = false;
+    } else {
+      document.getElementById("couponEndDateErr").innerHTML = "";
+    }
+
+    return isValid;
+  }
+</script>
+
+<%- include('./layouts/footer') %>

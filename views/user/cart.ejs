@@ -1,28 +1,59 @@
+<%-include("../user/layouts/header.ejs") %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
-<%- include("../layouts/user/header.ejs") %>
 <style>
-    .cart-summary-table th,
-    .cart-summary-table td {
-        width: auto;
-        padding: 10px;
-        border-top: 1px solid #ddd;
-    }
+    .custom-toast-warning {
+    background-color: #ff9800; /* Change the background color to your desired color */
+    color: #f6f2f2; /* Change the text color to ensure visibility */
+}
+    /* Cart summary area */
+.cart-summary {
+    background-color: #f8f9fa; /* Background color */
+    padding: 20px; /* Padding around the cart summary */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+}
+
+/* Cart summary title */
+.cart-summary h4 {
+    margin-bottom: 10px; /* Bottom margin for the title */
+    font-size: 20px; /* Font size for the title */
+    color: #333; /* Text color */
+}
+
+/* Cart summary items */
+.cart-summary p {
+    margin-bottom: 5px; /* Bottom margin for each item */
+    font-size: 16px; /* Font size for items */
+}
+
+/* Cart summary total */
+.cart-summary h2 {
+    margin-top: 20px; /* Top margin for the total */
+    font-size: 20px; /* Font size for the total */
+    color: rgb(17, 1, 1); /* Text color for the total */
+}
+
+/* Cart summary buttons */
+.cart-summary-button {
+    margin-top: 20px; /* Top margin for the buttons */
+}
+
+/* Checkout button */
+.checkout-btn {
+    background-color: #0675ec; /* Button background color */
+    color: #fff; /* Button text color */
+    border: none; /* Remove button border */
+    padding: 10px 20px; /* Padding for the button */
+    font-size: 18px; /* Font size for the button */
+    border-radius: 5px; /* Rounded corners for the button */
     
-    .cart-summary-table th {
-        text-align: left;
-        background-color: #f2f2f2;
-    }
-    
-    
-    .cart-summary-table tr:nth-child(n+2) td {
-        border-top: 2px solid #ddd;
-    }
-    
-    
-    .cart-summary-table tr:nth-child(n+2) td {
-        font-weight: bold;
-        color: #333;
-    }
+}
+
+/* Checkout button hover effect */
+.checkout-btn:hover {
+    background-color: #0056b3; /* Button background color on hover */
+}
 
 .cart-product-quantity {
     display: flex; 
@@ -70,14 +101,25 @@ td.pro-price {
 <br><br>
 <br>
 
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item"><a href="/shop">products</a></li>
-       
-        <li class="breadcrumb-item active" aria-current="page">cart</li>
-    </ol>
-</nav>
+<div class="container">
+    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+        <a href="/" class="stext-109 cl8 hov-cl1 trans-04">
+            Home
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+
+        <a href="" class="stext-109 cl8 hov-cl1 trans-04">
+            cart
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+      
+        <span class="stext-109 cl4">
+            
+        </span>
+    </div>
+</div>
+<br><br>
+<br>
 
 <!-- End Breadumb Area -->
 <div class="main-wrapper">
@@ -108,16 +150,16 @@ td.pro-price {
                                         <% cart.products.forEach(product => { %>
                                             <tr>
                                                 <td class="pro-thumbnail">
-                                                    <a href="/product-details?_id=<%= product.productId._id %>">
+                                                  
                                                         <% if (product.productId.images && product.productId.images.length > 0) { %>
                                                             <img src="/<%= product.productId.images[0] %>" alt="Product" style="width: 50px; height: 60px;">
                                                         <% } else { %>
                                                             <img src="/placeholder-image.jpg" alt="Placeholder Image" style="width: 50px; height: 60px;">
                                                         <% } %>
-                                                    </a>
+                                                    
                                                 </td>
                                                 <td class="pro-title">
-                                                    <a href="/product-details?_id=<%= product.productId._id %>">
+                                                  
                                                         <%= product.productId.name %>
                                                     </a>
                                                 </td>
@@ -159,54 +201,25 @@ td.pro-price {
                         <div class="col-lg-6 col-12 mb--15">
                             <!-- Calculate Shipping -->
                             <div class="calculate-shipping">
-                                <h4>Calculate Shipping</h4>
+                              
                                 <form action="#">
                                     <div class="row">
                                         <div class="col-md-6 col-12 mb--25">
-                                            <select class="nice-select">
-                                                <option>Bangladesh</option>
-                                                <option>China</option>
-                                                <option>country</option>
-                                                <option>India</option>
-                                                <option>Japan</option>
-                                            </select>
+                                            
+                                        </div>
+                                        
+                                        <div class="col-md-6 col-12 mb--25">
+                                            
+                                               
                                         </div>
                                         <div class="col-md-6 col-12 mb--25">
-                                            <select class="nice-select">
-                                                <option>Dhaka</option>
-                                                <option>Barisal</option>
-                                                <option>Khulna</option>
-                                                <option>Comilla</option>
-                                                <option>Chittagong</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 col-12 mb--25">
-                                            <input type="text"
-                                                placeholder="Postcode / Zip">
-                                        </div>
-                                        <div class="col-md-6 col-12 mb--25">
-                                            <input type="submit"
-                                                value="Estimate">
+                                            
                                         </div>
                                     </div>
                                 </form>
                             </div>
                             <!-- Discount Coupon -->
-                            <div class="discount-coupon">
-                                <h4>Discount Coupon Code</h4>
-                                <form action="#">
-                                    <div class="row">
-                                        <div class="col-md-6 col-12 mb--25">
-                                            <input type="text"
-                                                placeholder="Coupon Code">
-                                        </div>
-                                        <div class="col-md-6 col-12 mb--25">
-                                            <input type="submit"
-                                                value="Apply Code">
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                            
                         </div>
 
                         <!-- Cart Summary -->
@@ -244,149 +257,7 @@ td.pro-price {
     <!-- Cart Page End -->
 </div>
 
-<!-- Quick View Modal -->
-<div class="quick-view-modal">
-    <div class="quick-view-modal-inner">
-        <div class="container">
-            <div class="product-details">
-                <!-- Product Details Left -->
-                <div class="product-details-left">
-                    <div class="product-details-images slider-navigation-2">
-                        <a href="#">
-                            <img class="w-100"
-                                src="assets/images/product/product-01.jpg"
-                                alt="product image">
-                        </a>
-                        <a href="#">
-                            <img class="w-100"
-                                src="assets/images/product/product-02.jpg"
-                                alt="product image">
-                        </a>
-                        <a href="#">
-                            <img class="w-100"
-                                src="assets/images/product/product-03.jpg"
-                                alt="product image">
-                        </a>
-                        <a href="#">
-                            <img class="w-100"
-                                src="assets/images/product/product-04.jpg"
-                                alt="product image">
-                        </a>
-                        <a href="#">
-                            <img class="w-100"
-                                src="assets/images/product/product-05.jpg"
-                                alt="product image">
-                        </a>
-                    </div>
-                    <div class="product-details-thumbs slider-navigation-2">
-                        <img src="assets/images/product/product-01.jpg"
-                            alt="product image thumb">
-                        <img src="assets/images/product/product-02.jpg"
-                            alt="product image thumb">
-                        <img src="assets/images/product/product-03.jpg"
-                            alt="product image thumb">
-                        <img src="assets/images/product/product-04.jpg"
-                            alt="product image thumb">
-                        <img src="assets/images/product/product-05.jpg"
-                            alt="product image thumb">
-                    </div>
-                </div>
-                <!--// Product Details Left -->
-
-                <!-- Product Details Right -->
-                <div class="product-details-right">
-                    <h5 class="product-title">Demo Product Name</h5>
-
-                    <div class="ratting-stock-availbility">
-                        <div class="ratting-box">
-                            <span><i class="fa fa-star"></i></span>
-                            <span><i class="fa fa-star"></i></span>
-                            <span><i class="fa fa-star"></i></span>
-                            <span><i class="fa fa-star"></i></span>
-                            <span><i class="fa fa-star"></i></span>
-                        </div>
-                        <span class="stock-available">In stock</span>
-                    </div>
-
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Nam fringilla augue nec est
-                        tristique auctor. Donec non est at libero vulputate
-                        rutrum. Morbi ornare lectus quis
-                        justo gravida semper. Nulla tellus mi, vulputate
-                        adipiscing cursus eu, suscipit id
-                        nulla. adipiscing cursus eu, suscipit id nulla.</p>
-
-                    <div class="price-box">
-                        <span class="pricebox-price">£80.00</span>
-                    </div>
-
-                    <div class="product-details-quantity">
-                        <div class="quantity-select">
-                            <div class="pro-quantity">
-                                <div class="pro-qty"><input type="text"
-                                        value="1"></div>
-                            </div>
-                        </div>
-                        <a href="#" class="add-to-cart-button">
-                            <span>ADD TO CART</span>
-                        </a>
-                    </div>
-
-                    <div class="product-details-color">
-                        <span>Color :</span>
-                        <ul>
-                            <li class="red"><span></span></li>
-                            <li class="green checked"><span></span></li>
-                            <li class="blue"><span></span></li>
-                            <li class="black"><span></span></li>
-                        </ul>
-                    </div>
-
-                    <div class="product-details-size">
-                        <span>Size :</span>
-                        <ul>
-                            <li class="checked"><span>S</span></li>
-                            <li><span>M</span></li>
-                            <li><span>L</span></li>
-                            <li><span>XL</span></li>
-                            <li><span>XXL</span></li>
-                        </ul>
-                    </div>
-
-                    <div class="product-details-categories">
-                        <span>Categories :</span>
-                        <ul>
-                            <li><a href="shop.html">Accessories</a></li>
-                            <li><a href="shop.html">Kids</a></li>
-                            <li><a href="shop.html">Women</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="product-details-tags">
-                        <span>Tags :</span>
-                        <ul>
-                            <li><a href="shop.html">Electronic</a></li>
-                            <li><a href="shop.html">Television</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="product-details-socialshare">
-                        <span>Share :</span>
-                        <ul>
-                            <li><a class="facebook" href="#"><i
-                                        class="fa fa-facebook"></i></a></li>
-                            <li><a class="twitter" href="#"><i
-                                        class="fa fa-twitter"></i></a></li>
-                            <li><a class="google-plus" href="#"><i
-                                        class="fa fa-google-plus"></i></a></li>
-                            <li><a class="linkedin" href="#"><i
-                                        class="fa fa-linkedin"></i></a></li>
-                            <li><a class="instagram" href="#"><i
-                                        class="fa fa-instagram"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!--// Product Details Right -->
+   <!--// Product Details Right -->
 
             </div>
         </div>
@@ -397,6 +268,8 @@ td.pro-price {
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
    
@@ -457,14 +330,26 @@ td.pro-price {
 
     if (newValue < 1) {
         return;
+    } else if (newValue > 5) {
+        // Show a toast notification if the maximum limit is reached
+        toastr.warning("You can buy only 5 pieces at a time");
+        return;
     }
 
     quantityInput.val(newValue);
     updateCart(productId, increment, newValue); // Pass the new quantity to the updateCart function
 }
-   // Function to update cart via AJAX
-   function updateCart(productId, newQuantity) {
-        const data = { productId: productId, count: newQuantity };
+function updateCart(productId, newQuantity) {
+    // Check if the new quantity exceeds the limit (5)
+    if (newQuantity > 5) {
+        Swal.fire({
+            icon: "warning",
+            text: "You can buy only 5 pieces at a time"
+        });
+        return; // Exit the function if the limit is exceeded
+    }
+
+    const data = { productId: productId, count: newQuantity };
 
     $.ajax({
         method: 'POST',
@@ -478,20 +363,17 @@ td.pro-price {
                 Swal.fire({
                     text: "Product is out of stock. Will update soon!",
                     icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload(); // Reload the page only if "OK" is clicked
+                    }
                 });
                 $(".btn-increment").prop("disabled", true);
-                location.reload(); // Reload the page
-            } else if (response.limit) {
-                // Handle quantity limit scenario
-                Swal.fire({
-                    icon: "warning",
-                    text: "You can buy only 5 pieces at a time"
-                }).then(() => {
-                    $(".btn-increment").prop("disabled", true);
-                    // location.reload(); // Reload the page
-                });
             } else {
                 // Update UI elements with new data
+                location.reload(); // Reload the page
                 var quantityInput = $("#cartProductQuantity_" + productId);
                 quantityInput.val(response.newQuantity);
 
@@ -506,12 +388,13 @@ td.pro-price {
         },
         error: function (error) {
             console.error(error);
-            Swal.fire("Error", "An error occurred while updating the cart. Product quantity exceeded", "error");
+            Swal.fire("Error", "An error occurred while updating the cart. Please try again later", "error");
         }
     });
 }
 
+
     </script>
     
 
-<%- include("../layouts/user/footer.ejs") %>
+    <%-include("../user/layouts/footer.ejs") %>

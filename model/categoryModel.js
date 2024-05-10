@@ -20,5 +20,9 @@ let categorySchema = new mongoose.Schema({
         enum:['active','blocked'],
         default:'active'
     },
+    offer:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Offer"
+      }
 });
 module.exports = mongoose.model('Category',categorySchema);

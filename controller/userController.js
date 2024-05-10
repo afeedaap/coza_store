@@ -3,7 +3,7 @@ const Product = require('../model/productModel')
 const Category = require('../model/categoryModel')
 const Address = require('../model/addressModel')
 const Order= require('../model/orderModel')
-
+const Wishlist=require("../model/wishlistModel")
 const bcrypt = require("bcryptjs")
 const { sendVerifyMail } = require('../config/sendVerifyMail')
 //=================looad home=========================//
@@ -424,7 +424,7 @@ const productview = async (req, res, next) => {
             console.error("Product not found");
             return res.status(404).send("Product not found");
         }
-        
+        const wishlistData = await Wishlist.findOne({ user: user }).populate("products.product");
         let category = await Category.find({});
         let product = await Product.find({ status: "active" }).populate("category").exec();
         

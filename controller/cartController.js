@@ -36,7 +36,8 @@ const cartLoad = async (req, res) => {
               grandTotal: grandTotal,
               shippingCharge: shippingCharge,
               subTotal: subTotal,
-              category 
+              category ,
+              
           });
       } else {
           res.render("cart", { user: user_id, cart: null, message: "No products available in your cart." });
@@ -87,9 +88,10 @@ const addToCart = async (req, res) => {
           const existingProductIndex = cart.products.findIndex(product => product.productId.equals(productId));
 
           if (existingProductIndex !== -1) {
+           return res.redirect('/cart')
               // If the product exists in the cart, update its quantity and totalPrice
-              cart.products[existingProductIndex].count += quantity;
-              cart.products[existingProductIndex].totalPrice += productData.price * quantity;
+              // cart.products[existingProductIndex].count += quantity;
+              // cart.products[existingProductIndex].totalPrice += productData.price * quantity;
           } else {
               // If the product doesn't exist in the cart, add it
               cart.products.push({

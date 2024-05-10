@@ -9,13 +9,6 @@ const allCategory=async(req,res)=>{
         const category=await Category.find()
     
         const currentDate = new Date();
-
-        
-
-
-
-
-
         req.session.category=category
         res.render('category',{category,errMess})
     } catch (error) {

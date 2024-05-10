@@ -1,0 +1,81 @@
+<%-include('./layouts/header')%>
+
+<!-- iziToast CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+<!-- iziToast JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Edit Offer</h2>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="offerForm" action="/admin/editOffer" method="post">
+                        <div class="mb-4">
+                            <label for="offerName" class="form-label">Offer Name</label>
+                            <input type="text" placeholder="Type here" class="form-control" name="offerName" id="offerName" value="<%= offerData.name %>" />
+                            <input type="hidden" name="id" value="<%= offerData._id %>">
+                            <p id="offerNameErr" class="error-message" style="color: red;"></p>
+                        </div>
+                        <div class="row gx-3">
+                            <div class="col-md-4 mb-3">
+                                <label for="startDate" class="form-label">Starting Date</label>
+                                <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate" value="<%= offerData.startingDate.toISOString().split('T')[0] %>" />
+                                <p id="offerStartDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="endDate" class="form-label">Ending Date</label>
+                                <input name="endDate" type="date" placeholder="Type here" class="form-control" id="endDate" value="<%= offerData.endDate.toISOString().split('T')[0] %>" />
+                                <p id="offerEndDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="offerPercentage" class="form-label">Discount Percentage</label>
+                            <input name="discountPercentage" type="text" placeholder="Type here" class="form-control" id="offerPercentage" value="<%= offerData.discount %>" />
+                            <p id="offerDiscountPercentageErr" class="error-message" style="color: red;"></p>
+                        </div>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Update</button>
+                    </form>
+                </div>
+            </div>
+            <!-- card end// -->
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.getElementById('offerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        axios.post('/admin/editOffer', {
+                offerName: document.getElementById('offerName').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                discountPercentage: document.getElementById('offerPercentage').value,
+                id: document.querySelector('input[name="id"]').value
+            })
+            .then(function(response) {
+                if (response.data.data) {
+                    iziToast.success({
+                        title: 'Success',
+                        message: response.data.message,
+                    });
+                } else {
+                    iziToast.error({
+                        title: 'Error',
+                        message: response.data.message,
+                    });
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+<%-include('./layouts/footer')%>

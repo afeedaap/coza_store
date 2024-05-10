@@ -7,6 +7,7 @@ const userController = require('../controller/userController');
 const cartController = require('../controller/cartController');
 const addressController = require('../controller/addressController');
 const orderController = require('../controller/orderController');
+const wishlistController = require('../controller/wishlistController');
 
 const auth = require('../middleware/userAuth');
 const passport = require('passport');
@@ -93,6 +94,10 @@ user_route.get('/productview', userController.productview);
 user_route.get('/product-details', productController.productview);
 
 
+//========wishlist=========================//
+user_route.get('/wishlist', wishlistController.wishlist);
+user_route.post('/addToWishlist', auth.isLogin, wishlistController.addToWishlist);
+user_route.delete('/removeWishlist', auth.isLogin, wishlistController.removeWishlist);
 
 
 // Load login

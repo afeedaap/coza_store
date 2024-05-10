@@ -1,0 +1,115 @@
+<%- include('./layouts/header') %>
+
+<!-- iziToast CSS -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css"
+/>
+<!-- iziToast JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+
+
+<section class="content-main">
+  <div class="row">
+    <div class="col-9">
+      <div class="content-header">
+        <h2 class="content-title">Edit Coupon</h2>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-header"></div>
+        <div class="card-body">
+          <form id="couponForm" method="post" action="/admin/editCoupon">
+            <div class="mb-4">
+              <label for="coupon_name" class="form-label">Coupon Name</label>
+              <input
+                type="text"
+                name="couponName"
+                placeholder="Type here"
+                class="form-control"
+                id="coupon_name"
+              />
+              <p
+                id="couponNameErr"
+                class="error-message"
+                style="color: red"
+              ></p>
+            </div>
+            
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="mb-4">
+                  <label class="form-label">Coupon code</label>
+                  <input
+                    name="couponCode"
+                    placeholder="Type here"
+                    type="text"
+                    class="form-control"
+                    id="coupon_code"
+                  />
+                  <p
+                    id="couponCodeErr"
+                    class="error-message"
+                    style="color: red"
+                  ></p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="mb-4">
+                  <label class="form-label">Minimum amount</label>
+                  <input
+                    name="minAmount"
+                    placeholder="Type here"
+                    type="text"
+                    class="form-control"
+                    id="min_amount"
+                  />
+                  <p
+                    id="minAmountErr"
+                    class="error-message"
+                    style="color: red"
+                  ></p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <label class="form-label">Discount Amount</label>
+                <input
+                  name="discount"
+                  placeholder="Type here"
+                  type="text"
+                  class="form-control"
+                  id="discount_amount"
+                />
+                <p
+                  id="discountErr"
+                  class="error-message"
+                  style="color: red"
+                ></p>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="row">
+                  <div class="col-md-6 mb-4">
+                      <label for="startDate" class="form-label">Starting Date</label>
+                      <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate" />
+                      <p id="couponStartDateErr" class="error-message" style="color: red;"></p>
+                  </div>
+                  <div class="col-md-6 mb-4">
+                      <label for="endDate" class="form-label">Ending Date</label>
+                      <input name="expireDate" type="date" placeholder="Type here" class="form-control" id="endDate" />
+                      <p id="couponEndDateErr" class="error-message" style="color: red;"></p>
+                  </div>
+              </div>
+          </div>
+          
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('./layouts/footer') %>

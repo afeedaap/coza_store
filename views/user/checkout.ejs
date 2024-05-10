@@ -1,5 +1,56 @@
-<%- include("../layouts/user/header.ejs") %>
+<%-include("../user/layouts/header.ejs") %>
 <style>
+     /* CSS styling for the coupon management section */
+    
+    
+     .coupon {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    max-width:auto;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+}
+.selected {
+ background-color: rgb(128, 128, 206);
+ color: white; 
+}
+
+
+.coupon-logo {
+    max-width: 100px;
+    margin-bottom: 15px;
+}
+.coupon-amount {
+    font-size: 20px;
+    color: #f00; /* Red color for emphasis */
+}
+    .apply-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .apply-button:hover {
+        background-color: #45a049;
+    }
+
+    .remove-button {
+        background-color: #f44336;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .remove-button:hover {
+        background-color: #da190b;
+    }
  /* Styling for cart summary table */
     /* Cart summary table styling */
     .cart-summary-table {
@@ -11,7 +62,7 @@
     .cart-summary-table th,
     .cart-summary-table td {
         border: 1px solid #ddd;
-        padding: 8px;
+        padding: 10px;
         text-align: left;
     }
 
@@ -60,17 +111,34 @@ width:250px
 </style>
 <br>
 <br>
+<br>
+<br>
+<div class="container">
+    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+        <a href="/" class="stext-109 cl8 hov-cl1 trans-04">
+            Home
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+        
+        <a href="/shop" class="stext-109 cl8 hov-cl1 trans-04">
+            products
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+        <a href="/cart" class="stext-109 cl8 hov-cl1 trans-04">
+            cart
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+        <a href="/checkout" class="stext-109 cl8 hov-cl1 trans-04">
+            checkout
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+        <span class="stext-109 cl4">
+            
+        </span>
+    </div>
+</div>
 <br><br>
 <br>
-
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item"><a href="/shop">products</a></li>
-        <li class="breadcrumb-item"><a href="/cart">cart</a></li>
-        <li class="breadcrumb-item active" aria-current="page">checkout</li>
-    </ol>
-</nav>
 
 <div id="checkout-container">
 <form id="checkout-form">
@@ -129,8 +197,27 @@ width:250px
                             </div>
                             <% } %>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
+
+                        <!-- Coupon Management Section -->
+                     
+                        <div class="discount-coupon">
+                            <h4>Discount Coupon Code</h4>
+                                <div class="row">
+                                    <div class="col-md-6 col-12 mb--25">
+                                        <input type="text" id="couponCodeInput" placeholder="Coupon Code" style="font-weight: bold; color: red;" disabled>
+                                    </div>
+                                    <div class="col-md-6 col-12 mb--25 button-container">
+                                        <input type="button" value="check coupons" onclick="showDiscountModal()" style="color: white; background-color: black; width: auto; display: inline-block; margin-right: 10px;">
+                                        <input type="button" value="remove coupon" onclick="removeCoupon()" style="color: white; background-color: black; width: auto; display: inline-block;">
+                                    </div>
+                                    
+                                 
+                               
+                                </div>
+                        </div>
+             </div>
+                    
+                    <div class="col-lg-6" style="padding-bottom: 20px;">
                         <div class="mb--60">
                             <h4 class="checkout-title">Cart Total</h4>
                             <div class="checkout-cart-total">
@@ -140,15 +227,15 @@ width:250px
                                             <tr>
                                                 <th scope="col">Product</th>
                                                 <th scope="col">Total</th>
-                                                <th scope="col">quantity</th>
+                                        
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <% cart.products.forEach((product,index) => { %>
                                                 <tr>
-                                                    <td><%= product.productId.name %></td>
+                                                    <td><%= product.productId.name  %> x <%=  eachQuantity[index] %></td>
                                                     <td>₹<%= eachTotal[index].toFixed(2) %></td>
-                                                    <td><%=  eachQuantity[index] %></td>
+                                                    
                                                 </tr>
                                             <% }); %>
                                             <tr >
@@ -167,29 +254,40 @@ width:250px
                                         
                                     </table>
                                     <div style="padding: 15px;">
-                                        <h4 class="checkout-title ">Payment
-                                            Method</h4>
+                                        <h4 class="checkout-title ">PAYMENT
+                                            METHOD</h4>
                                         <div class="single-method">
                                             <!-- Payment method options go here -->
-                                            <input type="radio" id="COD"
+                                            <div>
+                                                
+                                          
+                                           
+                                               
+                                                    <input type="radio" id="COD"
                                                 name="payment" value="COD"
                                                 checked>
-                                            <label for="payment_cash">Cash on
-                                                Delivery</label>
-                                            <p data-method="cash">Please send a
-                                                Check to Store name with Store
-                                                Street, Store Town,
-                                                Store State, Store Postcode,
-                                                Store Country.</p>
-                                                <!-- <input type="radio" name="paypal" id="paypal" value="paypal" >
-                                                <label for="payment_cash">paypal</label> -->
+                                                <label for="COD" style="font-weight: bold;">Cash on
+                                                    Delivery</label>
+                                                   
+                                            </div>
+                                            <div>
+                                                <input type="radio" id="razorpay" name="payment" value="razorpay">
+                                                <label for="razorpay" style="font-weight: bold;">razorpay</label>
+                                            </div>
+                                            <div>
+                                                <input type="radio" id="wallet" name="payment" value="wallet">
+                                                <label for="wallet" style="font-weight: bold;">wallet</label>
+                                            </div>
+                                         
                                         </div>
                                         <div style="text-align: center;">
-                                            <button type="submit" 
-                                                class="place-order-button">Place
+                                            <button type="button" id="place-order"
+                                                class="place-order">Place
                                                 Order</button>
-                                               
                                         </div>
+                                    </div>
+                                   
+                                   
                                     </div>
                                 </div>
 
@@ -201,258 +299,72 @@ width:250px
         </div>
     </form>
 
+    
+
+
    
-
-                  
-    <a href="/place-order"></a>
-    <!-- Quick View Modal -->
-    <div class="quick-view-modal">
-        <div class="quick-view-modal-inner">
-            <div class="container">
-                <div class="product-details">
-                    <!-- Product Details Left -->
-                    <div class="product-details-left">
-                        <div
-                            class="product-details-images slider-navigation-2">
-                            <a href="#">
-                                <img class="w-100"
-                                    src="assets/images/product/product-01.jpg"
-                                    alt="product image">
-                            </a>
-                            <a href="#">
-                                <img class="w-100"
-                                    src="assets/images/product/product-02.jpg"
-                                    alt="product image">
-                            </a>
-                            <a href="#">
-                                <img class="w-100"
-                                    src="assets/images/product/product-03.jpg"
-                                    alt="product image">
-                            </a>
-                            <a href="#">
-                                <img class="w-100"
-                                    src="assets/images/product/product-04.jpg"
-                                    alt="product image">
-                            </a>
-                            <a href="#">
-                                <img class="w-100"
-                                    src="assets/images/product/product-05.jpg"
-                                    alt="product image">
-                            </a>
-                        </div>
-                        <div
-                            class="product-details-thumbs slider-navigation-2">
-                            <img
-                                src="assets/images/product/product-01.jpg"
-                                alt="product image thumb">
-                            <img
-                                src="assets/images/product/product-02.jpg"
-                                alt="product image thumb">
-                            <img
-                                src="assets/images/product/product-03.jpg"
-                                alt="product image thumb">
-                            <img
-                                src="assets/images/product/product-04.jpg"
-                                alt="product image thumb">
-                            <img
-                                src="assets/images/product/product-05.jpg"
-                                alt="product image thumb">
-                        </div>
-                    </div>
-                    <!--// Product Details Left -->
-
-                    <!-- Product Details Right -->
-                    <div class="product-details-right">
-                        <h5 class="product-title">Demo Product
-                            Name</h5>
-
-                        <div class="ratting-stock-availbility">
-                            <div class="ratting-box">
-                                <span><i
-                                        class="fa fa-star"></i></span>
-                                <span><i
-                                        class="fa fa-star"></i></span>
-                                <span><i
-                                        class="fa fa-star"></i></span>
-                                <span><i
-                                        class="fa fa-star"></i></span>
-                                <span><i
-                                        class="fa fa-star"></i></span>
-                            </div>
-                            <span class="stock-available">In
-                                stock</span>
-                        </div>
-
-                        <p>Lorem ipsum dolor sit amet, consectetur
-                            adipiscing elit. Nam fringilla augue nec
-                            est
-                            tristique auctor. Donec non est at
-                            libero vulputate rutrum. Morbi ornare
-                            lectus quis
-                            justo gravida semper. Nulla tellus mi,
-                            vulputate adipiscing cursus eu, suscipit
-                            id
-                            nulla. adipiscing cursus eu, suscipit id
-                            nulla.</p>
-
-                        <div class="price-box">
-                            <span
-                                class="pricebox-price">£80.00</span>
-                        </div>
-
-                        <div class="product-details-quantity">
-                            <div class="quantity-select">
-                                <div class="pro-quantity">
-                                    <div class="pro-qty"><input
-                                            type="text"
-                                            value="1"></div>
-                                </div>
-                            </div>
-                            <a href="#" class="add-to-cart-button">
-                                <span>ADD TO CART</span>
-                            </a>
-                        </div>
-
-                        <div class="product-details-color">
-                            <span>Color :</span>
-                            <ul>
-                                <li class="red"><span></span></li>
-                                <li
-                                    class="green checked"><span></span></li>
-                                <li class="blue"><span></span></li>
-                                <li class="black"><span></span></li>
-                            </ul>
-                        </div>
-
-                        <div class="product-details-size">
-                            <span>Size :</span>
-                            <ul>
-                                <li
-                                    class="checked"><span>S</span></li>
-                                <li><span>M</span></li>
-                                <li><span>L</span></li>
-                                <li><span>XL</span></li>
-                                <li><span>XXL</span></li>
-                            </ul>
-                        </div>
-
-                        <div class="product-details-categories">
-                            <span>Categories :</span>
-                            <ul>
-                                <li><a
-                                        href="shop.html">Accessories</a></li>
-                                <li><a
-                                        href="shop.html">Kids</a></li>
-                                <li><a
-                                        href="shop.html">Women</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="product-details-tags">
-                            <span>Tags :</span>
-                            <ul>
-                                <li><a
-                                        href="shop.html">Electronic</a></li>
-                                <li><a
-                                        href="shop.html">Television</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="product-details-socialshare">
-                            <span>Share :</span>
-                            <ul>
-                                <li><a class="facebook" href="#"><i
-                                            class="fa fa-facebook"></i></a></li>
-                                <li><a class="twitter" href="#"><i
-                                            class="fa fa-twitter"></i></a></li>
-                                <li><a class="google-plus"
-                                        href="#"><i
-                                            class="fa fa-google-plus"></i></a></li>
-                                <li><a class="linkedin" href="#"><i
-                                            class="fa fa-linkedin"></i></a></li>
-                                <li><a class="instagram" href="#"><i
-                                            class="fa fa-instagram"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!--// Product Details Right -->
-
-                </div>
-            </div>
-        </div>
-        <button class="close-quickview-modal"><i
-                class="fa fa-close"></i></button>
-    </div>
-
-</div>
+   
 
 
 
     <!--// Quick View Modal -->
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <script>
-     
-
-         $("#checkout-form").submit(function (e) {
-            e.preventDefault();
-            const selectedAddress = $("input[name='address']:checked").val();
-            if (!selectedAddress) {
    
-        swal.fire({
-            title: "Please add an address using the profile page",
-            icon: "info",
-            button: false,
-            timer: 3000
-        }).then(function() {
-            window.location.href = "/profile";
-        });
-    } else {
-
-            const address = selectedAddress ? JSON.parse(selectedAddress) : {};
-            const paymentMethod = $("input[name='payment']:checked").val();
+<script>
+    const paymentMethod = $("input[name='payment']:checked").val();
+    const formData = {
+        address: address,
+        payment: paymentMethod,
+    };
     
-console.log('address',address);
 
-            formData   = {
-                address: address,
-                payment: paymentMethod,
-            };
-console.log(formData,"haaiiiiiiii");
-            $.ajax({
-                url: "/place-order",
-                method: "POST",
-                contentType: 'application/json',
-                data: JSON.stringify({ formData }),
-                success: (response) => {
-                    console.log('rs',response);
-                    if(response.quantity){
-                        swal.fire({
-                          title: "info",
-                          icon: "warning",
-                          title:"product is out of stock,better luck next timecart",
-                          button: false,
-                          timer: 3000
-                           })               
-                    }else if (response.codsuccess == true) {
-                          swal.fire({
-                          icon: "success",
-                          title:"order is success",
-                          timer: 3000
-                           }).then(()=> {        
-                            window.location.href = `/order-success`;
-
-                        })
-                       
+                    $.ajax({
+                        url: "/place-order",
+                        method: "POST",
+                        contentType: 'application/json',
+                        data: JSON.stringify({ formData }),
+                        success: (response) => {
+                            console.log('rssdgfsdfs',response);
+                            if(response.stock){
+                                swal.fire({
+                                title: "bad request!",
+                                text:"product is out of stock ,plese remove out of stock product for your place holder",
+                                icon: "warning"
+                                });               
+                            } else if (response.codsuccess == true) {
+                                swal.fire({
+                                icon: "success",
+                                title:"cash on delivery",
+                                text:"order success",
+                                timer: 3000
+                                }).then(()=> {        
+                                    window.location.href = `/order-success`;
+                                });
+                            }else if(response.wallet){
+                                swal.fire({
+                                icon: "success",
+                                title:"wallet",
+                                text:"order success",
+                                timer: 3000
+                                }).then(()=> {        
+                                    window.location.href = `/order-success`;
+                                });   
+                            }else if(response.walletAmount){
+                                swal.fire({
+                                icon: "error",
+                                text:"wallet amount not enough",
+                                })  
+                        }else if (response.paypal) {
+                        window.location.href = response.paypal;
                     }
-                },
-            });
-        }
-        });
+                        },
+                    });
+           
+                
+            
+</script>
 
-
-    
-        
-    </script>
-
-    <%- include("../layouts/user/footer.ejs") %>
+<%-include("../user/layouts/footer.ejs") %>

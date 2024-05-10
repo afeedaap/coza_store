@@ -1,4 +1,36 @@
 <%-include("../user/layouts/header.ejs") %>
+
+<style>
+	.offer-tag {
+    position: absolute; /* Position absolutely */
+    top: 0; /* Align to the top */
+    right: 0; /* Align to the left */
+    background-color: red; /* Red background */
+    color: #fff; /* White text */
+    padding: 5px 10px; /* Padding to provide some space around the text */
+    border-top-right-radius: 8px; /* Rounded corners */
+    font-size: 12px; /* Adjust font size */
+  }
+.new-tag {
+	position: absolute;
+    left: 20px;
+    top: 20px;
+    background-color: green;
+    color: #fff;
+    text-align: center;
+    z-index: 2;
+    padding: 1px 7px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 14px
+}
+  
+</style>
+
+  
+
+
+
 <br><br>
 	<div class="bg0 m-t-23 p-b-140">
 		<div class="container">
@@ -86,7 +118,7 @@
 								
 								<li class="p-b-6">
 									<a href="?page=<%= currentPage %>&sort=new_arrival&search=<%= searchTerm %>" class="filter-link stext-106 trans-04 <%= currentSort === 'new_arrival' ? 'filter-link-active' : '' %>">
-										Newn Arrival
+										New Arrival
 									</a>
 								</li>
 						
@@ -118,18 +150,12 @@
 						
 						<div class="filter-col4 p-b-27">
 							<div class="mtext-102 cl2 p-b-15">
-								categories
+								
 							</div>
 
 							<div class="flex-w p-t-4 m-r--5">
-								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									men
-								</a>
-
-								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									women
-								</a>
-
+								
+								
 								
 							</div>
 						</div>
@@ -139,53 +165,54 @@
 
 			<div class="row isotope-grid">
 				<% if (productData.length > 0) { %> 
-					<% for (let i = 0; i < productData.length; i++) { %>
-						<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-							<!-- Product item -->
-							<div class="block2">
-								<!-- Product image -->
-								<div class="block2-pic hov-img0">
-									<a href="" class="product-link"></a>
-									<img src="/<%= productData[i].images[0] %>" alt="IMG-PRODUCT">
-									<a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2  p-lr-15 trans-04 ">
-										Quick view
-									</a>
-								</div>
-			
-								<!-- Product details -->
-								<div class="block2-txt flex-w flex-t p-t-14">
-									<div class="block2-txt-child1 flex-col-l">
-										<!-- Product name -->
-										<a href="/productview?id=<%= productData[i]._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-											<%= productData[i].name %>
-										</a>
-										<!-- Product price -->
-										<span class="stext-105 cl3">
-											₹<%= productData[i].price %>
-										</span>
-									</div>
-			
-									<!-- Add to wishlist -->
-									<div class="block2-txt-child2 flex-r p-t-3">
-										<a href="/cart" class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti " data-notify="0">
-											<i class="zmdi zmdi-shopping-cart"></i>
-										</a>
-										<a href="/wishlist" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-											<img class="icon-heart1 dis-block trans-04" src="users/images/icons/icon-heart-01.png" alt="ICON">
-											<img class="icon-heart2 dis-block trans-04 ab-t-l" src="users/images/icons/icon-heart-02.png" alt="ICON">
-										</a>
-									
-										<!-- <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart" data-notify="">
-											<i class="zmdi zmdi-shopping-cart"></i>
-										</div>
-										 -->
-									</div>
-								</div>
-							</div>
+				  <% for (let i = 0; i < productData.length; i++) { %>
+					<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
+					  <!-- Product item -->
+					  <div class="block2">
+						<!-- Product image -->
+						<div class="block2-pic hov-img0">
+						  <a href="" class="product-link"></a>
+						  <img src="/<%= productData[i].images[0] %>" alt="IMG-PRODUCT">
+						  <a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2  p-lr-15 trans-04 ">
+							Quick view
+						  </a>
+						 
+							<span class="offer-tag">Offer</span>
+							<span class="new-tag">new</span>
 						</div>
-					<% } %>
+			  
+						<!-- Product details -->
+						<div class="block2-txt flex-w flex-t p-t-14">
+						  <div class="block2-txt-child1 flex-col-l">
+							<!-- Product name -->
+							<a href="/productview?id=<%= productData[i]._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+							  <%= productData[i].name %>
+							</a>
+							<!-- Product price -->
+							<span class="stext-105 cl3">
+							  ₹<%= productData[i].price %>
+							</span>
+						  </div>
+			  
+						  <!-- Add to wishlist -->
+						  <div class="block2-txt-child2 flex-r p-t-3">
+							<a href="/cart" class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti " data-notify="0">
+							  <i class="zmdi zmdi-shopping-cart"></i>
+							</a>
+							
+							<a href="/wishlist" onclick="addToWishlist('<%= productData[i]._id %>')" class="btn-addwish-b2 dis-block pos-relative addwish-b2" id="wishlistLink">
+
+							  <img class="icon-heart1 dis-block trans-04" src="users/images/icons/icon-heart-01.png" alt="ICON">
+							  <img class="icon-heart2 dis-block trans-04 ab-t-l" src="users/images/icons/icon-heart-02.png" alt="ICON">
+							</a>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  <% } %>
 				<% } %>
-			</div>
+			  </div>
+			  
 						
 				
 				
@@ -198,6 +225,7 @@
 			</div>
 		</div>
 	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 	<script>
 
@@ -227,5 +255,56 @@
 				handleSearch(searchTerm, selectedValue);
 			}
 		});
+
+		function addToWishlist(productId) {
+    console.log(productId, '-------------');
+   
+    // Send AJAX request to addToWishlist route
+    $.ajax({
+        method: "POST",
+        url: '/addToWishlist',
+        data: JSON.stringify({ productId: productId }),
+        contentType: 'application/json',
+        success: function (response) {
+            console.log(response);
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+            });
+
+            if (response.added) {
+                Toast.fire({
+                    icon: 'success',
+                    title: response.message
+                });
+                // Add a class to change the button color
+                $('#wishlistLink').addClass('added-to-wishlist');
+            } else if (response.removed) {
+                Toast.fire({
+                    icon: 'success',
+                    title: response.message
+                });
+          
+                $('#wishlistLink').removeClass('added-to-wishlist');
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Please log in to perform this action.',
+                    timer: 2000
+                });
+                setTimeout(function () {
+                    window.location.href = '/login';
+                }, 1000);
+            }
+        },
+        error: function (error) {
+            console.error(error.responseText);
+        }
+    });
+}
+
 		</script>
+		
 <%-include("../user/layouts/footer.ejs") %>

@@ -3,6 +3,14 @@ const Cart = require('../model/cartModel')
 const Product = require('../model/productModel')
 const crypto = require("crypto")
 const path = require('path')
+const Razorpay=require('razorpay')
+const env = require("dotenv").config();
+
+const razorpayInstance = new Razorpay({
+  key_id: 'process.env.RAZORPAY_ID_KEY',
+  key_secret: 'process.env.RAZORPAY_SECRET_KEY',
+});
+
 
 
 const decreaseProductQuantity = async (products) => {
@@ -20,7 +28,7 @@ const placeOrder = async (req, res) => {
   try {
       const user_id = req.session.user_id;
       console.log(user_id);
-  
+      const userData = await User.findById({ _id: user_id });
       const cartData = await Cart.findOne({ user: user_id }).populate("products.productId");
       if (!cartData) {
         res.status(404).json({ error: "Cart data not found" });
@@ -73,7 +81,7 @@ const placeOrder = async (req, res) => {
         deliveryDetails: address,
         products: productData,
         date: new Date(),
-        totalAmount: totalAmount, // Correctly set totalAmount including shipping
+        totalAmount: totalAmount, 
         paymentMethod: paymentMethod,
         shippingMethod: cartData.shippingMethod,
         shippingAmount: shippingAmount, // Correctly set shippingAmount

@@ -295,7 +295,7 @@ const shop = async (req, res) => {
      let sortOption = {};
      switch (sort) {
        case 'popularity':
-         // Assuming you have a way to determine popularity
+
          break;
        case 'low_to_high':
          sortOption = { price: 1 };
@@ -304,18 +304,16 @@ const shop = async (req, res) => {
          sortOption = { price: -1 };
          break;
        case 'average_rating':
-         // Assuming you have a way to calculate average ratings
+
          break;
        case 'new_arrival':
          sortOption = { date: -1 };
          break;
        case 'a_to_z':
          sortOption = { name: 1 };
-         console.log('Sorting by name in ascending order'); // Debugging line
-         break;
        case 'z_to_a':
          sortOption = { name: -1 };
-         console.log('Sorting by name in descending order'); // Debugging line
+         
          break;
        case 'featured':
          // Assuming "Featured" is a boolean field
@@ -354,6 +352,7 @@ const shop = async (req, res) => {
 
 
 
+
 module.exports = {
  loadAddProduct,
  loadProductSearchQuery,
@@ -365,6 +364,7 @@ module.exports = {
   productListPage,
   toggleBlockStatusProduct,
   productview,
-  shop
+  shop,
+
 
 };
