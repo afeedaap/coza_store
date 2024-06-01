@@ -15,67 +15,156 @@
         <div class="col-lg-6">
             <div class="card mb-4">
                 <div class="card-body">
-                    <form id="offerForm" action="/admin/editOffer" method="post">
-                        <div class="mb-4">
-                            <label for="offerName" class="form-label">Offer Name</label>
-                            <input type="text" placeholder="Type here" class="form-control" name="offerName" id="offerName" value="<%= offerData.name %>" />
-                            <input type="hidden" name="id" value="<%= offerData._id %>">
-                            <p id="offerNameErr" class="error-message" style="color: red;"></p>
-                        </div>
+                    <form id="offerForm" action="/admin/editOffer?id=<%= offer._id %>" method="post" onsubmit="return validateForm()">
                         <div class="row gx-3">
-                            <div class="col-md-4 mb-3">
+                            <div class="col-lg-6 mb-3">
+                                <label for="offerType" class="form-label">Offer Type</label>
+                                in
+                                <select class="form-select" id="offerType" name="type" required onchange="showHideFields(this.value)">
+                                    <option value="">Select Offer Type</option>
+                                    <option value="category" <% if (offer.offerType === 'category') { %>selected<% } %>>Category</option>
+                                    <option value="product" <% if (offer.offerType === 'product') { %>selected<% } %>>Product</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="item" class="form-label">Item</label>
+                                <select class="form-select" id="item" name="item">
+                                    <option value="">Select Item</option>
+                                    <% if (offer.offerType === 'category' && offer.categoryId) { %>
+                                        <% category.forEach(cat => { %>
+                                            <option value="<%= cat._id %>" <% if (offer.categoryId == cat._id) { %>selected<% } %>><%= cat.name %></option>
+                                        <% }); %>
+                                    <% } else if (offer.offerType === 'product' && offer.productId) { %>
+                                        <% product.forEach(prod => { %>
+                                            <option value="<%= prod._id %>" <% if (offer.productId == prod._id) { %>selected<% } %>><%= prod.name %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 mb-3">
                                 <label for="startDate" class="form-label">Starting Date</label>
-                                <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate" value="<%= offerData.startingDate.toISOString().split('T')[0] %>" />
+                                <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate" value="<%= offer.startDate.toISOString().split('T')[0] %>"/>
                                 <p id="offerStartDateErr" class="error-message" style="color: red;"></p>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-lg-6 mb-3">
                                 <label for="endDate" class="form-label">Ending Date</label>
-                                <input name="endDate" type="date" placeholder="Type here" class="form-control" id="endDate" value="<%= offerData.endDate.toISOString().split('T')[0] %>" />
+                                <input name="endDate" type="date" placeholder="Type here" class="form-control" id="endDate" value="<%= offer.endDate.toISOString().split('T')[0] %>" />
                                 <p id="offerEndDateErr" class="error-message" style="color: red;"></p>
                             </div>
                         </div>
                         <div class="mb-4">
                             <label for="offerPercentage" class="form-label">Discount Percentage</label>
-                            <input name="discountPercentage" type="text" placeholder="Type here" class="form-control" id="offerPercentage" value="<%= offerData.discount %>" />
+                            <input name="discount" type="text" placeholder="Type here" class="form-control" id="offerPercentage" value="<%= offer.discount%>"/>
                             <p id="offerDiscountPercentageErr" class="error-message" style="color: red;"></p>
                         </div>
-                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Update</button>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                        <input type="hidden" name="offerId" value="<%= offer._id %>">
                     </form>
                 </div>
             </div>
-            <!-- card end// -->
         </div>
     </div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    document.getElementById('offerForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        axios.post('/admin/editOffer', {
-                offerName: document.getElementById('offerName').value,
-                startDate: document.getElementById('startDate').value,
-                endDate: document.getElementById('endDate').value,
-                discountPercentage: document.getElementById('offerPercentage').value,
-                id: document.querySelector('input[name="id"]').value
-            })
-            .then(function(response) {
-                if (response.data.data) {
-                    iziToast.success({
-                        title: 'Success',
-                        message: response.data.message,
-                    });
-                } else {
-                    iziToast.error({
-                        title: 'Error',
-                        message: response.data.message,
-                    });
-                }
-            })
-            .catch(function(error) {
-                console.error('Error:', error);
+    function validateForm() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+        var offerPercentage = document.getElementById('offerPercentage').value;
+        var offerType = document.getElementById('offerType').value;
+
+        var isValid = true;
+
+        // Validate Offer Type
+        if (offerType === '') {
+            iziToast.error({
+                title: 'Error',
+                message: 'Please select an offer type',
+                position: 'topRight'
             });
+            isValid = false;
+        }
+
+        // Validate Start Date
+        if (startDate === '') {
+            document.getElementById('offerStartDateErr').innerText = 'Starting Date is required';
+            isValid = false;
+        } else {
+            document.getElementById('offerStartDateErr').innerText = '';
+        }
+
+        // Validate End Date
+        if (endDate === '') {
+            document.getElementById('offerEndDateErr').innerText = 'Ending Date is required';
+            isValid = false;
+        } else if (endDate <= startDate) {
+            document.getElementById('offerEndDateErr').innerText = 'Ending Date must be after Starting Date';
+            isValid = false;
+        } else {
+            document.getElementById('offerEndDateErr').innerText = '';
+        }
+
+        // Validate Discount Percentage
+        if (offerPercentage === '') {
+            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage is required';
+            isValid = false;
+        } else if (isNaN(offerPercentage) || offerPercentage <= 0 || offerPercentage > 100) {
+            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage must be a number between 1 and 100';
+            isValid = false;
+        } else {
+            document.getElementById('offerDiscountPercentageErr').innerText = '';
+        }
+
+        return isValid;
+    }
+
+    function showHideFields(type) {
+        document.getElementById('productFields').style.display = 'none';
+        document.getElementById('categoryFields').style.display = 'none';
+
+        if (type === 'product') {
+            document.getElementById('productFields').style.display = 'block';
+        } else if (type === 'category') {
+            document.getElementById('categoryFields').style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeSelect = document.getElementById('offerType');
+        showHideFields(typeSelect.value);
     });
+
+    // Fetch categories and products
+    axios.get('/api/categories')
+        .then(response => {
+            const categories = response.data;
+            const categoryDropdown = document.getElementById('categoryId');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category._id;
+                option.text = category.name;
+                categoryDropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+        });
+
+    axios.get('/api/products')
+        .then(response => {
+            const products = response.data;
+            const productDropdown = document.getElementById('productId');
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product._id;
+                option.text = product.name;
+                productDropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching products:', error);
+        });
 </script>
 
 <%-include('./layouts/footer')%>

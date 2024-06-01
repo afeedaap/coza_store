@@ -1,5 +1,11 @@
 <%- include("../layouts/user/header.ejs") %>
-   
+   <style>
+    .login-form-wrapper {
+    padding: 30px;
+    border: 1px solid #d5d5d5;
+    margin-top: -122px;
+}
+   </style>
 
    <!-- Start Breadumb Area -->
 <div class="breadcumb-area ptb--100 ptb_md--100 ptb_sm--100  bg_image bg_image--3">
@@ -24,7 +30,7 @@
         <!-- My Account Page -->
         <div class="my-account-area ptb--120 ptb_md--80 ptb_sm--80 bg-color    " data-bg-color="#ffffff">
             <div class="container  ">
-                <h2 class="font--20 mb--0">Login</h2>
+                <!-- <h2 class="font--20 mb--0">Login</h2> -->
                
                 <div class="row">
                      <div class="col-lg-6 mx-auto">
@@ -45,10 +51,7 @@
                                     <br>
                                     <div class="mb-2 d-flex single-input">
                                         <div class="mb-2 d-flex">
-                                            <button type="button" class="btn btn-facebook auth-form-btn flex-grow mr-1" style="background-color: rgb(232, 232, 236); color: rgb(67, 13, 230);">
-                                             
-                                              <a href="/auth/facebook">facebook</a>
-                                            </button>
+                                        
                                             <button type="button" class="btn btn-google auth-form-btn flex-grow ml-1" style="background-color: rgb(239, 239, 243); color: rgb(12, 12, 12);">
                                              
                                               <a href="/auth/google">Google</a>

@@ -1,9 +1,10 @@
 let Product = require("../model/productModel");
 let Category = require("../model/categoryModel");
 let User = require("../model/userModel");
+const CategoryOffer = require('../model/categoryOfferModel');
+const ProductOffer = require('../model/productOfferModel');
 let path = require('path')
-const fs = require('fs').promises; // Import the promises version of fs
-//let fs = require('fs')
+const fs = require('fs').promises; 
 let sharp = require('sharp');
 
 //=====View Product page=======================
@@ -16,7 +17,7 @@ const productListPage = async (req, res) => {
     const totalPages = Math.ceil(totalProducts / limit);
 
     const productData = await Product.find()
-      // .populate('offer')
+
       .skip((page - 1) * limit)
       .limit(limit);
     const currentDate = new Date();
@@ -36,7 +37,6 @@ let loadAddProduct = async(req,res)=>{
 
     let category = await Category.find()
     let message = req.flash('message');
-    // console.log('this is the category found at add proudct page :',category)
     res.render('addProduct',{category,message})
   }catch(err){
     console.log('error at add product loading page :',err)
@@ -92,7 +92,7 @@ const createProduct = async (req, res) => {
         res.redirect("/admin/product");
       }
     } else {
-      console.log("Product already exists while add product and iziToast worked");
+    
       req.flash('message', 'Product already exists..');
       res.redirect("/admin/addProduct");
     }
@@ -128,7 +128,7 @@ const editProduct = async (req, res) => {
     .exec();
    let category = await Category.find({})
 
-console.log('this is the product image or the existing images found at edit Product :',product.images);
+c
 
 
     if (product) {
@@ -138,7 +138,7 @@ console.log('this is the product image or the existing images found at edit Prod
     }
   } catch (error) {
     console.log("Error occurred in editProduct function", error);
-    res.status(500).send("Server Error"); // Send a suitable error response
+    res.status(500).send("Server Error"); 
   }
 };
 
@@ -151,7 +151,6 @@ const toggleBlockStatusProduct = async (req, res) => {
       return res.json({ value: "noRecord" });
     }
     product.status = product.status === "active" ? "blocked" : "active";
-
     await product.save();
 
     res.json({ value: true });
@@ -169,7 +168,7 @@ const productEdited = async (req, res) => {
      console.log('product data at body : ', productData);
  
      let existingImages = req.body.existingImages;
-     // Ensure existingImages is an array
+   
      if (!Array.isArray(existingImages)) {
        existingImages = [existingImages];
      }
@@ -183,13 +182,11 @@ const productEdited = async (req, res) => {
        category: productData.category.id,
      };
  
-     // Handle existing images
      if (existingImages.length > 0) {
        updateData.images = existingImages;
      }
 
  
-     // Handle image upload
      if (req.files && req.files.length > 0) {
        const newFilesToPush = req.files.map((file) =>{
          const relativePath = path.relative('public', path.join('public/adminAssets/imgs/category', file.filename));
@@ -197,12 +194,11 @@ const productEdited = async (req, res) => {
        });
        updateData.images = [...(updateData.images || []), ...newFilesToPush];
      }
-     console.log("updateee ",updateData.images)
- 
+     
      const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
        new: true,
      });
-     console.log("updatedProduct dattttttt",updatedProduct )
+   
  
      res.redirect("/admin/product");
   } catch (error) {
@@ -228,15 +224,7 @@ const deleteimage = async (req, res) => {
         const filePath = path.join(__dirname, 'public', 'adminAssets', 'imgs', 'category', filenameToDelete);
         console.log("File path to delete:", filePath);
   
-        // try {
-        //   // Attempt to delete the file
-        //   await fs.unlink(filePath);
-        //   console.log(`File ${filenameToDelete} deleted successfully`);
-        // } catch (deleteError) {
-        //   console.error(`Error deleting file ${filenameToDelete}:`, deleteError);
-        //   // Optionally, you can handle the error differently, e.g., by sending a response to the client
-        //   return res.status(500).send('Error deleting file');
-        // }
+       
   
         await Product.findByIdAndUpdate(product._id, { $pull: { images: filenameToDelete } });
         res.redirect(`/admin/editproduct?id=${req.query.id}`);
@@ -263,6 +251,7 @@ const loadProductSearchQuery = async (req, res) => {
   }
 };
  //==============user part==========================/
+  
 const productview = async (req, res, next) => {
   try {
     console.log("jhdskjfjdks")
@@ -270,81 +259,93 @@ const productview = async (req, res, next) => {
     const productId = req.query._id;
     const productData = await Product.findOne({ _id: productId }).populate("category");
     
+    
     console.log("productData",productData);
     res.render('product-details', {
       productData: productData,
+      
       });
   } catch (error) {
-    next(error); // Pass the error to the error handling middleware
+    next(error); 
   }
 };
 //=======================userproduct view================//
 const shop = async (req, res) => {
   try {
-     const page = parseInt(req.query.page) || 1;
-     const limit = 8;
-     const skip = (page - 1) * limit;
-     const searchTerm = req.query.search;
-     const sort = req.query.sort;
- 
-     let filter = {};
-     if (searchTerm) {
-       filter = { name: { $regex: searchTerm, $options: 'i' } };
-     }
- 
-     let sortOption = {};
-     switch (sort) {
-       case 'popularity':
+    const page = parseInt(req.query.page) || 1;
+    const limit = 8;
+    const skip = (page - 1) * limit;
+    const searchTerm = req.query.search;
+    const sort = req.query.sort;
 
-         break;
-       case 'low_to_high':
-         sortOption = { price: 1 };
-         break;
-       case 'high_to_low':
-         sortOption = { price: -1 };
-         break;
-       case 'average_rating':
+    
 
-         break;
-       case 'new_arrival':
-         sortOption = { date: -1 };
-         break;
-       case 'a_to_z':
-         sortOption = { name: 1 };
-       case 'z_to_a':
-         sortOption = { name: -1 };
-         
-         break;
-       case 'featured':
-         // Assuming "Featured" is a boolean field
-         filter.featured = true;
-         break;
-       default:
-         sortOption = {};
-     }
- 
-     const productData = await Product.find({ ...filter })
-       .sort(sortOption)
-       .skip(skip)
-       .limit(limit)
-       .exec();
- 
-     const totalCount = await Product.countDocuments(filter);
-     const totalPages = Math.ceil(totalCount / limit);
- 
-     res.render('shop', {
-       productData,
-       currentPage: page,
-       totalPages,
-       searchTerm: searchTerm,
-       currentSort: sort
-     });
- 
+    let filter = {};
+    if (searchTerm) {
+      filter = { name: { $regex: searchTerm, $options: 'i' } };
+    }
+
+    let sortOption = {};
+    switch (sort) {
+      case 'popularity':
+        
+        break;
+      case 'low_to_high':
+        sortOption = { price: 1 };
+        break;
+      case 'high_to_low':
+        sortOption = { price: -1 };
+        break;
+      case 'average_rating':
+       
+        break;
+      case 'new_arrival':
+        sortOption = { date: -1 };
+        break;
+      case 'a_to_z':
+        sortOption = { name: 1 };
+        break;
+      case 'z_to_a':
+        sortOption = { name: -1 };
+        break;
+      case 'featured':
+       
+        filter.featured = true;
+        break;
+      default:
+        sortOption = {};
+    }
+
+    
+    const productData = await Product.find({ ...filter })
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+
+    const totalCount = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    
+      
+      
+    
+
+    res.render('shop', {
+      productData,
+      currentPage: page,
+      totalPages,
+      searchTerm: searchTerm,
+      currentSort: sort
+    });
+
   } catch (error) {
-     console.log(error);
-     res.status(500).send('An error occurred while fetching products.');
+    console.log(error);
+    res.status(500).send('An error occurred while fetching products.');
   }
- };
+};
+
+
+
  
 
 

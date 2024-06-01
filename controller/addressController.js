@@ -3,12 +3,7 @@ const Address = require('../model/addressModel');
 
 const addAddress = async (req, res) => {
     try {
-
-        console.log("in address add")
-
         const user_id = req.session.user_id
-
-
         console.log(req.body);
         const userdata = {
             fullName: req.body.name,
@@ -23,12 +18,10 @@ const addAddress = async (req, res) => {
         console.log(userdata);
         const address = await Address.findOneAndUpdate(
             { user: user_id },
-            { $push: { address: userdata } }, // Corrected to only push the new address data
+            { $push: { address: userdata } }, 
             { upsert: true, new: true }
         );
-       
-
-        res.json({addressAdded:true})
+      res.json({addressAdded:true})
     } catch (e) {
         console.log('while adding address', e);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -49,7 +42,7 @@ const editAddress = async (req, res) => {
                     'address.$.houseName': req.body.houseName,
                     'address.$.city': req.body.city,
                     'address.$.state': req.body.state,
-                    'address.$.pin': req.body.pincode, // Corrected to 'pin' instead of 'pincode'
+                    'address.$.pin': req.body.pincode, 
                 },
             },
             { new: true }

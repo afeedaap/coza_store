@@ -23,7 +23,6 @@ router.get('/block',adminUser.userBlock)
 router.get('/unblock',adminUser.userUnBlock)
 router.get('/products',adminUser.product)
 router.get('/productlist',adminUser.productlist)
-//router.post('/toggleBlock',adminUser.toggleBlockStatus)
 
 
 //=========category part============================
@@ -47,21 +46,36 @@ router.get('/deleteimage', productController.deleteimage)
 //==================order=====================================//
 router.get('/order',adminAuth.isLoggedIn,orderController.loadOrder);
 router.get('/order-details',adminAuth.isLoggedIn, orderController.orderdetailsLoad);
+router.post('/update-order',adminAuth.isLoggedIn,orderController.updateOrder)
 //====================offer========================//
 router.get('/offer',adminAuth.isLoggedIn,offerController.offerload );
-router.get('/addOffer',adminAuth.isLoggedIn,offerController.addOffer);
-router.post('/addOffer',adminAuth.isLoggedIn,offerController.createOffer);
-router.get('/editOffer',adminAuth.isLoggedIn,offerController.loadEditOffer);
-router.post('/editOffer',adminAuth.isLoggedIn,offerController.offerEdited);
-router.delete('/deleteOffer',adminAuth.isLoggedIn,offerController.deleteOffer);
+router.get('/categoryOffer',adminAuth.isLoggedIn,offerController.loadCategoryOffer);
+router.get('/addCategoryOffer',adminAuth.isLoggedIn,offerController.loadAddCategoryOffer);
+router.post('/addCategoryOffer',adminAuth.isLoggedIn,offerController.createCategoryOffer);
+router.get('/editCategoryOffer',adminAuth.isLoggedIn,offerController.editCategoryOffer);
+router.post('/editCategoryOffer',adminAuth.isLoggedIn,offerController.updateCategoryOffer);
+router.get('/deleteCategoryOffer',adminAuth.isLoggedIn,offerController.deleteCategoryOffer );
+router.get('/productOffer',adminAuth.isLoggedIn,offerController.loadProductOffer);
+router.get('/addProductOffer',adminAuth.isLoggedIn,offerController.loadAddProductOffer);
+router.post('/addProductOffer',adminAuth.isLoggedIn,offerController.createProductOffer);
+router.get('/editProductOffer',adminAuth.isLoggedIn,offerController.editProductOffer);
+router.post('/editProductOffer',adminAuth.isLoggedIn,offerController.updateProductOffer);
+router.get('/deleteProductOffer',adminAuth.isLoggedIn,offerController.deleteProductOffer );
+router.get('/refferalOffer',adminAuth.isLoggedIn,offerController.loadRefferalOffer);
+router.get('/addReferalOffer',adminAuth.isLoggedIn,offerController.loadAddRefferalOffer);
+router.post('/addRefferalOffer',adminAuth.isLoggedIn,offerController. addRefferalOffer);
+router.get('/editRefferalOffer',adminAuth.isLoggedIn,offerController.editRefferalOffer);
+router.post('/editRefferalOffer',adminAuth.isLoggedIn,offerController.updateRefferalOffer);
+ router.get('/deleteRefferalOffer',adminAuth.isLoggedIn,offerController. deleteRefferalOffer );
+
+
+
 //=======================coupon==============================//
 router.get('/coupon',adminAuth.isLoggedIn,couponController.couponLoad);
 router.get('/addCoupon',adminAuth.isLoggedIn,couponController.addCouponLoad);
 router.post('/addCoupon',adminAuth.isLoggedIn,couponController.addCoupon);
 router.get('/editCoupon',adminAuth.isLoggedIn,couponController.editCouponLoad);
 router.post('/editCoupon',adminAuth.isLoggedIn,couponController.editCoupon);
-
-
 router.delete('/deleteCoupon',adminAuth.isLoggedIn,couponController.deleteCoupon);
 //============================================================================//
 

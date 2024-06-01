@@ -22,17 +22,17 @@ const wishlist = async (req, res) => {
 
   const addToWishlist = async (req, res) => {
     try {
-      // Ensure the product ID is correctly extracted from the request body
+      
       const id = req.body.productId;
       console.log("idddd",id)
       const userId = req.session.user_id;
   
-    // Find the wishlist for the current user
+    
     const wishData = await Wishlist.findOne({ user: userId });
     console.log("wishData", "hhhadkhadshakjdhkjahdfhadshasdh");
 
     if (wishData) {
-      // Check if the product is already in the wishlist
+     
       const productExists = wishData.products.some(
         (product) => product.product.toString() === id
       );

@@ -4,7 +4,7 @@ let moment = require('moment');
 //=============== landing page for category control===================
 const allCategory=async(req,res)=>{
     try {
-        //category is set at session
+    
       let errMess = req.flash('message');
         const category=await Category.find()
     

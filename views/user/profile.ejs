@@ -119,21 +119,28 @@
     background-color: #d0d0d0; 
     cursor: pointer;
 }
+.panel .panel-heading h5.panel-title span {
+    background-color:#0d6efd;
+}
 </style>
-
-<div
-    class="breadcumb-area ptb--100 ptb_md--100 ptb_sm--100  bg_image bg_image--3">
+<!-- <-- Start Breadumb Area --> 
+   <div class="breadcumb-area ptb--100 ptb_md--100 ptb_sm--100  bg_image bg_image--3">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="inner text-center">
-                    <h2 class="font--40 mb--0">profile</h2>
-
+                    <h2 class="font--40 mb--0">Profile</h2>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+        <!-- Breadcrumb navigation -->
+      
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                    </ol>
+                </nav>
 <!-- End Breadumb Area -->
 <div class="main-wrapper">
     <!-- Start My Account Area -->
@@ -141,7 +148,7 @@
         <div class="container">
             <div class="row">
                 <div class="ml-auto mr-auto col-lg-12">
-                    <div class="checkout-wrapper">
+                    <div class="checkout-wrapper" style="margin-top: -60px;">
 
                         <div class="row">
                             <div class=" container col-lg-4 col-md-12 mt-2">
@@ -150,12 +157,7 @@
                                     class="row justify-content-center">
                                     <div
                                         class="co-lg-4 col-md-6 profile-container">
-                                        <div
-                                            class="profile-image d-flex justify-content-center align-items-center position-relative rounded-circle"
-                                            style="width: 100px; height: 150px; overflow: hidden;">
-                                            <!-- Placeholder image -->
-                                            
-                                        </div>
+                                       
                                         <div
                                             class="profile-details">
                                             <p>Username: <%=
@@ -1127,7 +1129,12 @@
                                                             <h4>your order details</h4>
                                                         </div>
                                                         <div class="entries-wrapper">
-                                                            <h1>Wallet History</h1>
+                                                            <h1 style="font-size: 40px;">Wallet History</h1>
+                                                            <div style="display: inline-block; vertical-align: middle;">
+                                                                <span><b>Wallet History:</b></span>
+                                                                    <p style="font-weight: bold; display: inline;">$<%=userData.wallet %>.00</p>
+                                                                </div>
+                                                                
                                                             <table class="table">
                                                                 <thead>
                                                                     <tr>
@@ -1138,6 +1145,21 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
+                                                                    <% if (walletData.walletHistory && walletData.walletHistory.length) { %>
+                                                                        <% walletData.walletHistory.forEach((entry, index) => { %>
+                                                                            <tr>
+                                                                                <td><%= index + 1 %></td> 
+                                                                                <td><%= entry.date instanceof Date ? entry.date.toDateString() : 'Not a Date' %></td>
+                                                                                <td>$<%= entry.amount.toFixed(2) %></td>
+                                                                                <td><%= entry.direction %></td>
+                                                                            </tr>
+                                                                        <% }); %>
+                                                                    <% } else { %>
+                                                                        <tr>
+                                                                            <td colspan="4">No wallet history available.</td>
+                                                                        </tr>
+                                                                    <% } %>
+                                                                </tbody>
                                                                     
                                                                 
                                                                 

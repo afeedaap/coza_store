@@ -37,7 +37,7 @@
             </div>
             
             <div class="row">
-              <div class="col-lg-4">
+              <div class="col-lg-12">
                 <div class="mb-4">
                   <label class="form-label">Coupon code</label>
                   <input
@@ -54,7 +54,7 @@
                   ></p>
                 </div>
               </div>
-              <div class="col-lg-4">
+              <div class="col-lg-6">
                 <div class="mb-4">
                   <label class="form-label">Minimum amount</label>
                   <input
@@ -71,7 +71,7 @@
                   ></p>
                 </div>
               </div>
-              <div class="col-lg-4">
+              <div class="col-lg-6">
                 <label class="form-label">Discount Amount</label>
                 <input
                   name="discount"
@@ -87,21 +87,6 @@
                 ></p>
               </div>
             </div>
-            <div class="col-lg-12">
-              <div class="row">
-                  <div class="col-md-6 mb-4">
-                      <label for="startDate" class="form-label">Starting Date</label>
-                      <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate" />
-                      <p id="couponStartDateErr" class="error-message" style="color: red;"></p>
-                  </div>
-                  <div class="col-md-6 mb-4">
-                      <label for="endDate" class="form-label">Ending Date</label>
-                      <input name="expireDate" type="date" placeholder="Type here" class="form-control" id="endDate" />
-                      <p id="couponEndDateErr" class="error-message" style="color: red;"></p>
-                  </div>
-              </div>
-          </div>
-          
             
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
@@ -111,15 +96,13 @@
   </div>
 </section>
 
-
 <script>
   function validateForm() {
     var couponName = document.getElementById("coupon_name").value;
     var couponCode = document.getElementById("coupon_code").value;
     var minAmount = document.getElementById("min_amount").value;
     var discount = document.getElementById("discount_amount").value;
-    var startDate = document.getElementById("startDate").value;
-    var endDate = document.getElementById("endDate").value;
+    
     var isValid = true;
 
     if (couponName.trim() == "") {
@@ -146,36 +129,73 @@
       document.getElementById("minAmountErr").innerHTML = "";
     }
 
-
     if (discount.trim() == "") {
       document.getElementById("discountErr").innerHTML = "Discount Amount is required";
       isValid = false;
     } else if (isNaN(discount)) {
       document.getElementById("discountErr").innerHTML = "Discount Amount must be a number";
       isValid = false;
+    } else if (discount > 60) {
+      document.getElementById("discountErr").innerHTML = "Discount must be less than or equal to 60";
+      isValid = false;
     } else {
       document.getElementById("discountErr").innerHTML = "";
     }
 
-    if (startDate.trim() == "") {
-      document.getElementById("couponStartDateErr").innerHTML = "Starting Date is required";
-      isValid = false;
-    } else {
-      document.getElementById("couponStartDateErr").innerHTML = "";
-    }
-
-    if (endDate.trim() == "") {
-      document.getElementById("couponEndDateErr").innerHTML = "Ending Date is required";
-      isValid = false;
-    } else if (endDate <= startDate) {
-      document.getElementById("couponEndDateErr").innerHTML = "Ending Date must be greater than Starting Date";
-      isValid = false;
-    } else {
-      document.getElementById("couponEndDateErr").innerHTML = "";
-    }
-
     return isValid;
   }
+
+  document.getElementById('couponForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    var formData = new FormData(this);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', this.action, true);
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    
+    var jsonObject = {};
+    formData.forEach(function(value, key) {
+        jsonObject[key] = value;
+    });
+
+    xhr.onload = function() {
+      if (xhr.status === 400) {
+        var errors = JSON.parse(xhr.responseText).errors;
+        if (errors.couponName) {
+          iziToast.error({
+            title: 'Error',
+            message: errors.couponName
+          });
+        }
+        if (errors.couponCode) {
+          iziToast.error({
+            title: 'Error',
+            message: errors.couponCode
+          });
+        }
+      } else if (xhr.status === 500) {
+        iziToast.error({
+          title: 'Error',
+          message: 'Internal server error. Please try again later.'
+        });
+      } else {
+        window.location.href = '/admin/coupon';
+      }
+    };
+
+    xhr.onerror = function() {
+      iziToast.error({
+        title: 'Error',
+        message: 'An error occurred during the request. Please try again.'
+      });
+    };
+
+    xhr.send(JSON.stringify(jsonObject));
+  });
 </script>
 
 <%- include('./layouts/footer') %>

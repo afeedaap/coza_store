@@ -163,7 +163,15 @@ td.pro-price {
                                                         <%= product.productId.name %>
                                                     </a>
                                                 </td>
-                                                <td class="pro-price"><span>₹<%= product.productId.price %></span></td>
+                                                
+                                                <%if(product.offerPrice == product.productPrice) {%>
+                                                    <td class="column-2" id="productPrice_<%= i %>"><%= products[i].productPrice %> </td>
+                                                    <%}
+                                                     else if(product.offerPrice !== product.productPrice) {%>
+                                                        <td class="column-2" id="productPrice_<%=  %>"><span><del><%= product.productPrice %></del></span>
+                                                            <span class=" fw-bold"><%= product.offerPrice %> </span>
+                                                        <%}%>
+                                                            </td>
                                                 <td class="pro-quantity">
                                                     <div class="cart-product-quantity">
                                                         <button class="btn btn-decrement" type="button">-</button>
@@ -171,8 +179,13 @@ td.pro-price {
                                                         <button class="btn btn-increment" type="button">+</button>
                                                     </div>
                                                 </td>
-                                                <td class="pro-total" id="totalprice<%= product.productId._id %>">₹<%= product.totalPrice ? product.totalPrice.toFixed(2) : 'N/A' %></td>
-                                                <!-- <td class="pro-total" id="totalprice<%= product.productId._id %>"><%= product.price * product.count%></td> -->
+                                                <% if(product.offerPrice == product.productPrice) { %>
+                                            <td class="column-4" id="pricePerItem_<%=  %>"><%= product.totalPrice %></td>
+                                            <% } else { %>
+                                           <td class="column-4" id="pricePerItem_<%=  %>"><span><del><%= product.totalPrice %></del></span>
+                                           <span class="fw-bold"><%= product.offerPrice * product.count %></span>
+                                               </td>
+                                              <% } %>
                                                 <td>
                                                     <button type="button" onclick="removeItem('<%= product.productId._id %>')">
                                                         <i class="fa fa-trash-o"></i>
@@ -228,14 +241,22 @@ td.pro-price {
                                 <div class="cart-summary-wrap">
                                     <h4>Cart Summary</h4>
                                     <% if (cart && cart.products && cart.products.length > 0 && subTotal > 0) { %>
-                                        <p id="subtotal">Sub Total <span>₹<%= subTotal %>.00</span></p>
-                                        <p id="shippingCharge">Shipping Cost <span>₹<%= shippingCharge %>.00</span></p>
-                                        <h2 id="grandtotal">Grand Total <span>₹<%= grandTotal %>.00</span></h2>
-                                    <% } else { %>
-                                        <p>Sub Total <span>₹0.00</span></p>
-                                        <p>Shipping Cost <span>₹0.00</span></p>
-                                        <h2>Grand Total <span>₹0.00</span></h2>  
-                                    <% } %>
+    <p id="subtotal">Sub Total <span>₹<%= subTotal %>.00</span></p>
+
+    <% let totalDiscount = 0; %>
+    <% cart.products.forEach(product => { %>
+        <% if (product.offerPrice && product.offerPrice < product.productId.price) { %>
+           
+            <% totalDiscount += (product.productId.price - product.offerPrice) * product.count; %>
+        <% } %>
+    <% }); %>
+
+    <h2 id="grandtotal">Grand Total <span>₹<%= grandTotal - totalDiscount %>.00</span></h2>
+<% } else { %>
+    <p>Sub Total <span>₹0.00</span></p>
+    <h2>Grand Total <span>₹0.00</span></h2>
+<% } %>
+
 
                                     <div class="cart-summary-button" style="margin-top: 20px;">
                                         <button class="checkout-btn " id="checkout" type="submit"><a href="/checkout"

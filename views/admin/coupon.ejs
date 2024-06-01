@@ -47,9 +47,7 @@
                             <th scope="col">Coupon code</th>
                             <th scope="col">Discount</th>
                             <th scope="col">Minimum Amount</th>
-                            <th scope="col">Start Date</th>
-                            <th scope="col">Expiry Date</th>
-                            <th scope="col" class="text-end">Action</th>
+                             <th scope="col" class="text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,13 +58,12 @@
                                 <td><%=coupon.couponCode %></td>
                                 <td><%=coupon.discountAmount%></td>
                                 <td><%=coupon.minimumAmount%></td>
-                                <td><%= new Date(coupon.startDate).toDateString() %></td>
-                                <td><%= new Date(coupon.expireDate).toDateString() %></td>
+                                
                                 <td class="text-end">
                                     <div class="dropdown">
                                         <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                         <div class="dropdown-menu">
-                                            <a href="#" class="dropdown-item" data-bs-toggle="modal" onclick="openEditModal('<%= coupon._id %>', '<%= coupon.couponName %>', '<%= coupon.couponCode %>', '<%= coupon.discountAmount %>', '<%=coupon.minimumAmount %>', '<%= new Date(coupon.startDate).toISOString() %>', '<%= new Date(coupon.expireDate).toISOString() %>')" data-bs-target="#editCouponModal<%= index %>">Edit</a>
+                                            <a href="#" class="dropdown-item" data-bs-toggle="modal" onclick="openEditModal('<%= coupon._id %>', '<%= coupon.couponName %>', '<%= coupon.couponCode %>', '<%= coupon.discountAmount %>', '<%=coupon.minimumAmount %>')" data-bs-target="#editCouponModal<%= index %>">Edit</a>
                                             <a class="dropdown-item" onclick="deleteCoupon('<%=coupon._id %>')" >Delete</a>                                    
                                         </div>
                                     </div>
@@ -93,7 +90,7 @@
                 <% } %>
                 <% for (let i = 1; i <= totalPages; i++) { %>
                     <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                        <a class="page-link" href="?page=<%= i %>&search=<%= searchQuery %>"><%= i %></a>
+                        <a class="page-link" href="?page=<%= i %>&search=<%#= searchQuery %>"><%= i %></a>
                     </li>
                 <% } %>
                 <% if (currentPage < totalPages) { %>
@@ -107,116 +104,118 @@
 </section>
 
 <!-- Edit Coupon Modals -->
-<% couponData.forEach((coupon,index) => { %>
-<div class="modal fade" id="editCouponModal<%= index %>" tabindex="-1" aria-labelledby="editCouponModalLabel<%= index %>" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editCouponModalLabel<%= index %>">Edit Coupon</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Edit Coupon Form -->
-                <form id="couponForm<%= index %>" method="post" action="/admin/editCoupon" >
-                    <div class="mb-4">
-                        <label for="edit_coupon_name" class="form-label">Coupon Name</label>
-                        <input
-                            type="text"
-                            name="couponName"
-                            placeholder="Type here"
-                            class="form-control"
-                            id="edit_coupon_name"
-                            value="<%= coupon.couponName %>"
-                        />
-                        <p
-                            id="edit_couponNameErr"
-                            class="error-message"
-                            style="color: red"
-                        ></p>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <div class="mb-4">
-                                <label class="form-label">Coupon code</label>
-                                <input
-                                    name="couponCode"
-                                    placeholder="Type here"
-                                    type="text"
-                                    class="form-control"
-                                    id="edit_coupon_code"
-                                    value="<%= coupon.couponCode %>"
-                                />
-                                <p
-                                    id="edit_couponCodeErr"
-                                    class="error-message"
-                                    style="color: red"
-                                ></p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="mb-4">
-                                <label class="form-label">Minimum amount</label>
-                                <input
-                                    name="minAmount"
-                                    placeholder="Type here"
-                                    type="text"
-                                    class="form-control"
-                                    id="edit_min_amount"
-                                    value="<%= coupon.minimumAmount %>"
-                                />
-                                <p
-                                    id="edit_minAmountErr"
-                                    class="error-message"
-                                    style="color: red"
-                                ></p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <label class="form-label">Discount Amount</label>
+<% couponData.forEach((coupon, index) => { %>
+    <div class="modal fade" id="editCouponModal<%= index %>" tabindex="-1" aria-labelledby="editCouponModalLabel<%= index %>" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCouponModalLabel<%= index %>">Edit Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Edit Coupon Form -->
+                    <form id="couponForm<%= index %>" method="post" action="/admin/editCoupon" onsubmit="return validateEditCouponForm(<%= index %>)">
+                        <input type="hidden" name="couponId" value="<%= coupon._id %>">
+                        <div class="mb-4">
+                            <label for="edit_coupon_name_<%= index %>" class="form-label">Coupon Name</label>
                             <input
-                                name="discount"
-                                placeholder="Type here"
                                 type="text"
+                                name="couponName"
+                                placeholder="Type here"
                                 class="form-control"
-                                id="edit_discount_amount"
-                                value="<%= coupon.discountAmount %>"
+                                id="edit_coupon_name_<%= index %>"
+                                value="<%= coupon.couponName %>"
                             />
                             <p
-                                id="edit_discountErr"
+                                id="edit_couponNameErr_<%= index %>"
                                 class="error-message"
                                 style="color: red"
                             ></p>
                         </div>
-                    </div>
-                    <div class="col-lg-12">
+                        
                         <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <label for="editStartDate" class="form-label">Starting Date</label>
-                                <input name="startDate" type="date" placeholder="Type here" class="form-control" id="editStartDate" value="<%= new Date(coupon.startDate).toISOString().split('T')[0] %>" />
-                                <p id="edit_couponStartDateErr" class="error-message" style="color: red;"></p>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Coupon code</label>
+                                    <input
+                                        name="couponCode"
+                                        placeholder="Type here"
+                                        type="text"
+                                        class="form-control"
+                                        id="edit_coupon_code_<%= index %>"
+                                        value="<%= coupon.couponCode %>"
+                                    />
+                                    <p
+                                        id="edit_couponCodeErr_<%= index %>"
+                                        class="error-message"
+                                        style="color: red"
+                                    ></p>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-4">
-                                <label for="editEndDate" class="form-label">Ending Date</label>
-                                <input name="expireDate" type="date" placeholder="Type here" class="form-control" id="editEndDate" value="<%= new Date(coupon.expireDate).toISOString().split('T')[0]  %>" />
-                                <p id="edit_couponEndDateErr" class="error-message" style="color: red;"></p>
+                            <div class="col-lg-4">
+                                <div class="mb-4">
+                                    <label class="form-label">Minimum amount</label>
+                                    <input
+                                        name="minAmount"
+                                        placeholder="Type here"
+                                        type="text"
+                                        class="form-control"
+                                        id="edit_min_amount_<%= index %>"
+                                        value="<%= coupon.minimumAmount %>"
+                                    />
+                                    <p
+                                        id="edit_minAmountErr_<%= index %>"
+                                        class="error-message"
+                                        style="color: red"
+                                    ></p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-label">Discount Amount</label>
+                                <input
+                                    name="discount"
+                                    placeholder="Type here"
+                                    type="text"
+                                    class="form-control"
+                                    id="edit_discount_amount_<%= index %>"
+                                    value="<%= coupon.discountAmount %>"
+                                />
+                                <p
+                                    id="edit_discountErr_<%= index %>"
+                                    class="error-message"
+                                    style="color: red"
+                                ></p>
                             </div>
                         </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
+                        
+                        
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<% }); %>
+    <% }); %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+
 
 <script>
-    async function deleteCoupon(couponId) {
-        try {
+  async function deleteCoupon(couponId) {
+    try {
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (confirmation.isConfirmed) {
             const response = await fetch('/admin/deleteCoupon', {
                 method: 'DELETE',
                 headers: {
@@ -227,23 +226,32 @@
 
             const data = await response.json();
             if (data.success) {
-                iziToast.success({
+                Swal.fire({
+                    icon: 'success',
                     title: 'Success',
-                    message: 'Coupon deleted successfully',
-                    position: 'topRight'
+                    text: 'Coupon deleted successfully',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = '/admin/coupon';
                 });
-                window.location.href = '/admin/coupon';
             } else {
-                iziToast.error({
+                Swal.fire({
+                    icon: 'error',
                     title: 'Error',
-                    message: 'Failed to delete coupon',
-                    position: 'topRight'
+                    text: 'Failed to delete coupon'
                 });
             }
-        } catch (error) {
-            console.error('Error deleting coupon:', error);
         }
+    } catch (error) {
+        console.error('Error deleting coupon:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to delete coupon'
+        });
     }
+}
 
     function openEditModal(couponId, couponName, couponCode, discountAmount, minimumAmount, startDate, expireDate) {
     document.getElementById('edit_coupon_name').value = couponName;
@@ -251,73 +259,114 @@
     document.getElementById('edit_min_amount').value = minimumAmount;
     document.getElementById('edit_discount_amount').value = discountAmount;
     // Set the start date value
-    document.getElementById('editStartDate').value = startDate.split('T')[0];
-    // Set the expiry date value
-    document.getElementById('editEndDate').value = expireDate.split('T')[0];
+   
 
     document.getElementById('edit_coupon_id').value = couponId;
 }
-function validateEditCouponForm() {
-    var couponName = document.getElementById("edit_coupon_name").value;
-    var couponCode = document.getElementById("edit_coupon_code").value;
-    var minAmount = document.getElementById("edit_min_amount").value;
-    var discount = document.getElementById("edit_discount_amount").value;
-    var startDate = document.getElementById("editStartDate").value;
-    var endDate = document.getElementById("editEndDate").value;
+function validateEditCouponForm(index) {
+    var couponName = document.getElementById(`edit_coupon_name_${index}`).value;
+    var couponCode = document.getElementById(`edit_coupon_code_${index}`).value;
+    var minAmount = document.getElementById(`edit_min_amount_${index}`).value;
+    var discount = document.getElementById(`edit_discount_amount_${index}`).value;
+    
     var isValid = true;
 
-    if (couponName.trim() == "") {
-      document.getElementById("edit_couponNameErr").innerHTML = "Coupon Name is required";
-      isValid = false;
+    if (couponName.trim() === "") {
+        document.getElementById(`edit_couponNameErr_${index}`).innerHTML = "Coupon Name is required";
+        isValid = false;
     } else {
-      document.getElementById("edit_couponNameErr").innerHTML = "";
+        document.getElementById(`edit_couponNameErr_${index}`).innerHTML = "";
     }
 
-    if (couponCode.trim() == "") {
-      document.getElementById("edit_couponCodeErr").innerHTML = "Coupon Code is required";
-      isValid = false;
+    if (couponCode.trim() === "") {
+        document.getElementById(`edit_couponCodeErr_${index}`).innerHTML = "Coupon Code is required";
+        isValid = false;
     } else {
-      document.getElementById("edit_couponCodeErr").innerHTML = "";
+        document.getElementById(`edit_couponCodeErr_${index}`).innerHTML = "";
     }
 
-    if (minAmount.trim() == "") {
-      document.getElementById("edit_minAmountErr").innerHTML = "Minimum Amount is required";
-      isValid = false;
+    if (minAmount.trim() === "") {
+        document.getElementById(`edit_minAmountErr_${index}`).innerHTML = "Minimum Amount is required";
+        isValid = false;
     } else if (isNaN(minAmount) || minAmount <= 0) {
-      document.getElementById("edit_minAmountErr").innerHTML = "Minimum Amount must be a positive number";
-      isValid = false;
+        document.getElementById(`edit_minAmountErr_${index}`).innerHTML = "Minimum Amount must be a positive number";
+        isValid = false;
     } else {
-      document.getElementById("edit_minAmountErr").innerHTML = "";
+        document.getElementById(`edit_minAmountErr_${index}`).innerHTML = "";
     }
 
-    if (discount.trim() == "") {
-      document.getElementById("edit_discountErr").innerHTML = "Discount Amount is required";
-      isValid = false;
+    if (discount.trim() === "") {
+        document.getElementById(`edit_discountErr_${index}`).innerHTML = "Discount Amount is required";
+        isValid = false;
     } else if (isNaN(discount)) {
-      document.getElementById("edit_discountErr").innerHTML = "Discount Amount must be a number";
-      isValid = false;
+        document.getElementById(`edit_discountErr_${index}`).innerHTML = "Discount Amount must be a number";
+        isValid = false;
+    } else if (discount > 60) {
+        document.getElementById(`edit_discountErr_${index}`).innerHTML = "Discount must be less than or equal to 60";
+        isValid = false;
     } else {
-      document.getElementById("edit_discountErr").innerHTML = "";
-    }
-
-    if (startDate.trim() == "") {
-      document.getElementById("edit_couponStartDateErr").innerHTML = "Starting Date is required";
-      isValid = false;
-    } else {
-      document.getElementById("edit_couponStartDateErr").innerHTML = "";
-    }
-
-    if (endDate.trim() == "") {
-      document.getElementById("edit_couponEndDateErr").innerHTML = "Ending Date is required";
-      isValid = false;
-    } else if (endDate <= startDate) {
-      document.getElementById("edit_couponEndDateErr").innerHTML = "Ending Date must be greater than Starting Date";
-      isValid = false;
-    } else {
-      document.getElementById("edit_couponEndDateErr").innerHTML = "";
+        document.getElementById(`edit_discountErr_${index}`).innerHTML = "";
     }
 
     return isValid;
-  }
+}
+document.getElementById('couponForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    if (!validateForm()) {
+        return;
+    }
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function() {
+        if (xhr.status === 400) {
+            var errors = JSON.parse(xhr.responseText).errors;
+            if (errors.couponName) {
+                iziToast.error({
+                    title: 'Error',
+                    message: errors.couponName
+                });
+            }
+            if (errors.couponCode) {
+                iziToast.error({
+                    title: 'Error',
+                    message: errors.couponCode
+                });
+            }
+            // Handle other validation errors if needed
+        } else if (xhr.status === 500) {
+            iziToast.error({
+                title: 'Error',
+                message: 'Internal server error. Please try again later.'
+            });
+        } else {
+            iziToast.success({
+                title: 'Success',
+                message: 'Coupon updated successfully'
+            });
+            window.location.href = '/admin/coupon';
+        }
+    };
+
+    xhr.onerror = function() {
+        iziToast.error({
+            title: 'Error',
+            message: 'An error occurred during the request. Please try again.'
+        });
+    };
+
+    xhr.open('POST', this.action, true); // Open the XHR request
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+    var formData = new FormData(this);
+    var jsonObject = {};
+    formData.forEach(function(value, key) {
+        jsonObject[key] = value;
+    });
+
+    xhr.send(JSON.stringify(jsonObject)); // Send the XHR request with JSON data
+});
+
 </script>
 <%- include('./layouts/footer') %>

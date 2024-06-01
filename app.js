@@ -34,8 +34,8 @@ app.use(session({
   }));
   
 
-app.listen(7000, () => {
-    console.log(`Server is running on http://localhost:7000 and  http://localhost:7000/admin/login`);
+app.listen(8000, () => {
+    console.log(`Server is running on http://localhost:8000 and  http://localhost:8000/admin/login`);
 });
 
 module.exports = app;

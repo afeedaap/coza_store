@@ -12,14 +12,7 @@ const couponSchema = mongoose.Schema({
             type: String,
             required: true
         },
-        startDate: {
-            type: Date,
-            required: true
-        },
-        expireDate: {
-            type: Date,
-            required: true
-        },
+        
         minimumAmount: {
             type: String,
             required: true

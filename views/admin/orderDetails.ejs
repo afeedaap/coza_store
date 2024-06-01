@@ -1,5 +1,4 @@
-
-<%- include('./layouts/header.ejs')%>
+<%- include('./layouts/header.ejs') %>
 <section class="content-main">
     <div class="content-header">
         <div>
@@ -12,7 +11,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
                     <span> <i class="material-icons md-calendar_today"></i> <b><%= orderData.date.toDateString() %></b> </span> <br />
-                    <small class="text-muted">Order ID:<%= orderData.orderId %> </small>
+                    <small class="text-muted">Order ID: <%= orderData.orderId %> </small>
                 </div>
                 <div class="col-lg-6 col-md-6 ms-auto text-md-end">
                     <select class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
@@ -30,6 +29,7 @@
         <!-- card-header end// -->
         <div class="card-body">
             <div class="row mb-50 mt-20 order-info-wrap">
+                <!-- Order Info -->
                 <div class="col-md-4">
                     <article class="icontext align-items-start">
                         <span class="icon icon-sm rounded-circle bg-primary-light">
@@ -55,11 +55,11 @@
                         <div class="text">
                             <h6 class="mb-1">Order info</h6>
                             <p class="mb-1">
-                            <br />
-                               order ID:<%= orderData.orderId%>,<br> 
-                                Pay method: <%= orderData.paymentMethod%>  <br />
-                              
-                                totalAmount:<%= orderData.totalAmount%>
+                                <br />
+                                Order ID: <%= orderData.orderId %>,<br>
+                                Pay method: <%= orderData.paymentMethod %> <br />
+                                totalAmount: ₹<%= orderData.totalAmount %>
+                            </p>
                             <a href="#"></a>
                         </div>
                     </article>
@@ -73,13 +73,11 @@
                         <div class="text">
                             <h6 class="mb-1">Shipping Address</h6>
                             <p class="mb-1">
-                                Name:<%= orderData.deliveryDetails.fullName%><br>
-                                houseName:<%= orderData.deliveryDetails. houseName%><br>
-
-                                City:  <%= orderData.deliveryDetails.city%><br /> 
-                                State:<%= orderData.deliveryDetails.state%>, <br>
-                                 Pincode:<%= orderData.deliveryDetails.pin%>,<br />
-                                
+                                Name: <%= orderData.deliveryDetails.fullName %><br>
+                                House Name: <%= orderData.deliveryDetails.houseName %><br>
+                                City: <%= orderData.deliveryDetails.city %><br />
+                                State: <%= orderData.deliveryDetails.state %>,<br>
+                                Pincode: <%= orderData.deliveryDetails.pin %>,<br />
                             </p>
                             <a href=""></a>
                         </div>
@@ -89,44 +87,122 @@
             </div>
             <!-- row // -->
             <div class="row">
-                <div class="col-lg-7">
+                <div class="col-lg-12">
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-
-                                    <th width="40%">image</th>
-                                    <th width="40%">Product name</th>
-                                    <th width="20%">product Price</th>
-                                    <th width="20%">count</th>
-                                    <th width="20%" class="text-end">Total</th>
-                                    <th width="20%" class="text-end">status</th>
-                                    
+                                    <th width="20%">Image</th>
+                                    <th width="20%">Product Name</th>
+                                    <th width="20%">Product Price</th>
+                                    <th width="20%">Count</th>
+                                    <th width="20%">Total</th>
+                                    <th width="20%">Status</th>
+                                  
                                 </tr>
                             </thead>
                             <tbody>
-                                <% order.forEach( orderItem => { %>
-                                    <% orderItem.products.forEach(
-                                    product => { %>
-                                <tr>
-                                    <td>
-                                        <a class="itemside" href="#">
-                                            <% if (product.productId && product.productId.images && product.productId.images.length > 0) { %>
-                                                <img src="/<%= product.productId.images[0] %>" width="70" height="70" class="img-xs" alt="Item"  style="height: 80px"/>
-                                            <% } else { %>
-                                                <img src="/path/to/default/image.jpg" width="40" height="40" class="img-xs" alt="Default Item" />
-                                            <% } %>
-                                        </a>
-                                    </td>
-                                    <td><%= product.name%></td>
-                                    <td>₹<%= product.productPrice%></td>
-                                    <td><%= product.count%></td>
-                                    <td class="text-end">₹<%= product.
-                                        totalPrice %></td>
-                                        <td><%= product.status%></td>
-                                </tr>
-                                <% }); %>
-                              
+                                <% order.forEach(orderItem => { %>
+                                    <% orderItem.products.forEach(product => { %>
+                                        <tr data-product-id="<%= product._id %>">
+                                            <td>
+                                                <a class="itemside" href="#">
+                                                    <% if (product.productId && product.productId.images && product.productId.images.length > 0) { %>
+                                                        <img src="/<%= product.productId.images[0] %>" width="70" height="70" class="img-xs" alt="Item" style="height: 80px" />
+                                                    <% } else { %>
+                                                        <img src="/path/to/default/image.jpg" width="40" height="40" class="img-xs" alt="Default Item" />
+                                                    <% } %>
+                                                </a>
+                                            </td>
+                                            <td><%= product.productId.name %></td>
+                                            <td>₹<%= product.productPrice %></td>
+                                            <!-- <td>
+                                                <%# if (product.offerPrice) { %>
+                                                    $<%#= product.offerPrice %>.00
+                                                <%# } else {# %>
+                                                    $<%##= product.productPrice %>.00
+                                                <%# } %>
+                                            </td> -->
+                                            <td><%= product.count %></td>
+                                            <td>₹<%= product.totalPrice %></td>
+                                            <!-- <td>
+                                                <select class="status-dropdown">
+                                                    <option value="<%#= product.productStatus %>" selected><%= product.productStatus %></option>
+                                                    <option value="Shipped">Shipped</option>
+                                                    <option value="Placed">Placed</option>
+                                                    <option value="Accepted">Accepted</option>
+                                                </select> -->
+                                            <!-- </td> -->
+
+                                            <% if (product.productStatus == "pending") { %>
+                                                <td style="color: yellow;">Pending</td>
+                                                <% } else if (product.productStatus == 'Delivered') { %>
+                                                <td style="color: limegreen;">Delivered</td>
+                                                <% } else if (product.productStatus == "requested") { %>
+                                                <td> <!-- return reason modal -->
+                                                    <div class="modal fade" id="returnReasonModal" tabindex="-1"
+                                                    role="dialog" aria-labelledby="returnReasonModalLabel"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                      <div class="modal-content"
+                                                        style="border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                                                        <div class="modal-header"
+                                                          style="border-bottom: none; background-color: #007bff; color: white;">
+                                                          <h5 class="modal-title" id="returnReasonModalLabel"
+                                                            style="font-size: 1.5rem; font-weight: bold;">Return
+                                                            Reason</h5>
+                                                        </div>
+                                                        <div class="modal-body"
+                                                          style="padding: 20px; font-size: 1rem;">
+                                                          <p id="returnReasonText"></p>
+                                                        </div>
+                                                        <div class="modal-footer" style="border-top: none; background-color: #f9f9f9; color: #007bff;">
+                                                          <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close" onclick="$('#returnReasonModal').modal('hide');" style="color:black; font-size: 1rem;">
+                                                              <span aria-hidden="true">&times;</span>
+                                                          </button>
+                                                          <button type="button" class="btn btn-primary" onclick="acceptReturnRequest('<%= product._id %>','accepted');">Accept</button>
+                                                          <button type="button" class="btn btn-danger" onclick="rejectReturnRequest('<%= product._id %>','rejected');">Reject</button>
+                                                      </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <button
+                                                  onclick="showReturnModal('<%= JSON.stringify(product._id) %>','<%= JSON.stringify(product.count) %>',' <%= JSON.stringify(orderData.returnReason) %>','<%= JSON.stringify(orderData._id) %>')"
+                                                  class="badge badge-warning">Return Request</button>
+                                                 
+                                                      </td>
+                                                      <% } else if (product.productStatus == "accepted") { %>
+                                                      <td style="color: rgb(9, 16, 219);"
+                                                        >Returned</td>
+                                                      <% } else if (product.productStatus == 'Cancelled') { %>
+                                                      <td style="color: red;">Cancelled</td>
+                                                      <% } else { %>
+                                                      <td>
+                                                        <div class="dropdown">
+                                                          <button class="btn btn-primary dropdown-toggle"
+                                                            type="button" id="dropdownMenuButton"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false"><%= product.productStatus %></button>
+                                                          <div class="dropdown-menu"
+                                                            aria-labelledby="dropdownMenuButton">
+                                                            <button class="dropdown-item" type="button"
+                                                              onclick="updateOrder('<%= product._id %>','Placed')">Placed</button>
+                                                            <button class="dropdown-item" type="button"
+                                                              onclick="updateOrder('<%= product._id %>','Shipped')">Shipped</button>
+                                                            <button class="dropdown-item" type="button"
+                                                              onclick="updateOrder('<%= product._id %>','Out for Delivery')">Out
+                                                              for Delivery</button>
+                                                            <button class="dropdown-item" type="button"
+                                                              onclick="updateOrder('<%= product._id %>','Delivered')">Delivered</button>
+                                                          </div>
+                                                        </div>
+                                                      </td>
+                                                      <% } %>
+                                                    </tr>
+                                                    <% }); %>
+                                        </tr>
+                                    <% }); %>
+                                
                                 <tr>
                                     <td colspan="4">
                                         <article class="float-end">
@@ -135,31 +211,17 @@
                                                 <dd>₹<%= subtotal.toFixed(2) %></dd>
                                             </dl>
                                             <dl class="dlist">
-                                                <dt>Shipping cost:</dt>
-                                                <dd>₹<%= orderData.shippingAmount %></dd>
-                                            </dl>
-                                            <dl class="dlist">
                                                 <dt>Grand total:</dt>
-                                                <dd><b class="h5">₹ <%= orderData.totalAmount%></b></dd>
+                                                <dd><b class="h5">₹<%= orderData.totalAmount %></b></dd>
                                             </dl>
-                                            <!-- <dl class="dlist">
-                                                <dt class="text-muted"><b></b>Status:</dt>
-                                                <dd>
-                                                    <span class="badge rounded-pill alert-success text-success"><b><%= %></b></span>
-                                                </dd>
-                                            </dl> -->
                                         </article>
                                     </td>
                                 </tr>
-                                
-                                <% }); %>
                             </tbody>
                         </table>
                     </div>
                     <!-- table-responsive// -->
                 </div>
-                <!-- col// -->
-                
                 <!-- col// -->
             </div>
         </div>
@@ -167,4 +229,172 @@
     </div>
     <!-- card end// -->
 </section>
-<%- include('./layouts/footer.ejs')%>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert@2"></script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Bootstrap JavaScript -->
+<!-- Ensure jQuery is loaded before Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+ $('.dropdown-toggle').dropdown();
+});
+
+
+  function updateOrder(id, status) {
+  const data = { orderId: id, status };
+  console.log('data',data);
+
+  $.ajax({
+    url: '/admin/update-order',
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    method: 'POST',
+    success: function (response) {
+      location.reload()
+      if (response.success) {
+        const newStatus = response.orderData.products.find(product => product._id === id).status;
+        $(`#${id}`).text(newStatus);
+        if (newStatus === 'Delivered') {
+          $(`#${id}`).removeClass('btn-primary').addClass('btn-success');
+          location.reload()
+        } else if (newStatus === 'Cancelled') {
+          $(`#${id}`).removeClass('btn-primary').addClass('btn-danger');
+        }
+
+        Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1500,
+        }).fire({
+          icon: "success",
+          title: "Status changed",
+        });
+        location.reload()
+      } else {
+        console.log('erroooooorororror');
+        swal("Something went wrong", "", "error");
+      }
+      
+    },
+    error: function () {
+      swal("Something went wrong", "", "error");
+    }
+  });
+}
+
+
+
+function showReturnModal(productId, count, returnReason, orderId, orderReturnReason) {
+    console.log('Product ID:', productId);
+    console.log('Count:', count);
+    console.log('Return Reason:', returnReason);
+    console.log('Order ID:', orderId);
+    console.log('Order Return Reason:', orderReturnReason);
+    document.getElementById('returnReasonText').textContent = returnReason;
+    $('#returnReasonModal').modal('show');
+}
+
+function acceptReturnRequest(id,status) {
+  const data = { orderId: id, status };
+  console.log('dataaaaaaas',data);
+  $.ajax({
+    url: '/admin/update-order',
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    method: 'POST',
+    success: function (response) {
+      if (response.success) {
+        const newStatus = response.orderData.products.find(product => product._id === id).status;
+        $(`#${id}`).text(newStatus);
+        if (newStatus === 'accepted') {
+          $(`#${id}`).removeClass('btn-primary').addClass('btn-success');
+        } 
+        location.reload()
+
+        Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1500,
+        }).fire({
+          icon: "success",
+          title: "request accepted ,status changed",
+        });
+        
+      } else {
+        console.log('erroooooorororror');
+        swal("Something went wrong", "", "error");
+      }
+    },
+    error: function () {
+      swal("Something went wrong", "", "error");
+    }
+  });
+
+    
+    console.log('Return request accepted.');
+
+    $('#returnReasonModal').modal('hide');
+}
+
+function rejectReturnRequest(id,status) {
+  const data = { orderId: id, status };
+
+  $.ajax({
+    url: '/admin/update-order',
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    method: 'POST',
+    success: function (response) {
+      if (response.success) {
+        const newStatus = response.orderData.products.find(product => product._id === id).status;
+        $(`#${id}`).text(newStatus);
+        if (newStatus === 'rejected') {
+          $(`#${id}`).removeClass('btn-primary').addClass('btn-success');
+        } 
+        location.reload()
+
+        Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1500,
+        }).fire({
+          icon: "success",
+          title: "request rejected , status changed",
+        });
+      } else {
+        console.log('erroooooorororror');
+        swal("Something went wrong", "", "error");
+      }
+    },
+    error: function () {
+      swal("Something went wrong", "", "error");
+    }
+  });
+
+  
+    console.log('Return request rejected.');
+
+    $('#returnReasonModal').modal('hide');
+}
+      
+
+
+      </script>
+       <script src="js/off-canvas.js"></script>
+       <script src="js/hoverable-collapse.js"></script>
+       <script src="js/template.js"></script>
+
+<%- include('./layouts/footer.ejs') %>

@@ -1,8 +1,5 @@
-
 const nodeMailer = require('nodemailer')
 const dotenv = require('dotenv').config()
-
-
 const sendVerifyMail = async (name,email,otp) => {
     try {
         console.log(email,name,otp);

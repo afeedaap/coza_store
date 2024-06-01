@@ -1,0 +1,127 @@
+<%-include('./layouts/header')%>
+
+<!-- iziToast CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+<!-- iziToast JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Edit Product Offer</h2>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="offerForm" action="/admin/editProductOffer?id=<%=productOffer._id%>" method="post" onsubmit="return validateForm()">
+                        <div class="row gx-3">
+                            <div class="mb-4">
+                                <label for="category" class="form-label">Select Product</label>
+                                <select class="form-select" id="category" name="product" required onchange="showHideFields(this.value)">
+                                    <% productlist.forEach(pro => {%>
+                                        <option value="<%=pro._id %>"><%=pro.name %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <br>
+                           
+                            <div class="col-lg-6 mb-3">
+                                <label for="startDate" class="form-label">Starting Date</label>
+                                <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate"  value="<%= productOffer.startDate ? productOffer.startDate.toISOString().substring(0, 10) : '' %>" />
+                                <p id="offerStartDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="endDate" class="form-label">Ending Date</label>
+                                <input name="endDate" type="date" placeholder="Type here" class="form-control" id="endDate"  value="<%= productOffer.endDate ? productOffer.endDate.toISOString().substring(0, 10) : '' %>"/>
+                                <p id="offerEndDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="offerPercentage" class="form-label">Discount Percentage</label>
+                            <input name="discount" type="text" placeholder="Type here" class="form-control" id="offerPercentage" value="<%=productOffer.discountPercentage%>"/>
+                            <p id="offerDiscountPercentageErr" class="error-message" style="color: red;"></p>
+                        </div>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+console.log("Product Offer Start Date:", <%= JSON.stringify(productOffer.startDate) %>);
+console.log("Product Offer End Date:", <%= JSON.stringify(productOffer.endDate) %>);
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function validateForm() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+        var offerPercentage = document.getElementById('offerPercentage').value;
+
+        var isValid = true;
+
+        // Validate Start Date
+        if (!startDate) {
+            document.getElementById('offerStartDateErr').innerText = 'Starting Date is required';
+            isValid = false;
+        } else {
+            var currentDate = new Date();
+            var selectedStartDate = new Date(startDate);
+            if (selectedStartDate < currentDate) {
+                document.getElementById('offerStartDateErr').innerText = 'Starting Date cannot be in the past';
+                isValid = false;
+            } else {
+                document.getElementById('offerStartDateErr').innerText = '';
+            }
+        }
+
+        // Validate End Date
+        if (!endDate) {
+            document.getElementById('offerEndDateErr').innerText = 'Ending Date is required';
+            isValid = false;
+        } else {
+            var selectedEndDate = new Date(endDate);
+            if (selectedEndDate <= selectedStartDate) {
+                document.getElementById('offerEndDateErr').innerText = 'Ending Date must be after Starting Date';
+                isValid = false;
+            } else {
+                document.getElementById('offerEndDateErr').innerText = '';
+            }
+        }
+
+        // Validate Discount Percentage
+        if (!offerPercentage) {
+            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage is required';
+            isValid = false;
+        } else {
+            var parsedPercentage = parseFloat(offerPercentage);
+            if (isNaN(parsedPercentage) || parsedPercentage < 1 || parsedPercentage > 100) {
+                document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage must be a number between 1 and 100';
+                isValid = false;
+            } else {
+                document.getElementById('offerDiscountPercentageErr').innerText = '';
+            }
+        }
+
+        return isValid;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Debugging: Log the values being set
+    console.log("Category Offer Data:", {
+        startDate: "<%= productOffer.startDate ? productOffer.startDate.toISOString().substring(0, 10) : '' %>",
+        endDate: "<%= productOffer.endDate ? productOffer.endDate.toISOString().substring(0, 10) : '' %>",
+        discountPercentage: "<%= productOffer.discountPercentage %>"
+    });
+
+    // Pre-populate form with existing offer data
+    document.getElementById('startDate').value = "<%= productOffer.startDate ? productOffer.startDate.toISOString().substring(0, 10) : '' %>";
+    document.getElementById('endDate').value = "<%= productOffer.endDate ? productOffer.endDate.toISOString().substring(0, 10) : '' %>";
+    document.getElementById('offerPercentage').value = "<%= productOffer.discountPercentage %>";
+});
+
+</script>
+
+<%-include('./layouts/footer')%>

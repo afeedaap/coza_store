@@ -35,9 +35,11 @@
     "passport-google-oauth2": "^0.2.0",
     "path": "^0.12.7",
     "paypal-rest-sdk": "^1.8.1",
+    "pdfkit": "^0.15.0",
     "razorpay": "^2.9.3",
     "request": "^2.88.2",
-    "sharp": "^0.33.2"
+    "sharp": "^0.33.2",
+    "uniqid": "^5.4.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"

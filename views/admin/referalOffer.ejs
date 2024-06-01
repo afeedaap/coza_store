@@ -1,0 +1,117 @@
+<%-include('./layouts/header')  %>
+
+
+
+
+
+
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">View Offers</h2>
+                       
+                    </div>
+                    <div>
+                        <a href="/admin/addReferalOffer" class="btn btn-md rounded font-sm">Add Offer</a>
+                    </div>
+                    
+                </div>
+                <div class="card mb-4">
+                    <header class="card-header">
+                        <div class="row gx-3">
+                            <div class="col-lg-4 col-md-6 me-auto">
+                                <input type="text" placeholder="Search..." class="form-control" />
+                            </div>
+                            <div class="col-lg-2 col-6 col-md-3">
+                                <select class="form-select">
+                                    <option>Status</option>
+                                    <option>Active</option>
+                                    <option>Disabled</option>
+                                    <option>Show all</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-6 col-md-3">
+                                <select class="form-select">
+                                    <option>Show 20</option>
+                                    <option>Show 30</option>
+                                    <option>Show 40</option>
+                                </select>
+                            </div>
+                        </div>
+                    </header>
+                    <!-- card-header end// -->
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">SI No</th>
+                                        <th scope="col">Discount</th>
+                                        <th scope="col">Start Date</th>
+                                        <th scope="col">End date</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col" class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% refferalOffers.forEach((offer,index) => { %>
+                                        <tr>
+                                            <td><%=index+1%></td>
+                                            <td><b><%= offer.discountPercentage %></b></td>
+                                            
+                                            <td><%=new Date(offer.startDate).toLocaleDateString()  %></td>
+                                            <td><%=new Date(offer.endDate).toLocaleDateString()  %></td>
+                                           
+                                            <td><%= offer.status %></td>
+                                            <td>
+                                                <span class="badge rounded-pill">
+                                                    <!-- Insert status badge HTML here if needed -->
+                                                </span>
+                                                <div class="text-end">
+                                                    <a href="#" class="" style="background-color: border-color: ">
+                                                        <!-- Insert appropriate link or button for action -->
+                                                    </a>
+                                                    <a href="/admin/editRefferalOffer?id=<%=offer._id%>" id="editOfferBtn" class="btn btn-md rounded font-sm" >Edit</a>
+                
+                                                 
+                                                    <a href="#" class="btn btn-md rounded font-sm" onclick="confirmDelete('<%=offer._id%>')">Delete</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        <!-- table-responsive //end -->
+                    </div>
+                    <!-- card-body end// -->
+                </div>
+                <!-- card end// -->
+               
+            </section>
+        
+            <script>
+               function confirmDelete(offerId){
+    swal({
+  title: "Are you sure?",
+  text: "You want to delete this offer!",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+  if (willDelete) {
+    window.location.href ="/admin/deleteRefferalOffer?id=" +offerId;
+    swal("The offer has been deleted!", {
+      icon: "success",
+    });
+  } 
+});
+  }
+  
+  </script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+              </script>
+            
+<%-include('./layouts/footer')  %>

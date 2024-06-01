@@ -16,7 +16,7 @@ let productSchema = new mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        required: true, // Assuming a product must belong to a category
+        required: true,
       },
     quantity:{
         type:Number,     

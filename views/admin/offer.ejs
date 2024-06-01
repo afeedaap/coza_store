@@ -4,115 +4,56 @@
 
 
 
+<div class="pagetitle">
+  <h1>Offers</h1>
+  <nav>
+    <ol class="breadcrumb">
+       <li class="breadcrumb-item"><a href="/admin/dashboard">Home</a></li>
+     
+    </ol>
+  </nav>
+</div>
+<section class="content-main">
+  <div class="content-header">
 
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">View Offers</h2>
-                       
-                    </div>
-                    <div>
-                        <input type="text" placeholder="Search order ID" class="form-control bg-white" />
-                    </div>
-                    <div>
-                        <input type="text" placeholder="Search order ID" class="form-control bg-white" />
-                    </div>
+<section class="section">
+<div class="row">
+  <div class="col-lg-12">
+   
+        <div class="card-group">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Category Offers</h5>
+                <p class="card-text"></p>
+                <button  class="btn btn-primary"> <a href="/admin/categoryOffer" style="text-decoration: none;color: white ;" >View Offers</a></button>
+                
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Product Offers</h5>
+                     <!------------<p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>----->
+                <button  class="btn btn-primary"> <a href="/admin/productOffer" style="text-decoration: none;color: white ;" >View Offers</a></button>
+
+              </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Refferal Offers</h5>
+                  <!------<p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                  <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>------>
+                  <button  class="btn btn-primary"> <a href="/admin/refferalOffer" style="text-decoration: none;color: white ;" >View Offers</a></button>
+
                 </div>
-                <div class="card mb-4">
-                    <header class="card-header">
-                        <div class="row gx-3">
-                            <div class="col-lg-4 col-md-6 me-auto">
-                                <input type="text" placeholder="Search..." class="form-control" />
-                            </div>
-                            <div class="col-lg-2 col-6 col-md-3">
-                                <select class="form-select">
-                                    <option>Status</option>
-                                    <option>Active</option>
-                                    <option>Disabled</option>
-                                    <option>Show all</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-2 col-6 col-md-3">
-                                <select class="form-select">
-                                    <option>Show 20</option>
-                                    <option>Show 30</option>
-                                    <option>Show 40</option>
-                                </select>
-                            </div>
-                        </div>
-                    </header>
-                    <!-- card-header end// -->
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Discount</th>
-                                        <th scope="col">Start Date</th>
-                                        <th scope="col">End date</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col" class="text-end">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% offerData.forEach(offer => { %>
-                                        <tr>
-                                            <td><%= offer.name %></td>
-                                            <td><b><%= offer.discount %></b></td>
-                                            
-                                            <td><%=new Date(offer.startingDate).toLocaleDateString()  %></td>
-                                            <td><%=new Date(offer.endDate).toLocaleDateString()  %></td>
-                                           
-                                            <td><%= offer.status %></td>
-                                            <td>
-                                                <span class="badge rounded-pill">
-                                                    <!-- Insert status badge HTML here if needed -->
-                                                </span>
-                                                <div class="text-end">
-                                                    <a href="#" class="" style="background-color: border-color: ">
-                                                        <!-- Insert appropriate link or button for action -->
-                                                    </a>
-                                                    <a href="/admin/editOffer?id=<%= offer.id %>" id="editOfferBtn" class="btn btn-md rounded font-sm" >Edit</a>
-
+              </div>
+          </div>
        
-                                                    <a href="#" class="btn btn-md rounded font-sm" onclick="deleteOffer('<%= offer._id %>')">Delete</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                            
-                        </div>
-                        <!-- table-responsive //end -->
-                    </div>
-                    <!-- card-body end// -->
-                </div>
-                <!-- card end// -->
-               
-            </section>
-        
-            <script>
-                async function deleteOffer(offerId) {
-                  try {
-                    const response = await fetch(`/admin/deleteOffer?id=${offerId}`, {
-                      method: 'DELETE'
-                    });
-                    if (response.ok) {
-                      // Offer deleted successfully
-                      alert('Offer deleted successfully');
-                      // Optionally, you can reload the page or update the UI
-                    } else {
-                      // Offer not found or other error
-                      const errorData = await response.json();
-                      alert(errorData.error || 'Offer not found');
-                    }
-                  } catch (error) {
-                    console.error(error.message);
-                    // Handle network error or other exceptions
-                  }
-                }
-              </script>
-            
-<%-include('./layouts/footer')  %>
+     
+  </div>
+</div>
+</section>
+         
+
+
+<%- include('./layouts/footer.ejs')%>

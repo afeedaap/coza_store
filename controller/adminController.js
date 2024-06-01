@@ -16,7 +16,6 @@ let adminLogin = async(req,res)=>{
 const verifyAdminLogin=async(req,res)=>{
     try {
         const {email, password}=req.body;
-        console.log("-------------------admin entered email----------------",email);
          if(email === process.env.AD_EMAIL && password === process.env.AD_PASS){
             console.log('password of admin was matched');
             req.session.Admin=true;
@@ -61,9 +60,9 @@ const userField = async(req,res)=>{
        const user = await User.find({is_admin:{$ne:1}})
         .skip(skip)
         .limit(limit);
-        //Get the total number of products in the database
+    
         const totalProductsCount = await User.countDocuments();
-        //Calculate the total number of pages based on the total products and limit
+     
         const totalPages = Math.ceil(totalProductsCount / limit);
         res.render('users',{users:user,page,totalPages,limit});
     

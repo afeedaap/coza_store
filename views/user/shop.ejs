@@ -1,35 +1,46 @@
 <%-include("../user/layouts/header.ejs") %>
 
 <style>
-	.offer-tag {
+  .pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .pagination a {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 4px;
+    background-color: #f2f2f2;
+    color: #333;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .pagination a:hover {
+    background-color: #ddd;
+  }
+
+  .pagination a.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+  /* Your CSS styles here */
+  .offer-tag {
     position: absolute; /* Position absolutely */
     top: 0; /* Align to the top */
-    right: 0; /* Align to the left */
+    right: 0; /* Align to the right */
     background-color: red; /* Red background */
     color: #fff; /* White text */
     padding: 5px 10px; /* Padding to provide some space around the text */
     border-top-right-radius: 8px; /* Rounded corners */
     font-size: 12px; /* Adjust font size */
   }
-.new-tag {
-	position: absolute;
-    left: 20px;
-    top: 20px;
-    background-color: green;
-    color: #fff;
-    text-align: center;
-    z-index: 2;
-    padding: 1px 7px;
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: 14px
-}
-  
+
+ 
 </style>
 
-  
-
-
+<!-- Your HTML content here -->
 
 <br><br>
 	<div class="bg0 m-t-23 p-b-140">
@@ -163,69 +174,74 @@
 				</div>
 			</div>
 
-			<div class="row isotope-grid">
-				<% if (productData.length > 0) { %> 
-				  <% for (let i = 0; i < productData.length; i++) { %>
-					<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					  <!-- Product item -->
-					  <div class="block2">
-						<!-- Product image -->
-						<div class="block2-pic hov-img0">
-						  <a href="" class="product-link"></a>
-						  <img src="/<%= productData[i].images[0] %>" alt="IMG-PRODUCT">
-						  <a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2  p-lr-15 trans-04 ">
-							Quick view
-						  </a>
-						 
-							<span class="offer-tag">Offer</span>
-							<span class="new-tag">new</span>
-						</div>
-			  
-						<!-- Product details -->
-						<div class="block2-txt flex-w flex-t p-t-14">
-						  <div class="block2-txt-child1 flex-col-l">
-							<!-- Product name -->
-							<a href="/productview?id=<%= productData[i]._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-							  <%= productData[i].name %>
-							</a>
-							<!-- Product price -->
-							<span class="stext-105 cl3">
-							  ₹<%= productData[i].price %>
-							</span>
-						  </div>
-			  
-						  <!-- Add to wishlist -->
-						  <div class="block2-txt-child2 flex-r p-t-3">
-							<a href="/cart" class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti " data-notify="0">
-							  <i class="zmdi zmdi-shopping-cart"></i>
-							</a>
-							
-							<a href="/wishlist" onclick="addToWishlist('<%= productData[i]._id %>')" class="btn-addwish-b2 dis-block pos-relative addwish-b2" id="wishlistLink">
 
-							  <img class="icon-heart1 dis-block trans-04" src="users/images/icons/icon-heart-01.png" alt="ICON">
-							  <img class="icon-heart2 dis-block trans-04 ab-t-l" src="users/images/icons/icon-heart-02.png" alt="ICON">
-							</a>
-						  </div>
-						</div>
-					  </div>
-					</div>
-				  <% } %>
-				<% } %>
-			  </div>
-			  
-						
-				
-				
+    <div class="row isotope-grid">
+      <% if (productData.length > 0) { %>
+      <% for (let i = 0; i < productData.length; i++) { %>
+      <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
+        <!-- Product item -->
+        <div class="block2">
+          <!-- Product image -->
+          <div class="block2-pic hov-img0">
+            <a href="" class="product-link"></a>
+            <img src="/<%= productData[i].images[0] %>" alt="IMG-PRODUCT">
+            <a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2  p-lr-15 trans-04 ">
+              Quick view
+            </a>
 
-			<!-- Load more -->
-			<div class="flex-c-m flex-w w-full p-t-45">
-				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-					Load More
-				</a>
-			</div>
-		</div>
-	</div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            
+
+            <span class="new-tag">new</span>
+          </div>
+
+          <!-- Product details -->
+          <div class="block2-txt flex-w flex-t p-t-14">
+            <div class="block2-txt-child1 flex-col-l">
+              <!-- Product name -->
+              <a href="/productview?id=<%= productData[i]._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                <%= productData[i].name %>
+              </a>
+              <!-- Product price -->
+              <span class="stext-105 cl3">
+                <%= productData[i].price %> <!-- Display regular price -->
+              </span>
+            </div>
+
+            <!-- Add to wishlist -->
+            <div class="block2-txt-child2 flex-r p-t-3">
+              <a href="/cart" class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti " data-notify="0">
+                <i class="zmdi zmdi-shopping-cart"></i>
+              </a>
+
+              <a href="/wishlist" onclick="addToWishlist('<%= productData[i]._id %>')" class="btn-addwish-b2 dis-block pos-relative addwish-b2" id="wishlistLink">
+                <img class="icon-heart1 dis-block trans-04" src="users/images/icons/icon-heart-01.png" alt="ICON">
+                <img class="icon-heart2 dis-block trans-04 ab-t-l" src="users/images/icons/icon-heart-02.png" alt="ICON">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+      <% } %>
+    </div>
+
+    <!-- Load more -->
+    <div class="flex-c-m flex-w w-full p-t-45">
+      <!-- <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+        Load More
+      </a> -->
+     
+    </div>
+    <div class="pagination">
+      <% for(let i = 1; i <= totalPages; i++) { %>
+        <a href="/shop?page=<%= i %>&search=<%= searchTerm %>&sort=<%= currentSort %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 
 	<script>
 
@@ -306,5 +322,5 @@
 }
 
 		</script>
-		
+
 <%-include("../user/layouts/footer.ejs") %>

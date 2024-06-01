@@ -1,0 +1,151 @@
+<%- include('./layouts/header') %>
+
+<!-- iziToast CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+<!-- iziToast JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Add Offer</h2>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="offerForm" action="/admin/addCategoryOffer" method="post">
+                        <div class="row gx-3">
+                            <div class="mb-4">
+                                <label for="category" class="form-label">Select Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <% category.forEach(cat => { %>
+                                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="col-lg-6 mb-3">
+                                <label for="startDate" class="form-label">Starting Date</label>
+                                <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate" />
+                                <p id="offerStartDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="endDate" class="form-label">Ending Date</label>
+                                <input name="endDate" type="date" placeholder="Type here" class="form-control" id="endDate" />
+                                <p id="offerEndDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="offerPercentage" class="form-label">Discount Percentage</label>
+                            <input name="discount" type="text" placeholder="Type here" class="form-control" id="offerPercentage" />
+                            <p id="offerDiscountPercentageErr" class="error-message" style="color: red;"></p>
+                        </div>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function validateForm() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+        var offerPercentage = document.getElementById('offerPercentage').value;
+        var category = document.getElementById('category').value;
+
+        var isValid = true;
+
+        // Validate Start Date
+        if (startDate === '') {
+            document.getElementById('offerStartDateErr').innerText = 'Starting Date is required';
+            isValid = false;
+        } else {
+            document.getElementById('offerStartDateErr').innerText = '';
+        }
+
+        // Validate End Date
+        if (endDate === '') {
+            document.getElementById('offerEndDateErr').innerText = 'Ending Date is required';
+            isValid = false;
+        } else if (endDate <= startDate) {
+            document.getElementById('offerEndDateErr').innerText = 'Ending Date must be after Starting Date';
+            isValid = false;
+        } else {
+            document.getElementById('offerEndDateErr').innerText = '';
+        }
+
+        // Validate Discount Percentage
+        if (offerPercentage === '') {
+            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage is required';
+            isValid = false;
+        } else if (isNaN(offerPercentage) || offerPercentage <= 0 || offerPercentage > 100) {
+            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage must be a number between 1 and 100';
+            isValid = false;
+        } else {
+            document.getElementById('offerDiscountPercentageErr').innerText = '';
+        }
+
+        // Validate Category
+        if (category === '') {
+            iziToast.error({
+                title: 'Error',
+                message: 'Please select a category',
+                position: 'topRight'
+            });
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    document.getElementById('offerForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = {
+            category: formData.get('category'),
+            discount: formData.get('discount'),
+            startDate: formData.get('startDate'),
+            endDate: formData.get('endDate'),
+            status: formData.get('status')
+        };
+
+        try {
+            const response = await fetch('/admin/addCategoryOffer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                iziToast.error({
+                    title: 'Error',
+                    message: errorData.error,
+                    position: 'topRight'
+                });
+            } else {
+                window.location.href = '/admin/categoryOffer';
+            }
+        } catch (error) {
+            iziToast.error({
+                title: 'Error',
+                message: 'An unexpected error occurred',
+                position: 'topRight'
+            });
+        }
+    });
+</script>
+
+<%- include('./layouts/footer') %>

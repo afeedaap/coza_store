@@ -1,0 +1,155 @@
+<%-include('./layouts/header')%>
+
+<!-- iziToast CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+<!-- iziToast JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Add Offer</h2>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="offerForm" action="/admin/editRefferalOffer?id=<%=refferalOffer._id%>" method="post" onsubmit="return validateForm()">
+                        <div class="row gx-3">
+                            <div class="mb-4">
+                                <label for="offerType" class="form-label" name="refferalCode" >Offer Code:</label>
+                                
+                                <label for="offerType" class="form-label" name="refferalCode" ><b><%=refferalOffer.refferalCode%></b></label>
+                                
+                                    
+                            </div>
+                            <br>
+                           
+                            
+                            <div class="col-lg-6 mb-3">
+                                <label for="startDate" class="form-label">Starting Date</label>
+                                <input name="startDate" type="date" placeholder="Type here" class="form-control" id="startDate"  value="<%=refferalOffer.startDate%>" />
+                                <p id="offerStartDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label for="endDate" class="form-label">Ending Date</label>
+                                <input name="endDate" type="date" placeholder="Type here" class="form-control" id="endDate"  value="<%=refferalOffer.endDate%>"/>
+                                <p id="offerEndDateErr" class="error-message" style="color: red;"></p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="offerPercentage" class="form-label">Discount Percentage</label>
+                            <input name="discount" type="text" placeholder="Type here" class="form-control" id="offerPercentage" value="<%=refferalOffer.discountPercentage%>"/>
+                            <p id="offerDiscountPercentageErr" class="error-message" style="color: red;"></p>
+                        </div>
+                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function validateForm() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+        var offerPercentage = document.getElementById('offerPercentage').value;
+        var offerType = document.getElementById('offerType').value;
+
+        var isValid = true;
+
+        // Validate Offer Type
+        if (offerType === '') {
+            iziToast.error({
+                title: 'Error',
+                message: 'Please select an offer type',
+                position: 'topRight'
+            });
+            isValid = false;
+        }
+
+        // Validate Start Date
+        if (startDate === '') {
+            document.getElementById('offerStartDateErr').innerText = 'Starting Date is required';
+            isValid = false;
+        } else {
+            document.getElementById('offerStartDateErr').innerText = '';
+        }
+
+        // Validate End Date
+        if (endDate === '') {
+            document.getElementById('offerEndDateErr').innerText = 'Ending Date is required';
+            isValid = false;
+        } else if (endDate <= startDate) {
+            document.getElementById('offerEndDateErr').innerText = 'Ending Date must be after Starting Date';
+            isValid = false;
+        } else {
+            document.getElementById('offerEndDateErr').innerText = '';
+        }
+
+        // Validate Discount Percentage
+        if (offerPercentage === '') {
+            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage is required';
+            isValid = false;
+        } else if (isNaN(offerPercentage) || offerPercentage <= 0 || offerPercentage > 100) {
+            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage must be a number between 1 and 100';
+            isValid = false;
+        } else {
+            document.getElementById('offerDiscountPercentageErr').innerText = '';
+        }
+
+        return isValid;
+    }
+
+    function showHideFields(type) {
+      document.getElementById('productFields').style.display = 'none';
+      document.getElementById('categoryFields').style.display = 'none';
+
+      if (type === 'product') {
+        document.getElementById('productFields').style.display = 'block';
+      } else if (type === 'category') {
+        document.getElementById('categoryFields').style.display = 'block';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const typeSelect = document.getElementById('type');
+      showHideFields(typeSelect.value);
+    });
+
+    // Fetch categories and products
+    axios.get('/api/categories')
+        .then(response => {
+            const categories = response.data;
+            const categoryDropdown = document.getElementById('categoryId');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category._id;
+                option.text = category.name;
+                categoryDropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+        });
+
+    axios.get('/api/products')
+        .then(response => {
+            const products = response.data;
+            const productDropdown = document.getElementById('productId');
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product._id;
+                option.text = product.name;
+                productDropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching products:', error);
+        });
+</script>
+
+<%-include('./layouts/footer')%>

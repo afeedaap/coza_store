@@ -31,57 +31,42 @@
                         <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
 
                         <div class="slick3 gallery-lb">
-                            <div class="item-slick3" data-thumb="/<%= productData.images[0]%>">
-                                <div class="wrap-pic-w pos-relative">
-                                    <img src="/<%= productData.images[0]%>" alt="IMG-PRODUCT">
-                            
-                                    <!-- Adjusted to dynamically link to the product's first image -->
-                                    <a data-fancybox="gallery" class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="/<%= productData.images[0]%>">
-                                        <i class="fa fa-expand"></i>
-                                    </a>
+                            <% productData.images.forEach((image, index) => { %>
+                                <div class="item-slick3" data-thumb="/<%= image %>">
+                                    <div class="wrap-pic-w pos-relative">
+                                        <img src="/<%= image %>" alt="IMG-PRODUCT" class="pdtImage">
+                                        <a data-fancybox="gallery" class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="/<%= image %>">
+                                            <i class="fa fa-expand"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            
-
-                            <div class="item-slick3" data-thumb="/<%= productData.images[1]%>">
-                                <div class="wrap-pic-w pos-relative">
-                                    <img src="/<%= productData.images[1]%>" alt="IMG-PRODUCT">
-
-                                    <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="images/product-detail-02.jpg">
-                                        <i class="fa fa-expand"></i>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="item-slick3" data-thumb="/<%= productData.images[2]%>">
-                                <div class="wrap-pic-w pos-relative">
-                                    <img src="/<%= productData.images[2]%>" alt="IMG-PRODUCT">
-
-                                    <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="images/product-detail-03.jpg">
-                                        <i class="fa fa-expand"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="item-slick3" data-thumb="/<%= productData.images[2]%>">
-                                <div class="wrap-pic-w pos-relative">
-                                    <img src="/<%= productData.images[2]%>" alt="IMG-PRODUCT">
-
-                                    <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="images/product-detail-03.jpg">
-                                        <i class="fa fa-expand"></i>
-                                    </a>
-                                </div>
-                            </div>
+                            <% }); %>
                         </div>
                     </div>
                 </div>
             </div>
-                
+        
+            
+
+
+                           
+                       
             <div class="col-md-6 col-lg-5 p-b-30">
                 <div class="p-r-50 p-t-5 p-lr-0-lg">
                     <h4 class="mtext-105 cl2 js-name-detail p-b-14">
                         <%= productData.name %>
                     </h4>
-
+                    <% if(productData.offerPrice == productData.price) {%>
+						<span class="mtext-106 cl2">
+							<%= productData.price %>
+						</span>
+						<%}
+						else if(productData.offerPrice !== productData.price) {%>
+							<span class="mtext-106 cl2">
+								<del><%= productData.price %></del>
+							</span>
+							<span><p class="text-success fw-bold">Offer Price: <%= productData.offerPrice %></p></span>
+						  <% } %>
                     <span class="mtext-106 cl2">
                         ₹ <%= productData.price %>
                     </span>
@@ -382,8 +367,43 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $('.fancybox').fancybox();
+    function setupImageZoom() {
+        	var imageContainers = document.querySelectorAll('.wrap-pic-w');
+        	imageContainers.forEach(function(container, index) {
+            	var largeImage = container;
+           		var pdtImage = container.querySelector('.pdtImage');
+
+            	largeImage.addEventListener("mousemove", function(event) {
+                var rect = largeImage.getBoundingClientRect();
+                var offsetX = event.clientX - rect.left;
+                var offsetY = event.clientY - rect.top;
+
+                // Calculate zoom center
+                var centerX = rect.width / 2;
+                var centerY = rect.height / 2;
+
+                // Calculate zoom scale
+                var scaleX = 2; // Increase to zoom level
+                var scaleY = 2;
+
+                // Calculate translation values
+                var translateX = (centerX - offsetX) * (scaleX - 1);
+                var translateY = (centerY - offsetY) * (scaleY - 1);
+
+                // Apply zoom and translation transformations
+                pdtImage.style.transform = 'translate(' + translateX + 'px, ' + translateY + 'px) scale(' + scaleX + ',' + scaleY + ')';
+            });
+
+            largeImage.addEventListener("mouseleave", function() {
+                // Reset zoom and translation transformations when mouse leaves
+                pdtImage.style.transform = 'translate(0px, 0px) scale(1)';
+            });
+        });
+    }
+
+    // Call the setupImageZoom function after the images are loaded
+    window.addEventListener('load', function() {
+        setupImageZoom();
     });
 </script>
 <script>

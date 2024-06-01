@@ -3,50 +3,74 @@ const Product = require('../model/productModel')
 const User = require('../model/userModel')
 const Address = require('../model/addressModel')
 const Category = require('../model/categoryModel')
+const CategoryOffer = require('../model/categoryOfferModel');
+const ProductOffer = require('../model/productOfferModel');
+const Coupon = require("../model/couponModel");
+
 
 const cartLoad = async (req, res) => {
   try {
       const user_id = req.session.user_id;
       const cartData = await Cart.findOne({ user: user_id }).populate('products.productId');
       console.log("cartData", cartData);
-      let category = await Category.find({});
-      if (cartData && cartData.products && cartData.products.length > 0) {
-          let subTotal = 0;
-          cartData.products.forEach(product => {
-              // Check if product.productId is not null or undefined before accessing its price
-              if (product.productId) {
-                  product.totalPrice = product.productId.price * product.count;
-                  subTotal += product.totalPrice;
-                  console.log('product images in cart', product.productId.images);
-              } else {
-                  console.error('productId is null or undefined for a product in the cart');
-              }
-          });
 
-          const shippingCharge = subTotal > 1500 ? 90 : 0;
-          console.log("hello", shippingCharge);
-          const grandTotal = subTotal + shippingCharge;
-
-          console.log('dataa', grandTotal, shippingCharge);
-
-          // Pass subTotal, shippingCharge, and grandTotal to the EJS template
-          res.render("cart", {
-              user: user_id,
-              cart: cartData,
-              grandTotal: grandTotal,
-              shippingCharge: shippingCharge,
-              subTotal: subTotal,
-              category ,
-              
-          });
-      } else {
-          res.render("cart", { user: user_id, cart: null, message: "No products available in your cart." });
+      if (!cartData || !cartData.products || cartData.products.length === 0) {
+          return res.render("cart", { user: user_id, cart: null, message: "No products available in your cart." });
       }
+
+      let subTotal = 0;
+
+      for (const product of cartData.products) {
+          if (!product.productId) {
+              console.error('productId is null or undefined for a product in the cart');
+              continue;
+          }
+          product.totalPrice = product.productId.price * product.count;
+          subTotal += product.totalPrice;
+
+          product.offerPrice = await checkAllOffer(product.productId);
+      }
+
+      const grandTotal = subTotal;
+
+      const categories = await Category.find({});
+
+      res.render("cart", {
+          user: user_id,
+          cart: cartData,
+          grandTotal: grandTotal,
+          subTotal: subTotal,
+          categories: categories,
+          
+      });
   } catch (e) {
-      console.log("error while loading cart", e);
+      console.log("Error while loading cart", e);
       res.status(500).send("Error loading cart");
   }
 };
+
+const checkAllOffer = async (product) => {
+  const categoryOffer = await CategoryOffer.findOne({ category: product.category });
+  const productOffer = await ProductOffer.findOne({ product: product._id });
+
+  if (categoryOffer && productOffer) {
+      return Math.max(
+          calculateDiscountedPrice(product.price, categoryOffer.discountPercentage),
+          calculateDiscountedPrice(product.price, productOffer.discountPercentage)
+      );
+  } else if (categoryOffer) {
+      return calculateDiscountedPrice(product.price, categoryOffer.discountPercentage);
+  } else if (productOffer) {
+      return calculateDiscountedPrice(product.price, productOffer.discountPercentage);
+  } else {
+      return product.price;
+  }
+};
+
+const calculateDiscountedPrice = (originalPrice, discountValue) => {
+  return originalPrice - (originalPrice * discountValue) / 100; // For percentage-based discount
+};
+
 
 
 const addToCart = async (req, res) => {
@@ -63,15 +87,15 @@ const addToCart = async (req, res) => {
       const productId = req.query.id;
       console.log("Cart product ID:", productId);
 
-      let quantity = req.body.quantity || 1; // Default to 1 if quantity is not provided
+      let quantity = req.body.quantity || 1; 
       console.log("Quantity:", quantity);
 
-      const productData = await Product.findOne({ _id: productId }).select('name price image'); // Fetch only necessary fields
+      const productData = await Product.findOne({ _id: productId }).select('name price image');
       console.log("Product datass:", productData);
 
       let cart = await Cart.findOne({ user: user_id });
       if (!cart) {
-          // If the cart doesn't exist, create a new one
+          
           cart = new Cart({
               user: user_id,
               products: [{
@@ -84,14 +108,12 @@ const addToCart = async (req, res) => {
               }]
           });
       } else {
-          // If the cart already exists, find if the product is already in the cart
+          
           const existingProductIndex = cart.products.findIndex(product => product.productId.equals(productId));
 
           if (existingProductIndex !== -1) {
            return res.redirect('/cart')
-              // If the product exists in the cart, update its quantity and totalPrice
-              // cart.products[existingProductIndex].count += quantity;
-              // cart.products[existingProductIndex].totalPrice += productData.price * quantity;
+             
           } else {
               // If the product doesn't exist in the cart, add it
               cart.products.push({
@@ -194,70 +216,99 @@ const removeCartItem = async (req, res) => {
     }
 };
 
+   
+   
+const checkoutLoad = async (req, res) => {
+  try {
+    const user_id = req.session.user_id;
+    const cartData = await Cart.findOne({ user: user_id }).populate("products.productId");
+    const coupons = await Coupon.find({});
 
-   
-   
-  const checkoutLoad = async (req, res) => {
-    try {
-       const user_id = req.session.user_id;
-       const cartData = await Cart.findOne({ user: user_id }).populate("products.productId");
-   
-       if (cartData) {
-         let addressData = await Address.findOne({ user: user_id });
-         console.log('addressData', addressData);
-   
-         // Calculate the subtotal by summing up the total price of each product
-         const subTotal = cartData.products.reduce((acc, val) => {
-           if (val && val.productId && val.productId.price && val.count) {
-             return acc + (val.productId.price * val.count);
-           }
-           return acc;
-         }, 0);
-   
-         console.log("subtotal", subTotal);
-         let totalAmount = subTotal;
-   
-         let shippingAmount = subTotal < 1500 ? 0: 90;
-         if (shippingAmount > 0) {
-           totalAmount += shippingAmount;
-         }
-   
-         console.log(totalAmount);
-   
-         // Calculate the total price for each product
-         const eachTotal = cartData.products.map(val => {
-           if (val && val.productId && val.productId.price && val.count) {
-             return val.productId.price * val.count;
-           }
-           return 0;
-         });
-         const eachQuantity = cartData.products.map(val => {
-          if (val && val.count) {
-            return val.count;
-          }
-          return 0;
-        });
-   
-         // Render the checkout page with the necessary data
-         res.render("checkout", {
-           addressData,
-           cart: cartData,
-           subTotal,
-           total: totalAmount,
-           user: user_id,
-           shippingAmount,
-           eachTotal, // Pass the eachTotal array to the template
-           eachQuantity
-         });
-       } else {
-         res.redirect("/cart");
-       }
-    } catch (error) {
-       console.log(error.message);
-       res.status(500).json({ error: "Internal server error" });
+    if (cartData) {
+      let addressData = await Address.findOne({ user: user_id });
+
+      let subTotal = 0;
+      let totalDiscount = 0;
+
+      for (const product of cartData.products) {
+        if (product && product.productId && product.productId.price && product.count) {
+          const originalPrice = product.productId.price * product.count;
+          const offerPrice = await checkAllOffer(product.productId) * product.count;
+          subTotal += originalPrice;
+          totalDiscount += (originalPrice - offerPrice);
+          product.offerPrice = offerPrice;
+        }
+      }
+     
+      const totalAmount = subTotal - totalDiscount;
+      console.log("totttyd disccc",totalDiscount)
+    console.log("subtotal at checkout",subTotal);
+  
+      cartData.totalPrice = totalAmount;
+      await cartData.save();
+
+      // Calculate the total price and quantity for each product
+      const eachTotal = cartData.products.map(val => {
+        if (val && val.offerPrice) {
+          return val.offerPrice;
+        }
+        return 0;
+      });
+      const eachQuantity = cartData.products.map(val => {
+        if (val && val.count) {
+          return val.count;
+        }
+        return 0;
+      });
+
+      res.render("checkout", {
+        addressData,
+        cart: cartData,
+        subTotal,
+        total: totalAmount,
+        user: user_id,
+        eachTotal,
+        eachQuantity,
+        totalDiscount,
+        coupons
+      });
+    } else {
+      res.redirect("/cart");
     }
-   };
-   
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+//  const checkout = async(req,res)=>{
+//   try {
+//       const userId= req.session.user_id;
+//       const user = await User.findOne({_id:userId});
+//       const addressData= await Address.findOne({userId:req.session.user_id});
+//       const cartData = await Cart.findOne({userName:req.session.user_id});
+//       const products = cartData.products.map(product=>product.productId);
+//       const productData = await Product.find({_id:products});
+//       const coupons= await Coupon.find();
+//       let discountPerItem = [];
+//       for (const item of cartData.products) {
+//               const productData = await Product.findOne({_id:item.productId});
+//               const quantity= item.count;
+//               item.offerPrice = Math.floor(await checkAllOffer(productData));
+//               discountPerItem.push(quantity * item.offerPrice);
+//       }
+//       const reducedAmount = discountPerItem.reduce((acc,curr)=> acc+curr);
+//       const totalDiscount = cartData.totalPrice-reducedAmount;
+//       if(addressData){
+//           const userAddress = addressData.addresses;
+//           res.render('./checkout',{userAddress,productData,products,cartData,coupons,totalDiscount,reducedAmount}); 
+//       }else{
+//           res.redirect('/users/add_address');}
+//   } catch (error) {
+//       console.error(error);
+//   }
+// }
 
 
 
@@ -265,10 +316,10 @@ module.exports = {
     cartLoad,
     addToCart,
     removeCartItem,
-    
-    
     updateCart,
     checkoutLoad
+    
+    
     
 
 }

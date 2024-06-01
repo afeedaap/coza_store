@@ -36,8 +36,30 @@ const userSchema = new mongoose.Schema({
     is_block:{
         type:Boolean,
         default:0
-    }
+    },referral:{
+        type:String,
+      },
+      wallet: {
+        type: Number,
+        default: 0,
+      },
+      walletHistory: [
+        {
+          date: {
+            type: Date,
+            required: true,
+          },
+          amount: {
+            type: Number,
+            required: true,
+          },
+          direction: {
+            type: String,
+          },
+        },
+      ],
+    });
     
-})
+    
 
 module.exports = mongoose.model("User",userSchema)
