@@ -1,9 +1,13 @@
 {
 	"folders": [
 		{
-			"name": "COZA STORE",
 			"path": "../.."
+		},
+		{
+			"path": "../../../backup/mine"
+		},
+		{
+			"path": "../../../backup/Elegance-Shop-main"
 		}
-	],
-	"settings": {}
+	]
 }

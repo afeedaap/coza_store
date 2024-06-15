@@ -1,0 +1,146 @@
+<%- include('./layouts/header') %>
+<div class="content-main">
+  <div class="content-header">
+    <div class="col-lg-12">
+      <div class="card mt-5">
+        <div class="card-body">
+          <div class="page-header">
+            <h3 class="page-title">Sales Report </h3>
+            <div class="d-flex mt-5 ml">
+              <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                <select class="form-select d-inline-block mb-lg-0 mr-5 mw-200" id="filterSelect">
+                  <option value="1">Daily</option>
+                  <option value="7">Weekly</option>
+                  <option value="30">Monthly</option>
+                  <option value="365">Yearly</option>
+                </select>
+                <a class="btn btn-secondary print ms-2" id="excel-format" href="/admin/excel-download"><i class="icon material-icons md-print"></i>excell</a>
+                <a class="btn btn-secondary print ms-2" id="pdf-format" href="/admin/pdf-download"><i class="icon material-icons md-print"></i>pdf</a>
+              </div>
+            </div>
+            
+            <div id="calendarContainer" class="m-3 text-end">
+              <form onsubmit="sendDateToBackend(event)" style="display: flex; gap: 10px; align-items: center;">
+                <label for="calendarInput">Select Date:</label>
+                <input type="date" id="calendarInput" class="form-control">
+                <button type="submit" class="btn btn-primary">Get Report</button>
+              </form>
+            </div>
+            <div class="container">
+              <form id="dateRangeForm">
+                <div class="form-group">
+                  <label for="startDate">Start Date:</label>
+                  <input type="date" class="form-control" id="startDate" required>
+                </div>
+                <div class="form-group">
+                  <label for="endDate">End Date:</label>
+                  <input type="date" class="form-control" id="endDate" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Generate Report</button>
+              </form>
+            </div>
+          </div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Order Id</th>
+                <th>Products - Qty</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Total Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (orders.length > 0) { %>
+                <% orders.forEach((order, index) => { %>
+                  <tr>
+                    <td><%= index + 1 %>.</td>
+                    <td><%= order.orderId %></td>
+                    <td><%= order.products.productDetails.name %>-<%= order.products.count %></td>
+                    <td><%= order.date.toISOString().split('T')[0] %></td>
+                    <td><%= order.deliveryDetails.fullName ? order.deliveryDetails.fullName : order.deliveryDetails.name %></td>
+                    <td>₹&nbsp;<%= order.products.totalPrice %></td>
+                  </tr>
+                <% }); %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6">No orders found</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+          <ul class="pagination_style d-flex justify-content-center">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <li style="list-style: none; margin-right: 5px;">
+                <button type="button" class="btn btn-primary <% if (i === page) { %>active<% } %>">
+                  <a href="<%= `?page=${i}&limit=${limit}${date ? `&date=${date}` : ''}${duration ? `&sort=${duration}` : ''}` %>" style="color: inherit; text-decoration: none;">
+                    <%= i %>
+                  </a>
+                </button>
+              </li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script><script>
+  $(document).ready(function() {
+    $('#filterSelect').on('change', function() {
+      var duration = $(this).val();
+      var url = `/admin/sales-report?sort=${encodeURIComponent(duration)}`;
+      window.location.href = url;
+    });
+  
+    $('#dateRangeForm').on('submit', function(event) {
+      event.preventDefault();
+      const startDate = $('#startDate').val();
+      const endDate = $('#endDate').val();
+      const url = `/admin/sales-report?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+      window.location.href = url;
+    });
+  
+    $('#calendarContainer form').on('submit', function(event) {
+      event.preventDefault();
+      const selectedDate = $('#calendarInput').val();
+      const url = `/admin/sales-report?date=${encodeURIComponent(selectedDate)}`;
+      window.location.href = url;
+    });
+  
+    $('#excel-format').on('click', function(event) {
+      event.preventDefault();
+      const urlParams = new URLSearchParams(window.location.search);
+      const startDate = urlParams.get('startDate');
+      const endDate = urlParams.get('endDate');
+      const sort = urlParams.get('sort');
+      let url = `/admin/excel-download`;
+      if (startDate && endDate) {
+        url += `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+      } else if (sort) {
+        url += `?sort=${encodeURIComponent(sort)}`;
+      }
+      window.location.href = url;
+    });
+  
+    $('#pdf-format').on('click', function(event) {
+      event.preventDefault();
+      const urlParams = new URLSearchParams(window.location.search);
+      const startDate = urlParams.get('startDate');
+      const endDate = urlParams.get('endDate');
+      const sort = urlParams.get('sort');
+      let url = `/admin/pdf-download`;
+      if (startDate && endDate) {
+        url += `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+      } else if (sort) {
+        url += `?sort=${encodeURIComponent(sort)}`;
+      }
+      window.location.href = url;
+    });
+  });
+  </script>
+  
+
+<%- include('./layouts/footer') %>

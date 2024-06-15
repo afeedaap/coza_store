@@ -4,7 +4,6 @@ const Address = require('../model/addressModel');
 const addAddress = async (req, res) => {
     try {
         const user_id = req.session.user_id
-        console.log(req.body);
         const userdata = {
             fullName: req.body.name,
             mobile: req.body.mobile,
@@ -14,8 +13,6 @@ const addAddress = async (req, res) => {
             city: req.body.city,
             pin: req.body.pincode,
         }
-
-        console.log(userdata);
         const address = await Address.findOneAndUpdate(
             { user: user_id },
             { $push: { address: userdata } }, 
@@ -30,9 +27,7 @@ const addAddress = async (req, res) => {
 
 const editAddress = async (req, res) => {
     try {
-        console.log('Request Body:', req.body);
-
-        const updated = await Address.findOneAndUpdate(
+       const updated = await Address.findOneAndUpdate(
             { user: req.session.user_id, 'address._id': req.body.editAddressId },
             {
                 $set: {
@@ -48,25 +43,18 @@ const editAddress = async (req, res) => {
             { new: true }
         );
 
-        console.log('Updated Address:', updated);
-
         res.json({ success: true, message: 'Address edited!', address: updated });
     } catch (error) {
         console.log('Error while editing address', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
-
-
-
 const deleteAddress = async(req,res)=>{
     try {
       
        const user_id=req.session.user_id
        const address_id = req.body.id
-       console.log('id',address_id);
-  
-       await Address.updateOne({user:user_id},{$pull:{address:{_id:address_id}}})
+      await Address.updateOne({user:user_id},{$pull:{address:{_id:address_id}}})
   
       res.json({success:true})
   

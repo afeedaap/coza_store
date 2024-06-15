@@ -38,7 +38,7 @@ const wishlist = async (req, res) => {
       );
 
       if (productExists) {
-        // If the product exists, remove it from the wishlist
+       
         const removedWishlist = await Wishlist.findOneAndUpdate(
           { user: userId },
           { $pull: { products: { product: id } } },

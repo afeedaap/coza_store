@@ -30,7 +30,7 @@
     <div class="col-lg-6">
       <div class="card mb-4">
         <div class="card-body">
-          <form action="/admin/createProduct" method="post" enctype="multipart/form-data">
+          <form action="/admin/createProduct" method="post" enctype="multipart/form-data" id="productForm">
             <div class="row">
               <div class="col-md-3">
                 <h6>1. General info</h6>
@@ -39,42 +39,38 @@
                 <div class="mb-4">
                   <label class="form-label">Product name</label>
                   <input type="text" id="name" placeholder="Type here" class="form-control" name="name">
-                  <div class="error-message text-danger" id="name-error"></div>
+                  <div class="error-message" id="name-error"></div>
                 </div>
                 <div class="mb-4">
                   <label class="form-label">Description</label>
                   <textarea name="description" id="description" placeholder="Type here" class="form-control" rows="4"></textarea>
-                  <div class="error-message text-danger" id="description-error"></div>
+                  <div class="error-message" id="description-error"></div>
                 </div>
                 <div class="mb-4">
-                  <label class="form-label">size</label>
-                  <input name="size" id="size" type="text" placeholder="Type here" class="form-control">
-                  <div class="error-message text-danger" id="size-error"></div>
+                  <label class="form-label">Discount</label>
+                  <input name="discount" id="discount" type="text" placeholder="Type here" class="form-control">
+                  <div class="error-message" id="discount-error"></div>
                 </div>
                 <div class="mb-4">
                   <label class="form-label">Quantity</label>
                   <input name="quantity" id="quantity" type="number" class="form-control">
-                  <div class="error-message text-danger" id="quantity-error"></div>
+                  <div class="error-message" id="quantity-error"></div>
                 </div>
               </div>
-              <!-- col.// -->
-              <hr class="mb-4 mt-0">
-              <div class="row">
-                  <div class="col-md-3">
-                      <h6>3. Date </h6>
-                  </div>
-                  <div class="col-md-9">
-                      <div class="mb-4">
-                          <label class="form-label">Date </label>
-                  
-                          <input type="date" id="date" name="date" class="form-control">
-
-                          <div class="error-message text-danger" id="date-error"></div>
-                      </div>
-                  </div> <!-- col.// -->
-              </div> <!-- row.// -->
             </div>
-            <!-- row.// -->
+            <hr class="mb-4 mt-0">
+            <div class="row">
+              <div class="col-md-3">
+                <h6>3. Date </h6>
+              </div>
+              <div class="col-md-9">
+                <div class="mb-4">
+                  <label class="form-label">Date </label>
+                  <input type="date" id="date" name="date" class="form-control">
+                  <div class="error-message" id="date-error"></div>
+                </div>
+              </div>
+            </div>
             <hr class="mb-4 mt-0">
             <div class="row">
               <div class="col-md-3">
@@ -84,16 +80,10 @@
                 <div class="mb-4">
                   <label class="form-label">Cost </label>
                   <input type="text" id="price" name="price" class="form-control">
-                  <div class="error-message text-danger" id="price-error"></div>
+                  <div class="error-message" id="price-error"></div>
                 </div>
               </div>
-              <!-- col.// -->
             </div>
-            <!-- row.// -->
-            
-              <!-- col.// -->
-            </div>
-            <!-- row.// -->
             <hr class="mb-4 mt-0">
             <div class="row">
               <div class="col-md-3">
@@ -108,11 +98,9 @@
                   </label>
                   <% }) %>
                 </div>
-                <!-- Error message element placed after all category input fields -->
-                <div class="category-error text-danger" id="category-error"></div>
+                <div class="error-message" id="category-error"></div>
               </div>
             </div>
-            <!-- row.// -->
             <hr class="mb-4 mt-0">
             <div class="row">
               <div class="col-md-3">
@@ -121,16 +109,12 @@
               <div class="col-md-9">
                 <div class="mb-4">
                   <label class="form-label">Images</label>
-                  <!-- Add an input element to upload images -->
                   <input id="imageInput" name="images" class="form-control" type="file" multiple>
-                  <!-- Add an image element to display the cropped image -->
                   <img id="croppedImage" class="img-fluid" style="display: none;">
-                  <div class="error-message text-danger" id="image-error"></div>
+                  <div class="error-message" id="image-error"></div>
                 </div>
               </div>
-              <!-- col.// -->
             </div>
-            <!-- .row end// -->
             <div>
               <button type="submit" class="btn btn-md rounded font-sm hover-up">Publish</button>
             </div>
@@ -140,6 +124,89 @@
     </div>
   </div>
 </section>
-<!-- content-main end// -->
+<script>
+  document.getElementById('productForm').addEventListener('submit', function(event) {
+    let isValid = true;
+  
+    // Product Name validation
+    const name = document.getElementById('name').value;
+    if (name.trim() === '') {
+      isValid = false;
+      document.getElementById('name-error').textContent = 'Product name is required';
+    } else {
+      document.getElementById('name-error').textContent = '';
+    }
+  
+    // Description validation
+    const description = document.getElementById('description').value;
+    if (description.trim() === '') {
+      isValid = false;
+      document.getElementById('description-error').textContent = 'Description is required';
+    } else {
+      document.getElementById('description-error').textContent = '';
+    }
+  
+    // Discount validation
+    const discount = document.getElementById('discount').value;
+    if (isNaN(discount) || discount.trim() === '') {
+      isValid = false;
+      document.getElementById('discount-error').textContent = 'Discount must be a number';
+    } else if (parseFloat(discount) > 60) {
+      isValid = false;
+      document.getElementById('discount-error').textContent = 'Discount must be less than or equal to 60%';
+    } else {
+      document.getElementById('discount-error').textContent = '';
+    }
+  
+    // Quantity validation
+    const quantity = document.getElementById('quantity').value;
+    if (quantity.trim() === '' || isNaN(quantity) || parseInt(quantity) <= 0) {
+      isValid = false;
+      document.getElementById('quantity-error').textContent = 'Quantity must be a positive number';
+    } else {
+      document.getElementById('quantity-error').textContent = '';
+    }
+  
+    // Date validation
+    const date = document.getElementById('date').value;
+    if (date.trim() === '') {
+      isValid = false;
+      document.getElementById('date-error').textContent = 'Date is required';
+    } else {
+      document.getElementById('date-error').textContent = '';
+    }
+  
+    // Price validation
+    const price = document.getElementById('price').value;
+    if (price.trim() === '' || isNaN(price) || parseFloat(price) <= 0) {
+      isValid = false;
+      document.getElementById('price-error').textContent = 'Price must be a positive number';
+    } else {
+      document.getElementById('price-error').textContent = '';
+    }
+  
+    // Category validation
+    const category = document.querySelector('input[name="category"]:checked');
+    if (!category) {
+      isValid = false;
+      document.getElementById('category-error').textContent = 'Category is required';
+    } else {
+      document.getElementById('category-error').textContent = '';
+    }
+  
+    // Image validation
+    const imageInput = document.getElementById('imageInput');
+    if (imageInput.files.length === 0) {
+      isValid = false;
+      document.getElementById('image-error').textContent = 'At least one image is required';
+    } else {
+      document.getElementById('image-error').textContent = '';
+    }
+  
+    if (!isValid) {
+      event.preventDefault();
+    }
+  });
+</script>
 
 <%- include('./layouts/footer.ejs')%>

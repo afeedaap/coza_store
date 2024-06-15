@@ -1,7 +1,7 @@
 const Coupon=require("../model/couponModel")
 const Order = require("../model/orderModel");
 const Cart = require("../model/cartModel");
-
+//============load all coupon================
 const couponLoad = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -25,7 +25,6 @@ const couponLoad = async (req, res) => {
 const addCouponLoad=async(req,res)=>{
     try {
         res.render('addCoupon')
-        
     } catch (error) {
         res.render('500')
     }
@@ -34,23 +33,19 @@ const addCouponLoad=async(req,res)=>{
 const addCoupon = async (req, res) => {
     try {
         const { couponName, couponCode, minAmount, discount } = req.body;
-
-        // Check if the coupon code or name already exists (case-insensitive)
+         const couponCodePattern = /^flash-\d{4}$/;
+        if (!couponCodePattern.test(couponCode)) {
+            return res.status(400).json({ error: 'Invalid coupon code format. Must be "flash-xxxx" where xxxx is a four-digit number.' });
+        }
         const existingCouponCode = await Coupon.findOne({ couponCode: { $regex: new RegExp(`^${couponCode}$`, 'i') } });
-        const existingCouponName = await Coupon.findOne({ couponName: { $regex: new RegExp(`^${couponName}$`, 'i') } });
-
-        if (existingCouponCode || existingCouponName) {
-            const errors = {};
-            if (existingCouponCode) {
-                errors.couponCode = 'Coupon code already exists';
-            }
-            if (existingCouponName) {
-                errors.couponName = 'Coupon name already exists';
-            }
-            return res.status(400).json({ errors });
+        if (existingCouponCode) {
+            return res.status(400).json({ existcode: true });
         }
 
-        // Create a new coupon if the code and name do not exist
+        const existingCouponName = await Coupon.findOne({ couponName: { $regex: new RegExp(`^${couponName}$`, 'i') } });
+        if (existingCouponName) {
+            return res.status(400).json({ exist: true });
+        }
         const newCoupon = new Coupon({
             couponName,
             couponCode,
@@ -65,8 +60,6 @@ const addCoupon = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
-
 
 //=====================editCoupon load=====================//
 const editCouponLoad = async (req, res) => {
@@ -83,35 +76,28 @@ const editCouponLoad = async (req, res) => {
 const editCoupon = async (req, res) => {
     try {
         const { couponId, couponName, couponCode, minAmount, discount } = req.body;
+        const couponCodePattern = /^flash-\d{4}$/;
+        if (!couponCodePattern.test(couponCode)) {
+            return res.status(400).json({ error: 'Invalid coupon code format. Must be "flash-xxxx" where xxxx is a four-digit number.' });
+        }
 
-        // Validate that the discount is less than or equal to 60
         if (discount > 60) {
             return res.status(400).json({ errors: { discount: 'Discount must be less than or equal to 60' } });
         }
-
-        // Check if the coupon code or name already exists (case-insensitive), excluding the current coupon
         const existingCouponCode = await Coupon.findOne({
-            couponCode: { $regex: new RegExp(`^${couponCode}$`, 'i') },
+            couponCode: { $regex: new RegExp(couponCode, 'i') },
             _id: { $ne: couponId }
         });
-
-        const existingCouponName = await Coupon.findOne({
-            couponName: { $regex: new RegExp(`^${couponName}$`, 'i') },
-            _id: { $ne: couponId }
-        });
-
-        if (existingCouponCode || existingCouponName) {
-            const errors = {};
-            if (existingCouponCode) {
-                errors.couponCode = 'Coupon code already exists';
-            }
-            if (existingCouponName) {
-                errors.couponName = 'Coupon name already exists';
-            }
-            return res.status(400).json({ errors });
+        if (existingCouponCode) {
+            return res.status(400).json({ existcode: true });
         }
-
-        // Update the coupon if validation passes
+        const existingCouponName = await Coupon.findOne({
+            couponName: { $regex: new RegExp(couponName, 'i') },
+            _id: { $ne: couponId }
+        });
+        if (existingCouponName) {
+            return res.status(400).json({ exist: true });
+        }
         const updatedCoupon = await Coupon.findByIdAndUpdate(
             couponId,
             {
@@ -126,15 +112,12 @@ const editCoupon = async (req, res) => {
         if (!updatedCoupon) {
             return res.status(500).json({ success: false, message: 'Failed to update coupon' });
         }
-
-        res.json({ success: true, message: 'Coupon updated successfully' });
+     res.json({ success: true, message: 'Coupon updated successfully' });
     } catch (error) {
         console.error('Error in editCoupon:', error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
-
-
 //===========delete coupon======================//
 const deleteCoupon = async (req, res) => {
     try {
@@ -156,59 +139,36 @@ const deleteCoupon = async (req, res) => {
 //===============apply coupon=======================//
 const applyCoupon = async (req, res) => {
     try {
-        const { couponCode } = req.body; 
-
-        const userId = req.session.user_id; 
-console.log("Coupon code received:", couponCode);
-        console.log("User ID:", userId);
-
-        // Find the coupon by its code
-        const coupon = await Coupon.findOne({ 
-            couponCode:couponCode  });
-        console.log("Coupon found:", coupon);
-        // Find the coupon by its code
-       
-        if (!coupon) {
+        const { couponCode } = req.body;
+        const userId = req.session.user_id;
+        const coupon = await Coupon.findOne({ couponCode: couponCode });
+         if (!coupon) {
             return res.status(404).json({ success: false, message: 'Invalid coupon code' });
         }
-
-        // Check if the coupon has already been used by the user
-        if (coupon.users && coupon.users.includes(userId)) {
+       if (coupon.user && coupon.user.includes(userId)) {
             return res.status(400).json({ success: false, message: 'Coupon already used' });
         }
-
-        // Retrieve the user's cart
-        const cart = await Cart.findOne({ user: userId }).populate('products.productId');
+       const cart = await Cart.findOne({ user: userId }).populate('products.productId');
         if (!cart) {
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
-
-        // Check if the cart total meets the minimum amount required for the coupon
-        if (cart.totalPrice < coupon.minimumAmount) {
+         if (cart.totalPrice < coupon.minimumAmount) {
             return res.status(400).json({ success: false, message: `Minimum purchase amount is ${coupon.minimumAmount}` });
         }
-
-        // Calculate the discount amount
-        const discountAmount = (coupon.discountAmount / 100) * cart.totalPrice;
+        const discountAmount = (coupon.discountAmount * cart.totalPrice) / 100;
         const discountedTotal = cart.totalPrice - discountAmount;
-        console.log("discounted amount: ", discountAmount);
-
-        // Update the user's cart with the discounted total
-        cart.discountedTotal = discountedTotal;
+        cart.couponDiscount = discountAmount;
+        cart.totalPrice = discountedTotal; 
+        cart.appliedCouponcode = couponCode;
         await cart.save();
-
-        // Add the user to the coupon's user list
-        coupon.users = coupon.users || [];
-        coupon.users.push(userId);
-        await coupon.save();
-
-        // Send the updated cart and discount details back to the user
-        res.json({
+       await Coupon.findByIdAndUpdate({_id:coupon._id},{$push:{user:req.session.user_id}});
+       await coupon.save();
+        return res.json({
             success: true,
             message: 'Coupon applied successfully',
-            cartTotal: cart.totalPrice,
-            discountAmount,
-            discountedTotal, // Sending the discounted total
+            cartTotal: cart.totalPrice, 
+            discountAmount, 
+            discountedTotal, 
         });
 
     } catch (error) {
@@ -216,53 +176,39 @@ console.log("Coupon code received:", couponCode);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
-
-  
-
-  
-
 //=================remove coupon====================//
 const removeCoupon = async (req, res) => {
     try {
-        const couponValue = req.body.couponValue;
+        const { couponCode } = req.body;
         const userId = req.session.user_id;
-        let couponRemoved = false;
-
-        // Find the coupon by its code
-        const couponData = await Coupon.findOne({ couponCode: couponValue });
-        console.log(couponData, "at remove coupon");
-
-        if (!couponData) {
-            return res.status(404).json({ success: false, message: 'Coupon not found' });
+        const coupon = await Coupon.findOne({ couponCode: couponCode });
+         if (!coupon) {
+            return res.status(404).json({ success: false, message: 'Invalid coupon code' });
         }
-
-        // Check if the user has used this coupon
-        if (couponData.users.includes(userId)) {
-            // Remove the user from the usedUser array
-            await Coupon.findOneAndUpdate(
-                { couponCode: couponValue },
-                { $pull: { users: userId } }
-            );
-            couponRemoved = true;
+        const cart = await Cart.findOne({ user: userId }).populate('products.productId');
+        if (!cart) {
+            return res.status(404).json({ success: false, message: 'Cart not found' });
         }
+       const newTotalPrice = cart.totalPrice + cart.couponDiscount;
+       cart.couponDiscount = 0;
+        cart.totalPrice = newTotalPrice; 
+        cart.appliedCouponcode = null;
+        await cart.save();
+        await Coupon.findByIdAndUpdate({_id:coupon._id},{$pull:{user:req.session.user_id}});
+        await coupon.save();
+        return res.json({
+            success: true,
+            message: 'Coupon removed successfully',
+            newTotalPrice: cart.totalPrice,
+        });
 
-        if (couponRemoved) {
-            res.json({ success: true, message: 'Coupon removed successfully' });
-        } else {
-            res.json({ success: false, message: 'Coupon not used by user' });
-        }
     } catch (error) {
         console.error('Error removing coupon:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
-
-
-
-
-
-
-module.exports={
+  
+  module.exports={
     couponLoad,
     addCouponLoad,
     addCoupon,

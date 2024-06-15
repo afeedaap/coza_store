@@ -46,6 +46,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">SI No</th>
+                                        <th scope="col">product name</th>
                                         <th scope="col">Discount</th>
                                         <th scope="col">Start Date</th>
                                         <th scope="col">End date</th>
@@ -57,6 +58,8 @@
                                     <% productOffers.forEach((offer,index) => { %>
                                         <tr>
                                             <td><%=index+1%></td>
+                                           <td><b><%= offer. product.name%></b></td>
+                                           
                                             <td><b><%= offer.discountPercentage %></b></td>
                                             
                                             <td><%=new Date(offer.startDate).toLocaleDateString()  %></td>

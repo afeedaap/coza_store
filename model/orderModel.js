@@ -20,11 +20,16 @@ const OrderSchema = new mongoose.Schema({
     productStatus: {
       type: String,
     },
+    
   }],
   offerPrice: {
     type: Number,
     default: 0
   },
+  
+  returnReason: {
+    type: String,
+ },
   date: { type: Date, default: Date.now },
   orderStatus: { type: String, required: true },
   totalAmount: { type: Number, required: true },

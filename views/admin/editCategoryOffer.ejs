@@ -51,54 +51,75 @@
 </section>
 
 <script>
+   document.getElementById('offerForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    const offerId = "<%= categoryOffer._id %>";
+    console.log("Offer ID:", offerId); // Log the offerId
+    
+  
+});
+
+
     function validateForm() {
-        var startDate = document.getElementById('startDate').value;
-        var endDate = document.getElementById('endDate').value;
-        var offerPercentage = document.getElementById('offerPercentage').value;
-        var category = document.getElementById('category').value;
+    var startDate = document.getElementById('startDate').value;
+    var endDate = document.getElementById('endDate').value;
+    var offerPercentage = document.getElementById('offerPercentage').value;
+    var category = document.getElementById('category').value;
 
-        var isValid = true;
+    var isValid = true;
 
-        // Validate Category
-        if (category === '') {
-            document.getElementById('offerCategoryErr').innerText = 'Category is required';
-            isValid = false;
-        } else {
-            document.getElementById('offerCategoryErr').innerText = '';
-        }
+    // Get today's date in YYYY-MM-DD format
+    var today = new Date().toISOString().split('T')[0];
 
-        // Validate Start Date
-        if (startDate === '') {
-            document.getElementById('offerStartDateErr').innerText = 'Starting Date is required';
-            isValid = false;
-        } else {
-            document.getElementById('offerStartDateErr').innerText = '';
-        }
-
-        // Validate End Date
-        if (endDate === '') {
-            document.getElementById('offerEndDateErr').innerText = 'Ending Date is required';
-            isValid = false;
-        } else if (endDate <= startDate) {
-            document.getElementById('offerEndDateErr').innerText = 'Ending Date must be after Starting Date';
-            isValid = false;
-        } else {
-            document.getElementById('offerEndDateErr').innerText = '';
-        }
-
-        // Validate Discount Percentage
-        if (offerPercentage === '') {
-            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage is required';
-            isValid = false;
-        } else if (isNaN(offerPercentage) || offerPercentage <= 0 || offerPercentage > 100) {
-            document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage must be a number between 1 and 100';
-            isValid = false;
-        } else {
-            document.getElementById('offerDiscountPercentageErr').innerText = '';
-        }
-
-        return isValid;
+    // Validate Start Date
+    if (startDate === '') {
+        document.getElementById('offerStartDateErr').innerText = 'Starting Date is required';
+        isValid = false;
+    } else if (startDate < today) {
+        document.getElementById('offerStartDateErr').innerText = 'Starting Date must be today or a future date';
+        isValid = false;
+    } else {
+        document.getElementById('offerStartDateErr').innerText = '';
     }
+
+    // Validate End Date
+    if (endDate === '') {
+        document.getElementById('offerEndDateErr').innerText = 'Ending Date is required';
+        isValid = false;
+    } else if (endDate <= startDate) {
+        document.getElementById('offerEndDateErr').innerText = 'Ending Date must be after Starting Date';
+        isValid = false;
+    } else {
+        document.getElementById('offerEndDateErr').innerText = '';
+    }
+
+    // Validate Discount Percentage
+    if (offerPercentage === '') {
+        document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage is required';
+        isValid = false;
+    } else if (isNaN(offerPercentage) || offerPercentage <= 0 || offerPercentage > 100) {
+        document.getElementById('offerDiscountPercentageErr').innerText = 'Discount Percentage must be a number between 1 and 100';
+        isValid = false;
+    } else if (offerPercentage > 60) {
+        document.getElementById('offerDiscountPercentageErr').innerText = 'Offer must be less than or equal to 60%';
+        isValid = false;
+    } else {
+        document.getElementById('offerDiscountPercentageErr').innerText = '';
+    }
+
+    // Validate Category
+    if (category === '') {
+        iziToast.error({
+            title: 'Error',
+            message: 'Please select a category',
+            position: 'topRight'
+        });
+        isValid = false;
+    }
+
+    return isValid;
+}
 
     document.addEventListener('DOMContentLoaded', function() {
         // Debugging: Log the values being set
@@ -115,6 +136,52 @@
         document.getElementById('endDate').value = "<%= categoryOffer.endDate.toISOString().substring(0, 10) %>";
         document.getElementById('offerPercentage').value = "<%= categoryOffer.discountPercentage %>";
     });
+    
+    document.getElementById('offerForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    if (!validateForm()) {
+        return;
+    }
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = {
+        category: formData.get('category'),
+        discount: formData.get('discount'),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate'),
+        status: formData.get('status'),
+        offerName: formData.get('offerName')
+    };
+
+    try {
+        const response = await fetch('/admin/editCategoryOffer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            iziToast.error({
+                title: 'Error',
+                message: errorData.error,
+                position: 'topRight'
+            });
+        } else {
+            window.location.href = '/admin/categoryOffer';
+        }
+    } catch (error) {
+        iziToast.error({
+            title: 'Error',
+            message: 'An unexpected error occurred',
+            position: 'topRight'
+        });
+    }
+});
+
 </script>
 
 <%- include('./layouts/footer') %>

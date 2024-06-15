@@ -54,22 +54,7 @@ router.get('/addCategoryOffer',adminAuth.isLoggedIn,offerController.loadAddCateg
 router.post('/addCategoryOffer',adminAuth.isLoggedIn,offerController.createCategoryOffer);
 router.get('/editCategoryOffer',adminAuth.isLoggedIn,offerController.editCategoryOffer);
 router.post('/editCategoryOffer',adminAuth.isLoggedIn,offerController.updateCategoryOffer);
-router.get('/deleteCategoryOffer',adminAuth.isLoggedIn,offerController.deleteCategoryOffer );
-router.get('/productOffer',adminAuth.isLoggedIn,offerController.loadProductOffer);
-router.get('/addProductOffer',adminAuth.isLoggedIn,offerController.loadAddProductOffer);
-router.post('/addProductOffer',adminAuth.isLoggedIn,offerController.createProductOffer);
-router.get('/editProductOffer',adminAuth.isLoggedIn,offerController.editProductOffer);
-router.post('/editProductOffer',adminAuth.isLoggedIn,offerController.updateProductOffer);
-router.get('/deleteProductOffer',adminAuth.isLoggedIn,offerController.deleteProductOffer );
-router.get('/refferalOffer',adminAuth.isLoggedIn,offerController.loadRefferalOffer);
-router.get('/addReferalOffer',adminAuth.isLoggedIn,offerController.loadAddRefferalOffer);
-router.post('/addRefferalOffer',adminAuth.isLoggedIn,offerController. addRefferalOffer);
-router.get('/editRefferalOffer',adminAuth.isLoggedIn,offerController.editRefferalOffer);
-router.post('/editRefferalOffer',adminAuth.isLoggedIn,offerController.updateRefferalOffer);
- router.get('/deleteRefferalOffer',adminAuth.isLoggedIn,offerController. deleteRefferalOffer );
-
-
-
+router.get('/deleteCategoryOffer',adminAuth.isLoggedIn,offerController.deleteCategoryOffer )
 //=======================coupon==============================//
 router.get('/coupon',adminAuth.isLoggedIn,couponController.couponLoad);
 router.get('/addCoupon',adminAuth.isLoggedIn,couponController.addCouponLoad);
@@ -77,8 +62,9 @@ router.post('/addCoupon',adminAuth.isLoggedIn,couponController.addCoupon);
 router.get('/editCoupon',adminAuth.isLoggedIn,couponController.editCouponLoad);
 router.post('/editCoupon',adminAuth.isLoggedIn,couponController.editCoupon);
 router.delete('/deleteCoupon',adminAuth.isLoggedIn,couponController.deleteCoupon);
-//============================================================================//
-
-
+//===================================sales report=========================================//
+router.get("/sales-report",adminAuth.isLoggedIn,adminUser.salesReportLoad)
+router.get("/excel-download",adminAuth.isLoggedIn,adminUser.excelDownload)
+router.get('/pdf-download',adminAuth.isLoggedIn,adminUser.pdfDownload)
 
 module.exports = router

@@ -21,7 +21,7 @@
       <div class="card mb-4">
         <div class="card-header"></div>
         <div class="card-body">
-          <form id="couponForm" method="post" action="/admin/editCoupon">
+          <form id="couponForm" method="post" action="/admin/editCoupon" onsubmit="return validateForm()">
             <div class="mb-4">
               <label for="coupon_name" class="form-label">Coupon Name</label>
               <input
@@ -112,4 +112,106 @@
     </div>
   </div>
 </section>
+<script>
+   function validateForm() {
+    var couponName = document.getElementById("coupon_name").value;
+    var couponCode = document.getElementById("coupon_code").value;
+    var minAmount = document.getElementById("min_amount").value;
+    var discount = document.getElementById("discount_amount").value;
+    
+    var isValid = true;
+
+    if (couponName.trim() == "") {
+      document.getElementById("couponNameErr").innerHTML = "Coupon Name is required";
+      isValid = false;
+    } else {
+      document.getElementById("couponNameErr").innerHTML = "";
+    }
+
+    if (couponCode.trim() == "") {
+      document.getElementById("couponCodeErr").innerHTML = "Coupon Code is required";
+      isValid = false;
+    } else {
+      document.getElementById("couponCodeErr").innerHTML = "";
+    }
+
+    if (minAmount.trim() == "") {
+      document.getElementById("minAmountErr").innerHTML = "Minimum Amount is required";
+      isValid = false;
+    } else if (isNaN(minAmount) || minAmount <= 0) {
+      document.getElementById("minAmountErr").innerHTML = "Minimum Amount must be a positive number";
+      isValid = false;
+    } else {
+      document.getElementById("minAmountErr").innerHTML = "";
+    }
+
+    if (discount.trim() == "") {
+      document.getElementById("discountErr").innerHTML = "Discount Amount is required";
+      isValid = false;
+    } else if (isNaN(discount)) {
+      document.getElementById("discountErr").innerHTML = "Discount Amount must be a number";
+      isValid = false;
+    } else if (discount > 60) {
+      document.getElementById("discountErr").innerHTML = "Discount must be less than or equal to 60";
+      isValid = false;
+    } else {
+      document.getElementById("discountErr").innerHTML = "";
+    }
+
+    return isValid;
+  }
+
+  document.getElementById('couponForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    if (!validateForm()) {
+        return;
+    }
+
+    var formData = new FormData(this);
+    var jsonObject = {};
+    formData.forEach(function(value, key) {
+        jsonObject[key] = value;
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', this.action, true);
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+    xhr.onload = function() {
+        if (xhr.status === 400) {
+            var errors = JSON.parse(xhr.responseText);
+            if (errors.exist) {
+                iziToast.error({
+                    title: 'Error',
+                    message: 'Coupon name already exists.'
+                });
+            }
+            if (errors.existcode) {
+                iziToast.error({
+                    title: 'Error',
+                    message: 'Coupon code already exists.'
+                });
+            }
+        } else if (xhr.status === 500) {
+            iziToast.error({
+                title: 'Error',
+                message: 'Internal server error. Please try again later.'
+            });
+        } else {
+            window.location.href = '/admin/coupon';
+        }
+    };
+
+    xhr.onerror = function() {
+        iziToast.error({
+            title: 'Error',
+            message: 'An error occurred during the request. Please try again.'
+        });
+    };
+
+    xhr.send(JSON.stringify(jsonObject));
+});
+
+</script>
 <%- include('./layouts/footer') %>

@@ -61,15 +61,14 @@
 							<%= productData.price %>
 						</span>
 						<%}
-						else if(productData.offerPrice !== productData.price) {%>
+						else if(productData.offerprice !== productData.price) {%>
 							<span class="mtext-106 cl2">
 								<del><%= productData.price %></del>
 							</span>
-							<span><p class="text-success fw-bold">Offer Price: <%= productData.offerPrice %></p></span>
+							<span><p class="mtext-106 cl2"> <%= productData.offerprice %></p></span>
+                            <span><p class="text-success fw-bold">Offer : <%= productData.bigoffer %>%</p></span>
 						  <% } %>
-                    <span class="mtext-106 cl2">
-                        ₹ <%= productData.price %>
-                    </span>
+
 
                     <p class="stext-102 cl3 p-t-23">
                         <%= productData.description %>

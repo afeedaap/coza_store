@@ -17,7 +17,7 @@ const couponSchema = mongoose.Schema({
             type: String,
             required: true
         },
-        usedUser: {
+        user: {
             type: Array,
             ref: 'User',
             default: []

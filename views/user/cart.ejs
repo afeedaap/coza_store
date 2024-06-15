@@ -125,17 +125,15 @@ td.pro-price {
 <div class="main-wrapper">
 
     <!-- Cart Page Start -->
-    <div class="cart_area pt--120 pb--80 bg-color pt_md--80 pt_sm--80"
-        data-bg-color="#ffffff">
+    <div class="cart_area pt--120 pb--80 bg-color pt_md--80 pt_sm--80" data-bg-color="#ffffff">
         <div class="container">
             <div class="row">
                 <div class="col-12">
                     <form>
                         <!-- Cart Table -->
-                        <div class="cart-table table-responsive mb--40"  >
+                        <div class="cart-table table-responsive mb--40">
                             <table class="table" id="reloadArea">
                                 <thead>
-
                                     <tr>
                                         <th class="pro-thumbnail">Image</th>
                                         <th class="pro-title">Product</th>
@@ -147,51 +145,49 @@ td.pro-price {
                                 </thead>
                                 <tbody id="carttable">
                                     <% if (cart && cart.products && cart.products.length > 0) { %>
-                                        <% cart.products.forEach(product => { %>
-                                            <tr>
-                                                <td class="pro-thumbnail">
-                                                  
+                                        <% cart.products.forEach((product, i) => { %>
+                                            <% if (product.productId) { %>
+                                                <tr>
+                                                    <td class="pro-thumbnail">
                                                         <% if (product.productId.images && product.productId.images.length > 0) { %>
                                                             <img src="/<%= product.productId.images[0] %>" alt="Product" style="width: 50px; height: 60px;">
                                                         <% } else { %>
                                                             <img src="/placeholder-image.jpg" alt="Placeholder Image" style="width: 50px; height: 60px;">
                                                         <% } %>
-                                                    
-                                                </td>
-                                                <td class="pro-title">
-                                                  
+                                                    </td>
+                                                    <td class="pro-title">
                                                         <%= product.productId.name %>
-                                                    </a>
-                                                </td>
-                                                
-                                                <%if(product.offerPrice == product.productPrice) {%>
-                                                    <td class="column-2" id="productPrice_<%= i %>"><%= products[i].productPrice %> </td>
-                                                    <%}
-                                                     else if(product.offerPrice !== product.productPrice) {%>
-                                                        <td class="column-2" id="productPrice_<%=  %>"><span><del><%= product.productPrice %></del></span>
-                                                            <span class=" fw-bold"><%= product.offerPrice %> </span>
-                                                        <%}%>
-                                                            </td>
-                                                <td class="pro-quantity">
-                                                    <div class="cart-product-quantity">
-                                                        <button class="btn btn-decrement" type="button">-</button>
-                                                        <input type="text" id="cartProductQuantity_<%= product.productId._id %>" class="form-control quantity-input" value="<%= product.count %>" min="1" max="<%= product.quantity %>" readonly>
-                                                        <button class="btn btn-increment" type="button">+</button>
-                                                    </div>
-                                                </td>
-                                                <% if(product.offerPrice == product.productPrice) { %>
-                                            <td class="column-4" id="pricePerItem_<%=  %>"><%= product.totalPrice %></td>
-                                            <% } else { %>
-                                           <td class="column-4" id="pricePerItem_<%=  %>"><span><del><%= product.totalPrice %></del></span>
-                                           <span class="fw-bold"><%= product.offerPrice * product.count %></span>
-                                               </td>
-                                              <% } %>
-                                                <td>
-                                                    <button type="button" onclick="removeItem('<%= product.productId._id %>')">
-                                                        <i class="fa fa-trash-o"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                    <% if (product.productId.offerprice === product.productId.productPrice) { %>
+                                                        <td class="column-2" id="productPrice_<%= i %>"><%= product.productPrice %> </td>
+                                                    <% } else { %>
+                                                        <td class="column-2" id="productPrice_<%= i %>">
+                                                            <span><del><%= product.productId.productPrice %></del></span>
+                                                            <span class="fw-bold"><%= product.productId.offerprice %></span>
+                                                        </td>
+                                                    <% } %>
+                                                    <td class="pro-quantity">
+                                                        <div class="cart-product-quantity">
+                                                            <button class="btn btn-decrement" type="button">-</button>
+                                                            <input type="text" id="cartProductQuantity_<%= product.productId._id %>" class="form-control quantity-input" value="<%= product.count %>" min="1" max="<%= product.quantity %>" readonly>
+                                                            <button class="btn btn-increment" type="button">+</button>
+                                                        </div>
+                                                    </td>
+                                                    <% if (product.productId.offerprice === product.productId.productPrice) { %>
+                                                        <td class="column-4" id="pricePerItem_<%= i %>"><%= product.productId.productPrice*product.count %></td>
+                                                    <% } else { %>
+                                                        <td class="column-4" id="pricePerItem_<%= i %>">
+                                                            <!-- <span><del><%#= product.productId.productPrice * product.count%></del></span> -->
+                                                            <span class="fw-bold"><%= product.productId.offerprice * product.count %></span>
+                                                        </td>
+                                                    <% } %>
+                                                    <td>
+                                                        <button type="button" onclick="removeItem('<%= product.productId._id %>')">
+                                                            <i class="fa fa-trash-o"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <% } %>
                                         <% }); %>
                                     <% } else { %>
                                         <tr>
@@ -209,71 +205,50 @@ td.pro-price {
                         </div>
                     </form>
                 </div>
-
-                    <div class="row">
-                        <div class="col-lg-6 col-12 mb--15">
-                            <!-- Calculate Shipping -->
-                            <div class="calculate-shipping">
-                              
-                                <form action="#">
-                                    <div class="row">
-                                        <div class="col-md-6 col-12 mb--25">
-                                            
-                                        </div>
-                                        
-                                        <div class="col-md-6 col-12 mb--25">
-                                            
-                                               
-                                        </div>
-                                        <div class="col-md-6 col-12 mb--25">
-                                            
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- Discount Coupon -->
-                            
-                        </div>
-
-                        <!-- Cart Summary -->
-                        <div class="col-lg-6 col-12 mb--40 d-flex " >
-                            <div class="cart-summary" style="margin-left: 250px;">
-                                <div class="cart-summary-wrap">
-                                    <h4>Cart Summary</h4>
-                                    <% if (cart && cart.products && cart.products.length > 0 && subTotal > 0) { %>
-    <p id="subtotal">Sub Total <span>₹<%= subTotal %>.00</span></p>
-
-    <% let totalDiscount = 0; %>
-    <% cart.products.forEach(product => { %>
-        <% if (product.offerPrice && product.offerPrice < product.productId.price) { %>
-           
-            <% totalDiscount += (product.productId.price - product.offerPrice) * product.count; %>
-        <% } %>
-    <% }); %>
-
-    <h2 id="grandtotal">Grand Total <span>₹<%= grandTotal - totalDiscount %>.00</span></h2>
-<% } else { %>
-    <p>Sub Total <span>₹0.00</span></p>
-    <h2>Grand Total <span>₹0.00</span></h2>
-<% } %>
-
-
-                                    <div class="cart-summary-button" style="margin-top: 20px;">
-                                        <button class="checkout-btn " id="checkout" type="submit"><a href="/checkout"
-                                                >Checkout</a></button>
-                                        <!-- <button class="update-btn"
-                                            id="updateCartButton">Update
-                                            Cart</button> -->
-                                    </div>
+    
+                <div class="row">
+                    <div class="col-lg-6 col-12 mb--15">
+                        <!-- Calculate Shipping -->
+                        <div class="calculate-shipping">
+                            <form action="#">
+                                <div class="row">
+                                    <div class="col-md-6 col-12 mb--25"></div>
+                                    <div class="col-md-6 col-12 mb--25"></div>
+                                    <div class="col-md-6 col-12 mb--25"></div>
                                 </div>
-                                
-                              
+                            </form>
+                        </div>
+                        <!-- Discount Coupon -->
+                    </div>
+    
+                    <!-- Cart Summary -->
+                    <div class="col-lg-6 col-12 mb--40 d-flex">
+                        <div class="cart-summary" style="margin-left: 250px;">
+                            <div class="cart-summary-wrap">
+                                <h4>Cart Summary</h4>
+                                <% if (cart && cart.products && cart.products.length > 0 && subTotal > 0) { %>
+                                    <p id="subtotal">Sub Total <span>₹<%= subTotal %>.00</span></p>
+                                    <% let totalDiscount = 0; %>
+                                    <% cart.products.forEach(product => { %>
+                                        <% if (product.offerPrice && product.offerPrice < product.productId.price) { %>
+                                            <% totalDiscount += (product.productId.price - product.offerPrice) * product.count; %>
+                                        <% } %>
+                                    <% }); %>
+                                    <h2 id="grandtotal">Grand Total <span>₹<%= grandTotal - totalDiscount %>.00</span></h2>
+                                <% } else { %>
+                                    <p>Sub Total <span>₹0.00</span></p>
+                                    <h2>Grand Total <span>₹0.00</span></h2>
+                                <% } %>
+                            </div>
+                            <div class="cart-summary-button" style="margin-top: 20px;">
+                                <button class="checkout-btn" id="checkout" type="submit"><a href="/checkout">Checkout</a></button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <!-- Cart Page End -->
 </div>

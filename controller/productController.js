@@ -2,7 +2,7 @@ let Product = require("../model/productModel");
 let Category = require("../model/categoryModel");
 let User = require("../model/userModel");
 const CategoryOffer = require('../model/categoryOfferModel');
-const ProductOffer = require('../model/productOfferModel');
+
 let path = require('path')
 const fs = require('fs').promises; 
 let sharp = require('sharp');
@@ -73,19 +73,20 @@ const createProduct = async (req, res) => {
       });
 
       if (caseInsensitiveProductExist) {
-        console.log('case insensitive search for product found : ', caseInsensitiveProductExist);
+        
         req.flash('message', 'Product already exists');
         res.redirect("/admin/addProduct");
       } else {
         const newProduct = new Product({
-          name: productData.name,
+          name: name,
           description: productData.description,
-          size: productData.size,
+          discount: productData.discount,
           price: productData.price,
           date: productData.date,
           quantity: productData.quantity,
           category: productData.category,
           images: images,
+      
         });
 
         await newProduct.save();
@@ -97,8 +98,8 @@ const createProduct = async (req, res) => {
       res.redirect("/admin/addProduct");
     }
  } catch (error) {
-    console.log("Error happened in createProduct function", error);
-    // Handle error response
+    
+   
     res.status(500).send('An error occurred while creating the product.');
  }
 };
@@ -128,7 +129,7 @@ const editProduct = async (req, res) => {
     .exec();
    let category = await Category.find({})
 
-c
+
 
 
     if (product) {
@@ -176,7 +177,7 @@ const productEdited = async (req, res) => {
      let updateData = {
        name: productData.name,
        description: productData.description,
-       size: productData.size,
+       discount: productData.discount,
        price: productData.price,
        quantity: productData.quantity,
        category: productData.category.id,
@@ -315,13 +316,25 @@ const shop = async (req, res) => {
       default:
         sortOption = {};
     }
-
-    
     const productData = await Product.find({ ...filter })
-      .sort(sortOption)
-      .skip(skip)
-      .limit(limit);
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limit);
 
+    let biggestOffer = 0;
+    let productDiscountPercentage = 0;
+    
+    for (const product of productData) {
+      const categoryOffer = await CategoryOffer.findOne({ category: product.category._id });
+      const categoryDiscountPercentage = categoryOffer? categoryOffer.discountPercentage : 0;
+      const productDiscountPercentage = product.discount;
+      const offer = Math.max(categoryDiscountPercentage, productDiscountPercentage);
+      biggestOffer = Math.max(biggestOffer, offer);
+    }
+    
+    const offerPrice = productData[0].price - (productData[0].price * biggestOffer / 100);
+    
+   
     const totalCount = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalCount / limit);
 

@@ -9,7 +9,7 @@ let productSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    size:{
+    discount:{
         type:String,
         required:true
     },
@@ -34,10 +34,23 @@ let productSchema = new mongoose.Schema({
     images:{
         type:[String]
     },
+    bigoffer: {
+        type: Number,
+    default: 0
+    },
+    offerprice:{
+        type:Number,
+        default:0
+    },
+    
     status: {
         type: String,
         enum: ['active', 'blocked'],
         default: 'active',
+      },
+      offer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'CategoryOffer'
       },
 
 })

@@ -21,7 +21,7 @@
                                 <label for="category" class="form-label">Select Product</label>
                                 <select class="form-select" id="category" name="product" required onchange="showHideFields(this.value)">
                                     <% productlist.forEach(pro => {%>
-                                        <option value="<%=pro._id %>"><%=pro.name %></option>
+                                        <option value="<%=pro.name %>"><%=pro.name %></option>
                                     <% }); %>
                                 </select>
                             </div>

@@ -56,10 +56,27 @@
                                                         height="50"></td>
 
                                                 <td><%= product.count %></td>
-                                                <td>₹<%= product.productPrice%></td>
-                                                <td>₹<%= product.totalPrice %></td>
                                                
+                                                
+
+                                            </td>
+                                                    <% if (product.productId.offerprice === product.productId.productPrice) { %>
+                                                        <td class="column-2" id="productPrice"><%= product.productPrice %> </td>
+                                                    <% } else { %>
+                                                        <td class="column-2" id="productPrice">
+                                                           
+                                                            <span class=""><%= product.productId.offerprice %></span>
+                                                        </td>
+                                                        <% } %>
                                               
+                                                        <% if (product.productId.offerprice === product.productId.productPrice) { %>
+                                                        <td class="column-4" id="pricePerItem"><%= product.productId.productPrice*product.count %></td>
+                                                    <% } else { %>
+                                                        <td class="column-4" id="pricePerItem">
+                                                           
+                                                            <span ><%= product.productId.offerprice * product.count %></span>
+                                                        </td>
+                                                    <% } %>
                                                     <td><%= product.productStatus %></td>
                                                 <td>
 

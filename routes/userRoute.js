@@ -8,11 +8,16 @@ const addressController = require('../controller/addressController');
 const orderController = require('../controller/orderController');
 const wishlistController = require('../controller/wishlistController');
 const couponController = require('../controller/couponController');
-require('../config/gpassport');
+
 const auth = require('../middleware/userAuth');
+require('../config/gpassport');
 const passport = require('passport');
 const path = require('path');
 const session = require('express-session');
+user_route.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: true }));
+user_route.use(passport.initialize());
+user_route.use(passport.session());
+
 const multer1 = require('multer');
 const upload = multer1();
 const { isLogin, isLogout } = require("../middleware/userAuth"); 
@@ -54,9 +59,9 @@ user_route.get("/profile", isLogin, userController.profileLoad);
  user_route.post('/edit-profile',isLogin, userController.editProfile);
  user_route.get('/change-password',isLogin,userController.changePasswordLoad)
  user_route.post('/change-password',isLogin,userController.changePassword)
- user_route.get('/forgot-password',isLogin,userController.forgotPassword)
- user_route.post('/password-change',isLogin,userController.passwordChange)
- user_route.post('/get-email',isLogin,userController.getEmail)
+ user_route.get('/forgot-password',userController.forgotPassword)
+ user_route.post('/password-change',userController.passwordChange)
+ user_route.post('/get-email',userController.getEmail)
 
  //===============addresssss====================================
  user_route.post('/add-address',addressController.addAddress);

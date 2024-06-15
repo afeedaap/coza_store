@@ -115,25 +115,23 @@
                                                 </a>
                                             </td>
                                             <td><%= product.productId.name %></td>
-                                            <td>₹<%= product.productPrice %></td>
-                                            <!-- <td>
-                                                <%# if (product.offerPrice) { %>
-                                                    $<%#= product.offerPrice %>.00
-                                                <%# } else {# %>
-                                                    $<%##= product.productPrice %>.00
-                                                <%# } %>
-                                            </td> -->
+                                            <% if (product.productId.price === product.productId.offerprice) { %>
+                                              <td><%= product.productId.price %></td>
+                                          <% } else { %>
+                                              <td><%= product.productId.offerprice %></td>
+                                          <% } %>
+                                          
+                                          
                                             <td><%= product.count %></td>
-                                            <td>₹<%= product.totalPrice %></td>
-                                            <!-- <td>
-                                                <select class="status-dropdown">
-                                                    <option value="<%#= product.productStatus %>" selected><%= product.productStatus %></option>
-                                                    <option value="Shipped">Shipped</option>
-                                                    <option value="Placed">Placed</option>
-                                                    <option value="Accepted">Accepted</option>
-                                                </select> -->
-                                            <!-- </td> -->
-
+                                            <% if (product.productId.offerprice === product.productId.productPrice) { %>
+                                              <td class="column-4" id="pricePerItem"><%= product.productId.productPrice*product.count %></td>
+                                          <% } else { %>
+                                              <td class="column-4" id="pricePerItem">
+                                                 
+                                                  <span ><%= product.productId.offerprice * product.count %></span>
+                                              </td>
+                                          <% } %>
+                                           
                                             <% if (product.productStatus == "pending") { %>
                                                 <td style="color: yellow;">Pending</td>
                                                 <% } else if (product.productStatus == 'Delivered') { %>
@@ -206,10 +204,10 @@
                                 <tr>
                                     <td colspan="4">
                                         <article class="float-end">
-                                            <dl class="dlist">
+                                            <!-- <dl class="dlist">
                                                 <dt>Subtotal:</dt>
-                                                <dd>₹<%= subtotal.toFixed(2) %></dd>
-                                            </dl>
+                                                <dd>₹<%#= subtotal.toFixed(2) %></dd>
+                                            </dl> -->
                                             <dl class="dlist">
                                                 <dt>Grand total:</dt>
                                                 <dd><b class="h5">₹<%= orderData.totalAmount %></b></dd>
@@ -229,7 +227,7 @@
     </div>
     <!-- card end// -->
 </section>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert@2"></script>
 

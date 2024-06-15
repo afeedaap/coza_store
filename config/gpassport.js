@@ -1,16 +1,16 @@
-const passport = require('passport')
-const googleStrategy = require("passport-google-oauth2").Strategy
-const googleUser = require('../model/googleModel')
-
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
+const GoogleUser = require('../model/googleModel');
 
 passport.serializeUser((user, done) => {
-    done(null, user)
-})
+    done(null, user);
+});
 
 passport.deserializeUser((user, done) => {
-    done(null, user)
-})
-passport.use(new googleStrategy({
+    done(null, user);
+});
+
+passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     callbackURL: "http://localhost:7000/auth/google/callback",
@@ -18,19 +18,23 @@ passport.use(new googleStrategy({
 },
     async (request, accessToken, refreshToken, profile, done) => {
         try {
-            const newGoogleUser = new googleUser({
-                googleId: profile.id,
-                name: profile.displayName,
-                email: profile.email
+            // Check if the user already exists
+            let user = await GoogleUser.findOne({ googleId: profile.id });
+            if (!user) {
+                // Create a new user if not found
+                user = new GoogleUser({
+                    googleId: profile.id,
+                    name: profile.displayName,
+                    email: profile.emails[0].value // Correcting the email field
+                });
 
-            });
+                await user.save();
+            }
 
-            await newGoogleUser.save()
-
-
-            return done(null, profile)
+            return done(null, user);
         } catch (e) {
-            console.log(e, "error occured while saving to database");
+            console.log(e, "error occurred while saving to database");
+            return done(e); // Pass the error to done callback
         }
     }
-))
+));

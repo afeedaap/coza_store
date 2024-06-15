@@ -45,7 +45,9 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
+                                       
                                         <th scope="col">SI No</th>
+                                        <th scope="col">category name</th>
                                         <th scope="col">Discount</th>
                                         <th scope="col">Start Date</th>
                                         <th scope="col">End date</th>
@@ -57,6 +59,8 @@
                                     <% categoryOffers.forEach((offer,index) => { %>
                                         <tr>
                                             <td><%=index+1%></td>
+                                            <td><b><%= offer.
+                                                category.name %></b></td>
                                             <td><b><%= offer.discountPercentage %></b></td>
                                             
                                             <td><%=new Date(offer.startDate).toLocaleDateString()  %></td>
