@@ -21,12 +21,13 @@ const addAddress = async (req, res) => {
       res.json({addressAdded:true})
     } catch (e) {
         console.log('while adding address', e);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(200).render("error") 
+
     }
 }
-
 const editAddress = async (req, res) => {
     try {
+        console.log("entered edit adress")
        const updated = await Address.findOneAndUpdate(
             { user: req.session.user_id, 'address._id': req.body.editAddressId },
             {
@@ -42,11 +43,11 @@ const editAddress = async (req, res) => {
             },
             { new: true }
         );
-
+        console.log("error at edit adress")
         res.json({ success: true, message: 'Address edited!', address: updated });
     } catch (error) {
         console.log('Error while editing address', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(200).render("error")
     }
 };
 const deleteAddress = async(req,res)=>{
@@ -59,8 +60,9 @@ const deleteAddress = async(req,res)=>{
       res.json({success:true})
   
     } catch (error) {
-        console.log(error.message);
-        res.render('500Error')
+        console.log('while deleting address', e);
+        res.status(200).render("error") 
+
     }
   }
 

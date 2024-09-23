@@ -11,16 +11,13 @@ const wishlist = async (req, res) => {
     console.log("wishlist data at wish list", wishlistData);
     res.render("wishlist", { user: user, wishlistData: wishlistData });
   }catch (error) {
-    console.error(error.message);
-    res.status(500).render("500", { error: error.message });
+    console.error("error at wishlist load",error.message);
+    res.redirect('/error');
   }
 };
+//================addto wishlist===========================//
 
-
-
-  //================addto wishlist===========================//
-
-  const addToWishlist = async (req, res) => {
+const addToWishlist = async (req, res) => {
     try {
       
       const id = req.body.productId;
@@ -70,7 +67,7 @@ const wishlist = async (req, res) => {
   }
      catch (error) {
       console.error("Error adding to wishlist:", error.message);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.redirect('/error');
     }
   
   }
@@ -92,8 +89,8 @@ const removeWishlist = async (req, res) => {
       res.json({ remove: true, message: "Item removed from wishlist" });
     }
   } catch (error) {
-    console.error(error.message);
-    res.status(500).render("500", { error: error.message });
+    console.error("error at romving wishlist",error.message);
+    res.redirect('/error');
   }
 };
 

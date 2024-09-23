@@ -28,7 +28,8 @@ router.get('/productlist',adminUser.productlist)
 //=========category part============================
 router.get('/category',categoryControl.allCategory )
 router.post('/addCategory',adminAuth.isLoggedIn,upload.single('image'),categoryControl.addCategory);
-router.post('/updateCategory',adminAuth.isLoggedIn,upload.single('image'),categoryControl.updateCategory);
+// router.post('/updateCategory',adminAuth.isLoggedIn,upload.single('image'),categoryControl.updateCategory);
+router.put('/updateCategory',adminAuth.isLoggedIn,upload.single('image'),categoryControl.updateCategory);
 router.get('/deleteCategory',adminAuth.isLoggedIn,categoryControl.deleteCategory);
 router.get('/editCategory',adminAuth.isLoggedIn,categoryControl.editCategory);
 router.get('/categoryUnlist',adminAuth.isLoggedIn,categoryControl.categoryUnlist)
@@ -39,10 +40,10 @@ router.get('/addProduct',adminAuth.isLoggedIn,productController.loadAddProduct)
 router.get('/searchProduct', productController.loadProductSearchQuery);
 router.get('/editProduct',productController.editProduct);
 router.post('/createProduct',adminAuth.isLoggedIn,upload.array('images', 4),productController.createProduct);
-router.post('/productEdited',upload.array('images', 4),productController.productEdited);
+router.put('/productEdited',upload.array('images', 4),productController.productEdited);
 router.post('/toggleBlockProduct',adminAuth.isLoggedIn,productController.toggleBlockStatusProduct)
 router.get('/deleteProduct',adminAuth.isLoggedIn,productController.deleteProduct);
-router.get('/deleteimage', productController.deleteimage)
+router.delete('/deleteimage', productController.deleteimage)
 //==================order=====================================//
 router.get('/order',adminAuth.isLoggedIn,orderController.loadOrder);
 router.get('/order-details',adminAuth.isLoggedIn, orderController.orderdetailsLoad);
@@ -53,7 +54,7 @@ router.get('/categoryOffer',adminAuth.isLoggedIn,offerController.loadCategoryOff
 router.get('/addCategoryOffer',adminAuth.isLoggedIn,offerController.loadAddCategoryOffer);
 router.post('/addCategoryOffer',adminAuth.isLoggedIn,offerController.createCategoryOffer);
 router.get('/editCategoryOffer',adminAuth.isLoggedIn,offerController.editCategoryOffer);
-router.post('/editCategoryOffer',adminAuth.isLoggedIn,offerController.updateCategoryOffer);
+router.post('/updateCategoryOffer',adminAuth.isLoggedIn,offerController.updateCategoryOffer);
 router.get('/deleteCategoryOffer',adminAuth.isLoggedIn,offerController.deleteCategoryOffer )
 //=======================coupon==============================//
 router.get('/coupon',adminAuth.isLoggedIn,couponController.couponLoad);
@@ -66,5 +67,7 @@ router.delete('/deleteCoupon',adminAuth.isLoggedIn,couponController.deleteCoupon
 router.get("/sales-report",adminAuth.isLoggedIn,adminUser.salesReportLoad)
 router.get("/excel-download",adminAuth.isLoggedIn,adminUser.excelDownload)
 router.get('/pdf-download',adminAuth.isLoggedIn,adminUser.pdfDownload)
-
+router.post('/graph',adminAuth.isLoggedIn,adminUser.graphData)
+//=========errorr page===============//
+router.get("/error", adminUser.errorPage);
 module.exports = router

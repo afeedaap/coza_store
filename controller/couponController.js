@@ -11,6 +11,7 @@ const couponLoad = async (req, res) => {
         const totalCoupons = await Coupon.countDocuments(query);
         const totalPages = Math.ceil(totalCoupons / limit);
         const couponData = await Coupon.find(query).skip(skip).limit(limit);
+        
         res.render('coupon', {
             couponData,
             currentPage: page,
@@ -18,7 +19,7 @@ const couponLoad = async (req, res) => {
         });
     } catch (error) {
         console.log("Error while loading coupons:", error);
-        res.render('404');
+        res.status(200).render("error") 
     }
 };
 //=============coupon load ========================///
@@ -26,16 +27,16 @@ const addCouponLoad=async(req,res)=>{
     try {
         res.render('addCoupon')
     } catch (error) {
-        res.render('500')
+        res.status(200).render("error") 
     }
 }
 //=================coupon add=====================//
 const addCoupon = async (req, res) => {
     try {
-        const { couponName, couponCode, minAmount, discount } = req.body;
+        const { couponName, couponCode, minAmount, discount,maxAmount } = req.body;
          const couponCodePattern = /^flash-\d{4}$/;
         if (!couponCodePattern.test(couponCode)) {
-            return res.status(400).json({ error: 'Invalid coupon code format. Must be "flash-xxxx" where xxxx is a four-digit number.' });
+            return res.status(400).json({ error: 'Invalid coupon code format. Must be flash-xxxx' });
         }
         const existingCouponCode = await Coupon.findOne({ couponCode: { $regex: new RegExp(`^${couponCode}$`, 'i') } });
         if (existingCouponCode) {
@@ -50,14 +51,15 @@ const addCoupon = async (req, res) => {
             couponName,
             couponCode,
             discountAmount: discount,
-            minimumAmount: minAmount
+            minimumAmount: minAmount,
+            maxAmount:maxAmount
         });
 
         await newCoupon.save();
         res.redirect('/admin/coupon');
     } catch (error) {
         console.error('Error adding coupon:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(200).render("error") ;
     }
 };
 
@@ -68,14 +70,14 @@ const editCouponLoad = async (req, res) => {
         res.render("editCoupon", { coupon: couponData });
     } catch (error) {
         console.log("Error at edit coupon page:", error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(200).render("error") 
     }
 };
 
 //====================edit Coupon==================//
 const editCoupon = async (req, res) => {
     try {
-        const { couponId, couponName, couponCode, minAmount, discount } = req.body;
+        const { couponId, couponName, couponCode, minAmount, discount,maxAmount } = req.body;
         const couponCodePattern = /^flash-\d{4}$/;
         if (!couponCodePattern.test(couponCode)) {
             return res.status(400).json({ error: 'Invalid coupon code format. Must be "flash-xxxx" where xxxx is a four-digit number.' });
@@ -105,6 +107,7 @@ const editCoupon = async (req, res) => {
                 couponCode,
                 discountAmount: discount,
                 minimumAmount: minAmount,
+                maxAmount:maxAmount
             },
             { new: true }
         );
@@ -115,7 +118,7 @@ const editCoupon = async (req, res) => {
      res.json({ success: true, message: 'Coupon updated successfully' });
     } catch (error) {
         console.error('Error in editCoupon:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(200).render("error") ;
     }
 };
 //===========delete coupon======================//
@@ -132,7 +135,7 @@ const deleteCoupon = async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Error deleting coupon:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(200).render("error") 
     }
 };
 //==================================user part==========================//
@@ -140,6 +143,7 @@ const deleteCoupon = async (req, res) => {
 const applyCoupon = async (req, res) => {
     try {
         const { couponCode } = req.body;
+
         const userId = req.session.user_id;
         const coupon = await Coupon.findOne({ couponCode: couponCode });
          if (!coupon) {
@@ -155,13 +159,16 @@ const applyCoupon = async (req, res) => {
          if (cart.totalPrice < coupon.minimumAmount) {
             return res.status(400).json({ success: false, message: `Minimum purchase amount is ${coupon.minimumAmount}` });
         }
-        const discountAmount = (coupon.discountAmount * cart.totalPrice) / 100;
+        let discountAmount = (coupon.discountAmount * cart.totalPrice) / 100;
+        if (coupon. maxAmount && discountAmount > coupon.maxAmount) {
+            discountAmount = coupon.maxAmount;
+        }
         const discountedTotal = cart.totalPrice - discountAmount;
         cart.couponDiscount = discountAmount;
         cart.totalPrice = discountedTotal; 
         cart.appliedCouponcode = couponCode;
         await cart.save();
-       await Coupon.findByIdAndUpdate({_id:coupon._id},{$push:{user:req.session.user_id}});
+        await Coupon.findByIdAndUpdate({_id:coupon._id},{$push:{user:req.session.user_id}});
        await coupon.save();
         return res.json({
             success: true,
@@ -173,7 +180,7 @@ const applyCoupon = async (req, res) => {
 
     } catch (error) {
         console.error('Error applying coupon:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(200).render("error") ;
     }
 };
 //=================remove coupon====================//
@@ -204,7 +211,7 @@ const removeCoupon = async (req, res) => {
 
     } catch (error) {
         console.error('Error removing coupon:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(200).render("error") ;
     }
 };
   

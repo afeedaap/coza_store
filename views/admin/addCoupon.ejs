@@ -37,7 +37,7 @@
             </div>
             
             <div class="row">
-              <div class="col-lg-12">
+              <div class="col-lg-6">
                 <div class="mb-4">
                   <label class="form-label">Coupon code</label>
                   <input
@@ -72,13 +72,13 @@
                 </div>
               </div>
               <div class="col-lg-6">
-                <label class="form-label">Discount Amount</label>
+                <label class="form-label">Discount percentage</label>
                 <input
                   name="discount"
                   placeholder="Type here"
                   type="text"
                   class="form-control"
-                  id="discount_amount"
+                  id="discount_percentage"
                 />
                 <p
                   id="discountErr"
@@ -86,8 +86,23 @@
                   style="color: red"
                 ></p>
               </div>
+              <div class="col-lg-6">
+                <label class="form-label">Maximum Discount Amount</label>
+                <input
+                  name="maxAmount"
+                  placeholder="Type here"
+                  type="text"
+                  class="form-control"
+                  id="max_discount_amount"
+                />
+                <p
+                  id="maxDiscountErr"
+                  class="error-message"
+                  style="color: red"
+                ></p>
+              </div>
             </div>
-            
+            <br>
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
         </div>
@@ -101,7 +116,8 @@
     var couponName = document.getElementById("coupon_name").value;
     var couponCode = document.getElementById("coupon_code").value;
     var minAmount = document.getElementById("min_amount").value;
-    var discount = document.getElementById("discount_amount").value;
+    var discount = document.getElementById("discount_percentage").value;
+    var maxDiscountAmount = document.getElementById("max_discount_amount").value;
     
     var isValid = true;
 
@@ -130,10 +146,10 @@
     }
 
     if (discount.trim() == "") {
-      document.getElementById("discountErr").innerHTML = "Discount Amount is required";
+      document.getElementById("discountErr").innerHTML = "Discount Percentage is required";
       isValid = false;
     } else if (isNaN(discount)) {
-      document.getElementById("discountErr").innerHTML = "Discount Amount must be a number";
+      document.getElementById("discountErr").innerHTML = "Discount Percentage must be a number";
       isValid = false;
     } else if (discount > 60) {
       document.getElementById("discountErr").innerHTML = "Discount must be less than or equal to 60";
@@ -142,10 +158,19 @@
       document.getElementById("discountErr").innerHTML = "";
     }
 
+    if (maxDiscountAmount.trim() == "") {
+      document.getElementById("maxDiscountErr").innerHTML = "Maximum Discount Amount is required";
+      isValid = false;
+    } else if (isNaN(maxDiscountAmount)|| maxDiscountAmount <= 0) {
+      document.getElementById("maxDiscountErr").innerHTML = "Maximum Discount Amount must be  positive number a number";
+      isValid = false;
+    } else {
+      document.getElementById("maxDiscountErr").innerHTML = "";
+    }
+
     return isValid;
   }
 
- 
   document.getElementById('couponForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -196,9 +221,7 @@
     };
 
     xhr.send(JSON.stringify(jsonObject));
-});
-
-
+  });
 </script>
 
 <%- include('./layouts/footer') %>

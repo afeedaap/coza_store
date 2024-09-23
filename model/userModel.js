@@ -8,16 +8,16 @@ const userSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        required:true,
+        required:true
     },
     mobile:{
         type:String,
-        required:true,
+        
         minlength:10
     },
     password:{
         type:String,
-        required:true,
+      
         minlength:6
     },
     image:{

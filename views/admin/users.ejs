@@ -36,75 +36,77 @@
       </div>
     </header>
     <div class="card-body">
-
-      <% if(users.length>0) { %>
-
-       <% for (let i = 0; i < users.length; i++) { %>
-     
-       <article class="itemlist">
-           <div class="row align-items-center">
-               <div class="col col-check flex-grow-0">
-                   <div class="form-check">
-                       <input class="form-check-input" type="checkbox" />
-                   </div>
-               </div>
-               <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                   <a class="itemside" href="#">
-                       <div class="left">
-                           <img src="/adminAssets/imgs/items/1.jpg" class="img-sm img-thumbnail" alt="Item" />
-                       </div>
-                       <div class="info">
-                           <h6 class="mb-0"><%= users[i].name %></h6>
-                       </div>
-                   </a>
-               </div>
-               <div class="col-lg-2 col-sm-2 col-4 col-price"><span><%= users[i].email %></span></div>
-
-               <div class="col-lg-2 col-sm-2 col-4 col-status">
-
-                   <% if(users[i].is_block === true) { %>
-                       <span class="badge rounded-pill alert-danger">Inactive</span>
-                  
-                       <% } else { %>
-                           <span class="badge rounded-pill alert-success">Active</span>
-                           <% } %>
-
-                  
-               </div>
-               <div class="col-lg-1 col-sm-2 col-4 col-date">
-                   <span style="text-wrap: nowrap;"><%= users[i].mobile %></span>
-               </div>
-               <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                   <% if(users[i].is_block ===false) {%>
-                   <a href="/admin/block?id=<%= users[i]._id%> " class="btn btn-sm font-sm btn-light rounded"> <i class="material-icons md-delete_forever"></i>Block</a>
-                   <% }else { %>
-                       <a href="/admin/unblock?id=<%= users[i]._id%>" class="btn btn-sm font-sm btn-light rounded"> <i class="material-icons md-delete_forever"></i>Unblock</a>
-                       <% } %>
-               </div>
-           </div>
-           <!-- row .// -->
-       </article>
-       <% } %>
-
-       <% }else{ %>
-           <tr>
-               <td colspan="2">Users not found</td>
-           </tr>
-       <% } %>
-       
-   </div>
-   <!-- card-body end// -->
- </div>
+      <% if(users.length > 0) { %>
+        <% for (let i = 0; i < users.length; i++) { %>
+          <article class="itemlist">
+            <div class="row align-items-center">
+              <div class="col col-check flex-grow-0">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" />
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                <a class="itemside" href="#">
+                  <div class="left">
+                    <img src="/adminAssets/imgs/items/1.jpg" class="img-sm img-thumbnail" alt="Item" />
+                  </div>
+                  <div class="info">
+                    <h6 class="mb-0"><%= users[i].name %></h6>
+                  </div>
+                </a>
+              </div>
+              <div class="col-lg-2 col-sm-2 col-4 col-price">
+                <span><%= users[i].email %></span>
+              </div>
+              <div class="col-lg-2 col-sm-2 col-4 col-status">
+                <% if(users[i].is_block === true) { %>
+                  <span class="badge rounded-pill alert-danger">Inactive</span>
+                <% } else { %>
+                  <span class="badge rounded-pill alert-success">Active</span>
+                <% } %>
+              </div>
+              <div class="col-lg-1 col-sm-2 col-4 col-date">
+                <span style="text-wrap: nowrap;"><%= users[i].mobile %></span>
+              </div>
+              <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                <% if(users[i].is_block === false) { %>
+                  <a href="/admin/block?id=<%= users[i]._id %>" class="btn btn-sm font-sm btn-light rounded" onclick="return confirmAction('block')"> 
+                    <i class="material-icons md-delete_forever"></i>Block
+                  </a>
+                <% } else { %>
+                  <a href="/admin/unblock?id=<%= users[i]._id %>" class="btn btn-sm font-sm btn-light rounded" onclick="return confirmAction('unblock')"> 
+                    <i class="material-icons md-delete_forever"></i>Unblock
+                  </a>
+                <% } %>
+              </div>
+            </div>
+            <!-- row .// -->
+          </article>
+        <% } %>
+      <% } else { %>
+        <tr>
+          <td colspan="2">Users not found</td>
+        </tr>
+      <% } %>
+    </div>
+    <!-- card-body end// -->
+  </div>
   <!-- card end// -->
   <div class="pagination-area mt-30 mb-50">
-        <% if(page>1) { %>
-            <a href="/admin/users?page=<%= page - 1 %>">Previous</a>
-            <% } %>
-            <span>Page<%= page %> of <%= totalPages %></span>
-            <% if(page<totalPages) { %> 
-                <a href="/admin/users?page=<%= page + 1 %>">Next</a>
-                <% } %>   
+    <% if(page > 1) { %>
+      <a href="/admin/users?page=<%= page - 1 %>">Previous</a>
+    <% } %>
+    <span>Page <%= page %> of <%= totalPages %></span>
+    <% if(page < totalPages) { %> 
+      <a href="/admin/users?page=<%= page + 1 %>">Next</a>
+    <% } %>   
   </div>
 </section>
+
+<script>
+  function confirmAction(action) {
+    return confirm(`Are you sure you want to ${action} this user?`);
+  }
+</script>
 
 <%- include('./layouts/footer.ejs')%>

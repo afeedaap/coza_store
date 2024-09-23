@@ -15,7 +15,7 @@
         <div class="col-lg-6">
             <div class="card mb-4">
                 <div class="card-body">
-                    <form id="offerForm" action="/admin/editCategoryOffer?id=<%= categoryOffer._id %>" method="post" onsubmit="return validateForm()">
+                    <form id="offerForm" action="/admin/updateCategoryOffer?id=<%= categoryOffer._id %>" method="post" onsubmit="return validateForm()">
                         <div class="row gx-3">
                             <div class="mb-4">
                                 <label for="category" class="form-label">Select Category</label>
@@ -51,17 +51,7 @@
 </section>
 
 <script>
-   document.getElementById('offerForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
-    
-    const offerId = "<%= categoryOffer._id %>";
-    console.log("Offer ID:", offerId); // Log the offerId
-    
-  
-});
-
-
-    function validateForm() {
+function validateForm() {
     var startDate = document.getElementById('startDate').value;
     var endDate = document.getElementById('endDate').value;
     var offerPercentage = document.getElementById('offerPercentage').value;
@@ -121,23 +111,21 @@
     return isValid;
 }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Debugging: Log the values being set
-        console.log("Category Offer Data:", {
-        
-            startDate: "<%= categoryOffer.startDate.toISOString().substring(0, 10) %>",
-            endDate: "<%= categoryOffer.endDate.toISOString().substring(0, 10) %>",
-            discountPercentage: "<%= categoryOffer.discountPercentage %>"
-        });
-
-        // Pre-populate form with existing offer data
-    
-        document.getElementById('startDate').value = "<%= categoryOffer.startDate.toISOString().substring(0, 10) %>";
-        document.getElementById('endDate').value = "<%= categoryOffer.endDate.toISOString().substring(0, 10) %>";
-        document.getElementById('offerPercentage').value = "<%= categoryOffer.discountPercentage %>";
+document.addEventListener('DOMContentLoaded', function() {
+    // Debugging: Log the values being set
+    console.log("Category Offer Data:", {
+        startDate: "<%= categoryOffer.startDate.toISOString().substring(0, 10) %>",
+        endDate: "<%= categoryOffer.endDate.toISOString().substring(0, 10) %>",
+        discountPercentage: "<%= categoryOffer.discountPercentage %>"
     });
-    
-    document.getElementById('offerForm').addEventListener('submit', async function(event) {
+
+    // Pre-populate form with existing offer data
+    document.getElementById('startDate').value = "<%= categoryOffer.startDate.toISOString().substring(0, 10) %>";
+    document.getElementById('endDate').value = "<%= categoryOffer.endDate.toISOString().substring(0, 10) %>";
+    document.getElementById('offerPercentage').value = "<%= categoryOffer.discountPercentage %>";
+});
+
+document.getElementById('offerForm').addEventListener('submit', async function(event) {
     event.preventDefault();
     if (!validateForm()) {
         return;
@@ -150,12 +138,11 @@
         discount: formData.get('discount'),
         startDate: formData.get('startDate'),
         endDate: formData.get('endDate'),
-        status: formData.get('status'),
-        offerName: formData.get('offerName')
+        status: formData.get('status')
     };
 
     try {
-        const response = await fetch('/admin/editCategoryOffer', {
+        const response = await fetch('/admin/updateCategoryOffer?id=<%= categoryOffer._id %>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -181,7 +168,6 @@
         });
     }
 });
-
 </script>
 
 <%- include('./layouts/footer') %>

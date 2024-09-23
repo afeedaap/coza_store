@@ -11,8 +11,9 @@ const offerload = async (req, res) => {
   try {
     res.render('offer');
   } catch (error) {
-    console.error(error);
-    res.status(500).send('An error occurred while rendering the offer page');
+    console.error("error at offerload",error);
+    res.status(200).render("error") 
+   ;
   }
 };
 //================================load category offer=====================//
@@ -21,7 +22,9 @@ const loadCategoryOffer = async (req,res)=>{
       const categoryOffers = await CategoryOffer.find().populate('category');
       res.render('categoryOffer',{ categoryOffers});
   } catch (error) {
-      console.log(error.message);
+    console.error("error at load category offer",error);
+    res.status(200).render("error") 
+   ;
   }
 }
 //==========load add categoryoffer==================//
@@ -30,7 +33,10 @@ const loadAddCategoryOffer = async (req,res)=>{
       const category= await Category.find();
       res.render('addCategoryOffer',{ category});
   } catch (error) {
-      console.log(error.message);
+      console.log("errror at adding category offer",error.message);
+     ;
+      res.status(200).render("error") 
+     ;
   }
 }
 //================create category offer===============//
@@ -39,19 +45,19 @@ const createCategoryOffer = async (req, res) => {
     const { category, discount, startDate, endDate, status } = req.body;
     console.log(req.body);
 
-    // Find the category by name
+  
     const categoryName = await Category.findOne({ name: category });
     if (!categoryName) {
       return res.status(400).json({ error: 'Category not found' });
     }
 
-    // Check if a category offer already exists for the category
+    
     const existingCategoryOffer = await CategoryOffer.findOne({ category: categoryName._id });
     if (existingCategoryOffer) {
       return res.status(400).json({ error: 'A category offer for this category already exists' });
     }
 
-    // Create a new category offer
+
     const categoryOffer = new CategoryOffer({
       category: categoryName._id,
       discountPercentage: discount,
@@ -60,12 +66,13 @@ const createCategoryOffer = async (req, res) => {
       status: status
     });
 
-    // Save the new category offer
+ 
     await categoryOffer.save();
     res.redirect('/admin/categoryOffer');
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("error at crete offer",error);
+    res.status(200).render("error") 
+   ;
   }
 };
 
@@ -78,7 +85,9 @@ const editCategoryOffer = async(req,res)=>{
       const offerDetails= await CategoryOffer.findById({_id:offerId});
       res.render('editCategoryOffer',{categoryOffer:offerDetails,category});
   } catch (error) {
-    console.error(error);  
+    console.error("error at editoffer",error);
+    res.status(200).render("error") 
+   ;  
   }
 }
 //=====================update category offer=====================================//
@@ -98,7 +107,7 @@ const updateCategoryOffer = async (req, res) => {
       offerId,
       {
         $set: {
-          name: req.body.offerName,
+       
           category: categoryName._id,
           discountPercentage: discount,
           startDate: startDate,
@@ -111,8 +120,9 @@ const updateCategoryOffer = async (req, res) => {
   
     res.redirect('/admin/categoryOffer');
   } catch (error) {
-    console.error(error);
-    res.status(500).send('An error occurred while updating the category offer');
+    console.error("error at opdte offer",error);
+    res.status(200).render("error") 
+   ;
   }
 };
 const deleteCategoryOffer = async (req,res)=>{
@@ -122,7 +132,9 @@ const deleteCategoryOffer = async (req,res)=>{
       await CategoryOffer.deleteOne({_id:offerId});
       res.redirect('/admin/categoryOffer');
   }catch(error){
-      console.log(error.message);
+    console.error("error at delete offer",error);
+    res.status(200).render("error") 
+   ;
   }
 }
 

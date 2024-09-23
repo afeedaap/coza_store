@@ -3,14 +3,14 @@
 
 <style>
     .custom-toast-warning {
-    background-color: #ff9800; /* Change the background color to your desired color */
-    color: #f6f2f2; /* Change the text color to ensure visibility */
+    background-color: #ff9800; 
+    color: #f6f2f2; 
 }
     /* Cart summary area */
 .cart-summary {
-    background-color: #f8f9fa; /* Background color */
-    padding: 20px; /* Padding around the cart summary */
-    border-radius: 5px; /* Rounded corners */
+    background-color: #f8f9fa; 
+    padding: 20px; 
+    border-radius: 5px; 
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
 }
 
@@ -41,8 +41,8 @@
 
 /* Checkout button */
 .checkout-btn {
-    background-color: #0675ec; /* Button background color */
-    color: #fff; /* Button text color */
+    background-color: #b4b6b8; /* Button background color */
+    color: #f7f2f2; /* Button text color */
     border: none; /* Remove button border */
     padding: 10px 20px; /* Padding for the button */
     font-size: 18px; /* Font size for the button */
@@ -51,9 +51,7 @@
 }
 
 /* Checkout button hover effect */
-.checkout-btn:hover {
-    background-color: #0056b3; /* Button background color on hover */
-}
+
 
 .cart-product-quantity {
     display: flex; 
@@ -150,7 +148,7 @@ td.pro-price {
                                                 <tr>
                                                     <td class="pro-thumbnail">
                                                         <% if (product.productId.images && product.productId.images.length > 0) { %>
-                                                            <img src="/<%= product.productId.images[0] %>" alt="Product" style="width: 50px; height: 60px;">
+                                                            <img src="/adminAssets/imgs/category/<%= product.productId.images[0] %>" alt="Product" style="width: 50px; height: 60px;">
                                                         <% } else { %>
                                                             <img src="/placeholder-image.jpg" alt="Placeholder Image" style="width: 50px; height: 60px;">
                                                         <% } %>
@@ -158,12 +156,12 @@ td.pro-price {
                                                     <td class="pro-title">
                                                         <%= product.productId.name %>
                                                     </td>
-                                                    <% if (product.productId.offerprice === product.productId.productPrice) { %>
-                                                        <td class="column-2" id="productPrice_<%= i %>"><%= product.productPrice %> </td>
+                                                    <% if (product.productId.offerprice ===product.productId.productPrice) { %>
+                                                        <td class="column-2" id="productPrice_<%= i %>">₹<%= product.productPrice %> </td>
                                                     <% } else { %>
                                                         <td class="column-2" id="productPrice_<%= i %>">
                                                             <span><del><%= product.productId.productPrice %></del></span>
-                                                            <span class="fw-bold"><%= product.productId.offerprice %></span>
+                                                            <span class="fw-bold">₹<%= product.productId.offerprice %></span>
                                                         </td>
                                                     <% } %>
                                                     <td class="pro-quantity">
@@ -173,14 +171,9 @@ td.pro-price {
                                                             <button class="btn btn-increment" type="button">+</button>
                                                         </div>
                                                     </td>
-                                                    <% if (product.productId.offerprice === product.productId.productPrice) { %>
-                                                        <td class="column-4" id="pricePerItem_<%= i %>"><%= product.productId.productPrice*product.count %></td>
-                                                    <% } else { %>
-                                                        <td class="column-4" id="pricePerItem_<%= i %>">
-                                                            <!-- <span><del><%#= product.productId.productPrice * product.count%></del></span> -->
-                                                            <span class="fw-bold"><%= product.productId.offerprice * product.count %></span>
-                                                        </td>
-                                                    <% } %>
+                                                    <td class="pro-total" id="totalprice<%= product.productId._id %>">
+                                                        ₹<%=  product.totalPrice %>
+                                                      </td>
                                                     <td>
                                                         <button type="button" onclick="removeItem('<%= product.productId._id %>')">
                                                             <i class="fa fa-trash-o"></i>
@@ -227,21 +220,18 @@ td.pro-price {
                             <div class="cart-summary-wrap">
                                 <h4>Cart Summary</h4>
                                 <% if (cart && cart.products && cart.products.length > 0 && subTotal > 0) { %>
-                                    <p id="subtotal">Sub Total <span>₹<%= subTotal %>.00</span></p>
-                                    <% let totalDiscount = 0; %>
-                                    <% cart.products.forEach(product => { %>
-                                        <% if (product.offerPrice && product.offerPrice < product.productId.price) { %>
-                                            <% totalDiscount += (product.productId.price - product.offerPrice) * product.count; %>
-                                        <% } %>
-                                    <% }); %>
-                                    <h2 id="grandtotal">Grand Total <span>₹<%= grandTotal - totalDiscount %>.00</span></h2>
+                                  <h2 id="grandtotal">Grand Total <span>₹<%= grandTotal %>.00</span></h2>
                                 <% } else { %>
-                                    <p>Sub Total <span>₹0.00</span></p>
-                                    <h2>Grand Total <span>₹0.00</span></h2>
+                                  <p>Sub Total <span>₹0.00</span></p>
+                                  <h2 id="grandtotal">Grand Total <span>₹0.00</span></h2>
                                 <% } %>
-                            </div>
+                              </div>
+                              
                             <div class="cart-summary-button" style="margin-top: 20px;">
-                                <button class="checkout-btn" id="checkout" type="submit"><a href="/checkout">Checkout</a></button>
+                                <a class="flex-c-m stext-101 cl0 size-90 bg1 bor1 hov-btn1 p-lr-15 trans-04"  href="/checkout">
+                                    Checkout
+                                </a>
+                                
                             </div>
                         </div>
                     </div>
@@ -261,15 +251,14 @@ td.pro-price {
     <button class="close-quickview-modal"><i class="fa fa-close"></i></button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <script>
-   
-    function removeItem(product_Id) {
+    function removeItem(productId) {
         Swal.fire({
             title: "Are You Sure?",
             text: "You won't be able to revert this!",
@@ -284,7 +273,7 @@ td.pro-price {
                 $.ajax({
                     url: "/removeCartItem",
                     data: {
-                        product: product_Id,
+                        product: productId,
                     },
                     method: "post",
                     success: (response) => {
@@ -296,7 +285,9 @@ td.pro-price {
                                 timer: 1500,
                                 showConfirmButton: false,
                             }).then(() => {
-                                location.reload();
+                                // Remove the item from the DOM
+                                $(`#cartProductQuantity_${productId}`).closest("tr").remove();
+                                updateGrandTotal();
                             });
                         }
                     },
@@ -304,22 +295,22 @@ td.pro-price {
             }
         });
     }
-    
-    $(document).ready(function() {
-        // Event listener for decrement button
-        $(document).on('click', '.btn-decrement', function() {
-            const productId = $(this).siblings(".quantity-input").attr("id").split("_")[1];
-            updateQuantity(productId, -1);
-        });
 
-        // Event listener for increment button
-        $(document).on('click', '.btn-increment', function() {
-            const productId = $(this).siblings(".quantity-input").attr("id").split("_")[1];
-            updateQuantity(productId, 1);
-        });
+    $(document).ready(function() {
+    // Event listener for decrement button
+    $(document).on('click', '.btn-decrement', function() {
+        const productId = $(this).siblings(".quantity-input").attr("id").split("_")[1];
+        updateQuantity(productId, -1);
     });
 
-    function updateQuantity(productId, increment) {
+    // Event listener for increment button
+    $(document).on('click', '.btn-increment', function() {
+        const productId = $(this).siblings(".quantity-input").attr("id").split("_")[1];
+        updateQuantity(productId, 1);
+    });
+});
+
+function updateQuantity(productId, increment) {
     var quantityInput = $("#cartProductQuantity_" + productId);
     var currentValue = parseInt(quantityInput.val());
     var newValue = currentValue + increment;
@@ -333,64 +324,57 @@ td.pro-price {
     }
 
     quantityInput.val(newValue);
-    updateCart(productId, increment, newValue); // Pass the new quantity to the updateCart function
+    updateCart(productId, increment); // Call the updateCart function with the new quantity
 }
-function updateCart(productId, newQuantity) {
-    // Check if the new quantity exceeds the limit (5)
-    if (newQuantity > 5) {
+
+function updateCart(productId, increment) {
+  const data = { productId: productId, count: increment };
+
+  $.ajax({
+    method: 'POST',
+    url: '/update-cart',
+    data: JSON.stringify(data),
+    contentType: 'application/json',
+    success: function(response) {
+      if (response.stock) {
+        // Handle out of stock scenario
         Swal.fire({
-            icon: "warning",
-            text: "You can buy only 5 pieces at a time"
+          text: "Product is out of stock. Will update soon!",
+          icon: "warning",
+          showCancelButton: false,
+          confirmButtonText: "OK"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            location.reload(); 
+          }
         });
-        return; // Exit the function if the limit is exceeded
+        $(".btn-increment").prop("disabled", true);
+      } else {
+        // Update the quantity input of the updated product
+        var quantityInput = $("#cartProductQuantity_" + response.productId);
+        quantityInput.val(response.newQuantity);
+
+        // Update the total price for the specific product
+        var totalPriceElement = $("#totalprice" + response.productId);
+        totalPriceElement.text("₹" + response.totalPrice.toFixed(2));
+
+        // Update the subtotal and grand total in the UI
+        // $("#subtotal span").text("₹" + response.newSubTotal.toFixed(2));
+        $("#grandtotal span").text("₹" + response.newGrandTotal.toFixed(2));
+      }
+    },
+    error: function(error) {
+      console.error(error);
+      Swal.fire("Error", "An error occurred while updating the cart. Please try again later", "error");
     }
-
-    const data = { productId: productId, count: newQuantity };
-
-    $.ajax({
-        method: 'POST',
-        url: '/update-cart',
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        success: function (response) {
-            console.log(response);
-            if (response.stock) {
-                // Handle out of stock scenario
-                Swal.fire({
-                    text: "Product is out of stock. Will update soon!",
-                    icon: "warning",
-                    showCancelButton: false,
-                    confirmButtonText: "OK"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        location.reload(); // Reload the page only if "OK" is clicked
-                    }
-                });
-                $(".btn-increment").prop("disabled", true);
-            } else {
-                // Update UI elements with new data
-                location.reload(); // Reload the page
-                var quantityInput = $("#cartProductQuantity_" + productId);
-                quantityInput.val(response.newQuantity);
-
-                var totalPriceElement = $("#totalprice" + productId);
-                totalPriceElement.text(response.newTotalPrice.toFixed(2));
-
-                // Update subtotal, shipping charge, and grand total if needed
-                $("#subtotal span").text("$" + response.newSubTotal.toFixed(2));
-                $("#shippingCharge span").text("$" + response.newShippingCharge.toFixed(2));
-                $("#grandtotal span").text("$" + response.newGrandTotal.toFixed(2));
-            }
-        },
-        error: function (error) {
-            console.error(error);
-            Swal.fire("Error", "An error occurred while updating the cart. Please try again later", "error");
-        }
-    });
+  });
 }
 
 
-    </script>
+</script>
+
     
 
     <%-include("../user/layouts/footer.ejs") %>
+
+

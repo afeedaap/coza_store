@@ -27,15 +27,43 @@
   }
   /* Your CSS styles here */
   .offer-tag {
-    position: absolute; /* Position absolutely */
-    top: 0; /* Align to the top */
-    right: 0; /* Align to the right */
-    background-color: red; /* Red background */
-    color: #fff; /* White text */
-    padding: 5px 10px; /* Padding to provide some space around the text */
-    border-top-right-radius: 8px; /* Rounded corners */
-    font-size: 12px; /* Adjust font size */
-  }
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: red;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.new-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: green;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.price-container {
+  margin-top: 10px;
+}
+
+.offer-price {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.original-price {
+  color: #999;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
 
  
 </style>
@@ -101,14 +129,13 @@
 				
       <!-- Search product -->
       <div class="dis-none panel-search w-full p-t-10 p-b-15">
-        <div class="bor8 dis-flex p-l-15">
-          <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-            <i class="zmdi zmdi-search"></i>
-          </button>
-
-          <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search" value="<%= searchTerm %>">
-        </div>
-      </div>
+        <form action="/shop" method="GET" class="bor8 dis-flex p-l-15">
+            <button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                <i class="zmdi zmdi-search"></i>
+            </button>
+            <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search" placeholder="Search" value="<%= searchTerm %>">
+        </form>
+    </div>
 
 				<!-- Filter -->
 				<div class="dis-none panel-filter w-full p-t-10">
@@ -175,59 +202,68 @@
 			</div>
 
 
-    <div class="row isotope-grid">
-      <% if (productData.length > 0) { %>
-      <% for (let i = 0; i < productData.length; i++) { %>
-      <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-        <!-- Product item -->
-        <div class="block2">
-          <!-- Product image -->
-          <div class="block2-pic hov-img0">
-            <a href="" class="product-link"></a>
-            <img src="/<%= productData[i].images[0] %>" alt="IMG-PRODUCT">
-            <a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2  p-lr-15 trans-04 ">
-              Quick view
-            </a>
-         
-              <!-- <span class="offer-tag"><%#=productData[i].
-                bigoffer%></span>
-             -->
-            
-
-            <span class="new-tag">new</span>
-          </div>
-
-          <!-- Product details -->
-          <div class="block2-txt flex-w flex-t p-t-14">
-            <div class="block2-txt-child1 flex-col-l">
-              <!-- Product name -->
-              <a href="/productview?id=<%= productData[i]._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                <%= productData[i].name %>
-              </a>
-              <!-- Product price -->
-              <span class="stext-105 cl3">
-                <%= productData[i].price %> <!-- Display regular price -->
-              </span>
+      <div class="row isotope-grid">
+        <% if (productData.length > 0) { %>
+          <% for (let i = 0; i < productData.length; i++) { %>
+            <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
+              <!-- Product item -->
+              <div class="block2">
+                <!-- Product image -->
+                <div class="block2-pic hov-img0">
+                  <a href="" class="product-link"></a>
+                  <img src="/adminAssets/imgs/category/<%= productData[i].images[0] %>" alt="IMG-PRODUCT">
+                  <a href="" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 p-lr-15 trans-04 ">
+                    Quick view
+                  </a>
+      
+                  <!-- Offer tag if there's an offer -->
+                  <% if (productData[i].biggestOffer > 0) { %>
+                    <span class="offer-tag"><%= productData[i].biggestOffer %>% OFF</span>
+                  <% } %>
+      
+                  <% if (productData[i].new) { %>
+                    <span class="new-tag">new</span>
+                  <% } %>
+                </div>
+      
+                <!-- Product details -->
+                <div class="block2-txt flex-w flex-t p-t-14">
+                  <div class="block2-txt-child1 flex-col-l">
+                    <!-- Product name -->
+                    <a href="/productview?id=<%= productData[i]._id %>" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                      <%= productData[i].name %>
+                    </a>
+                    <!-- Product price with offer -->
+                    <div class="price-container">
+                      <% if (productData[i].biggestOffer > 0) { %>
+                        <span class="offer-price">₹ <%= productData[i].offerPrice.toFixed(2) %></span>
+                        <span class="original-price" style="text-decoration: line-through; color: #999;">₹ <%= parseFloat(productData[i].price).toFixed(2) %></span>
+                      <% } else { %>
+                        <span class="stext-105 cl3">₹ <%= parseFloat(productData[i].price).toFixed(2) %></span>
+                      <% } %>
+                    </div>
+                  </div>
+      
+                  <!-- Add to wishlist -->
+                  <div class="block2-txt-child2 flex-r p-t-3">
+                    <a href="/cart" class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="0">
+                      <i class="zmdi zmdi-shopping-cart"></i>
+                    </a>
+      
+                    <a href="/wishlist" onclick="addToWishlist('<%= productData[i]._id %>')" class="btn-addwish-b2 dis-block pos-relative addwish-b2" id="wishlistLink">
+                      <img class="icon-heart1 dis-block trans-04" src="users/images/icons/icon-heart-01.png" alt="ICON">
+                      <img class="icon-heart2 dis-block trans-04 ab-t-l" src="users/images/icons/icon-heart-02.png" alt="ICON">
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <!-- Add to wishlist -->
-            <div class="block2-txt-child2 flex-r p-t-3">
-              <a href="/cart" class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti " data-notify="0">
-                <i class="zmdi zmdi-shopping-cart"></i>
-              </a>
-
-              <a href="/wishlist" onclick="addToWishlist('<%= productData[i]._id %>')" class="btn-addwish-b2 dis-block pos-relative addwish-b2" id="wishlistLink">
-                <img class="icon-heart1 dis-block trans-04" src="users/images/icons/icon-heart-01.png" alt="ICON">
-                <img class="icon-heart2 dis-block trans-04 ab-t-l" src="users/images/icons/icon-heart-02.png" alt="ICON">
-              </a>
-            </div>
-          </div>
-        </div>
+          <% } %>
+        <% } else { %>
+          <div class="no-products">No products found.</div>
+        <% } %>
       </div>
-      <% } %>
-      <% } %>
-    </div>
-
+      
     <!-- Load more -->
     <div class="flex-c-m flex-w w-full p-t-45">
       <!-- <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">

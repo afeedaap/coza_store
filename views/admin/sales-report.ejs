@@ -57,7 +57,7 @@
                   <tr>
                     <td><%= index + 1 %>.</td>
                     <td><%= order.orderId %></td>
-                    <td><%= order.products.productDetails.name %>-<%= order.products.count %></td>
+                    <td><%= order.name %><%= order.products.count %></td>
                     <td><%= order.date.toISOString().split('T')[0] %></td>
                     <td><%= order.deliveryDetails.fullName ? order.deliveryDetails.fullName : order.deliveryDetails.name %></td>
                     <td>₹&nbsp;<%= order.products.totalPrice %></td>
