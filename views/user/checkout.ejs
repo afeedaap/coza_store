@@ -194,6 +194,9 @@ coupon {
                         <div class="col-lg-12 mb-4">
                             <button  id="addAddressButton" > <a href="/profile">add address</a></button>
                         </div>
+                       
+                        <!-- Add Address Modal -->
+                      
                         <h3>your Address</h3>
                         <div class="row">
 
@@ -219,7 +222,7 @@ coupon {
 
                                         <div style="display:flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;">
                                             <input type="radio" name="address" value='<%= JSON.stringify(address) %>' <%= index === 0 ? 'checked' : '' %> />
-                                            <a href="#" onclick="showEditAddressModal('<%= address.fullName %>','<%= address.mobile %>', '<%= address.email %>', '<%= address.houseName %>', '<%= address.city %>', '<%= address.state %>',  '<%= address.pin %>','<%= address._id %>')" class="edit-link" data-toggle="modal" data-target="#editAddressModal"> <i class="fa-sharp fa-solid fa-pen" style="color: #cc9966;"></i></a>
+                                            <a href="#" onclick="showEditAddressModal('<%= address.fullName %>','<%= address.mobile %>', '<%= address.email %>', '<%= address.houseName %>', '<%= address.city %>', '<%= address.state %>',  '<%= address.pin %>','<%= address._id %>')" class="edit-link" data-toggle="modal" data-target="#editAddressModal"> <i class="fa-sharp fa-solid fa-pen" style="color: #cc9966;"></i>edit</a>
                                         </div>
                                     </div>
                                     </div>
@@ -411,7 +414,13 @@ coupon {
                       <div class="form-check">
                         <input class="form-check-input" type="radio" value="<%= coupon.couponCode %>" id="code<%= index %>">
                         <label class="form-check-label" for="code<%= index %>">
-                          <strong><%= coupon.couponCode %></strong>
+                          <strong><%= coupon.couponCode %></strong><br>
+                          <label for="">Discount Percentage:</label>
+                          <strong><%= coupon.discountAmount %>%</strong><br>
+                          <label for="">Up to:</label>
+                          <strong><%= coupon.maxAmount %>off</strong>
+
+
                         <br>
                          
                         </label>
@@ -465,17 +474,18 @@ coupon {
                                                 </tr>
                                             <% }); %>
                                             <tr>
-                                                <td> TOTAL</td>
-                                                <td id="total">₹<%=  subTotal  %></td>
+                                              
+                                                <td id="total"><% subTotal  %></td>
                                             </tr>
-                                            <tr>
-                                                <td>total discount</td>
-                                                <td id="discount">₹<%=  totalDiscount%></td>
-                                            </tr>
+                                           <tr>
+                                            <td>Coupon Discount</td>
+                                            <td id="discount"><%totalDiscount%></td></tr>
+                                                
+                                            
                                             
                                             <tr>
                                                 <td>GRAND TOTAL</td>
-                                                <td id="grandtotal">₹<%=  cart.totalPrice %></td>
+                                                <td id="grandtotal">₹<%= cart.totalPrice %></td>
                                             </tr>
                                         </tbody>
                                         
@@ -486,12 +496,13 @@ coupon {
                                         <div class="single-method">
                                             <!-- Payment method options go here -->
                                             <div>
-                                               
-                                            <input type="radio" id="COD"
-                                                name="payment" value="COD">
-                                            <label for="COD" style="font-weight: bold;">Cash on
-                                                Delivery</label>
-                                              
+                                                <% if( cart.totalPrice <= 1000) { %>
+                                                    <input type="radio" id="COD" name="payment" value="COD" checked>
+                                                    <label for="COD" style="font-weight: bold;">Cash on Delivery</label>
+                                                <% } else { %>
+                                                    <input type="radio" id="COD" name="payment" value="COD" disabled>
+                                                    <label for="COD" style="font-weight: bold; color: gray;">Cash on Delivery (Unavailable for orders above Rs 1000)</label>
+                                                <% } %>
                                             </div>
                                             
                                             <div>
@@ -511,6 +522,12 @@ coupon {
                                                 class="place-order">Place
                                                 Order</button>
                                         </div>
+                                        <!-- <div class="cart-summary-button" style="margin-top: 20px;">
+                                            <a class="flex-c-m stext-101 cl0 size-90 bg1 bor1 hov-btn1 p-lr-15 trans-04"  href="/checkout">
+                                                Checkout
+                                            </a>
+                                            
+                                        </div> -->
                                     </div>
                                 </div>
 
@@ -620,7 +637,13 @@ document.getElementById("place-order").addEventListener("click", (e) => {
                                 text:"product is out of stock ,plese remove out of stock product for your place holder",
                                 icon: "warning"
                                 });               
-                            }else if(response.appliedCouponError){
+                            }else if (response.priceError) {
+            Swal.fire({
+                icon: "error",
+                text: "Every product should be priced above 1000."
+            });
+        }
+                            else if(response.appliedCouponError){
                                 Swal.fire({
                                     icon:"error",
                                     text:"you have error with applied coupon,please check the coupon criteria!"
@@ -644,7 +667,7 @@ document.getElementById("place-order").addEventListener("click", (e) => {
                                 }).then(()=> {        
                                     window.location.href = `/order-success`;
                                 });   
-                            }else if(response.walletAmount){
+                            }else if(response.walletAmount ){
                                 Swal.fire({
                                 icon: "error",
                                 text:"wallet amount not enough",
@@ -924,7 +947,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                     }
                 } else {
-                    document.getElementById('discount').innerText = '₹' + data.discountAmount;
+                    document.getElementById('discount').innerText = '' + data.discountAmount;
                     document.getElementById('grandtotal').innerText = '₹' + data.discountedTotal;
                     swal({
                         icon: "success",
@@ -964,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (data.success) {
-                document.getElementById('discount').innerText = '₹0';
+                document.getElementById('discount').innerText = '0';
                 document.getElementById('grandtotal').innerText = '₹' + data.newTotalPrice;
                 swal({ icon: "success", title: "Coupon removed from the order." });
             } else {
@@ -976,6 +999,108 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+ <!-- add address -->
+
+ <script>
+   
+   document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("addAddressForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Get form field values
+        const name = document.getElementById("newFullName").value;
+        const nameError = document.getElementById('nameError');
+        const email = document.getElementById("newEmail").value;
+        const emailError = document.getElementById("emailError");
+        const mobile = document.getElementById('newMobile').value;
+        const mobileError = document.getElementById('mobileError');
+        const pincode = document.getElementById('newPincode').value;
+        const pincodeError = document.getElementById('pincodeError');
+        const state = document.getElementById('newState').value;
+        const city = document.getElementById('newCity').value;
+        const houseName = document.getElementById('newHouseName').value;
+
+        // Validation patterns and checks
+        const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+        if (name.trim() === "") {
+            nameError.style.display = "block";
+            nameError.textContent = "Name is required.";
+            return;
+        } else if (name.length < 4) {
+            nameError.style.display = "block";
+            nameError.textContent = "User name must be at least 4 characters.";
+            return;
+        } else {
+            nameError.style.display = "none";
+        }
+
+        if (email.trim() === "") {
+            emailError.style.display = "block";
+            emailError.textContent = "Email is required.";
+            return;
+        } else if (!emailPattern.test(email)) {
+            emailError.style.display = "block";
+            emailError.textContent = "Invalid email format.";
+            return;
+        } else {
+            emailError.style.display = "none";
+        }
+
+        if (mobile.length != 10) {
+            mobileError.style.display = "block";
+            mobileError.textContent = "Mobile number must be at least 10 digits.";
+            return;
+        } else {
+            mobileError.style.display = "none";
+        }
+
+        if (pincode.length != 6) {
+            pincodeError.style.display = "block";
+            pincodeError.textContent = "Type a 6 digit Pincode.";
+            return;
+        } else {
+            pincodeError.style.display = "none";
+        }
+
+        // Prepare data for the AJAX call
+        const formData = {
+            name: name,
+            email: email,
+            mobile: mobile,
+            pincode: pincode,
+            state: state,
+            city: city,
+            houseName: houseName
+        };
+
+        // Make AJAX call to server to add the address
+        axios.post('/add-address', formData)
+            .then(response => {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+                if (response.data.addressAdded) {
+                    Toast.fire({
+                        icon: "success",
+                        title: "Added",
+                        text: "Your address was added successfully."
+                    });
+                    setTimeout(() => {
+                        window.location.href = "/profile";
+                    }, 2000);
+                }
+            })
+            .catch(e => {
+                console.log(e, "Error while passing the value from frontend");
+            });
+    });
+});
+ </script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     
 

@@ -53,5 +53,7 @@ let productSchema = new mongoose.Schema({
         ref: 'CategoryOffer'
       },
 
+},{
+    timestamps: true    
 })
 module.exports = mongoose.model('Product',productSchema);

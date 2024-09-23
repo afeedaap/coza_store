@@ -47,7 +47,11 @@
                             <th scope="col">Coupon code</th>
                             <th scope="col">Discount</th>
                             <th scope="col">Minimum Amount</th>
+                            <th scope="col">Maximum Amount</th>
+                        
+
                             <th scope="col" class="text-end">Action</th>
+                         
                         </tr>
                     </thead>
                     <tbody>
@@ -58,11 +62,18 @@
                                 <td><%= coupon.couponCode %></td>
                                 <td><%= coupon.discountAmount %></td>
                                 <td><%= coupon.minimumAmount %></td>
+                                <td><%= coupon.maxAmount %></td>
+                               
+                             
+                              
+                             
+                              
+
                                 <td class="text-end">
                                     <div class="dropdown">
                                         <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                         <div class="dropdown-menu">
-                                            <a href="#" class="dropdown-item" data-bs-toggle="modal" onclick="openEditModal('<%= coupon._id %>', '<%= coupon.couponName %>', '<%= coupon.couponCode %>', '<%= coupon.discountAmount %>', '<%= coupon.minimumAmount %>')" data-bs-target="#editCouponModal<%= index %>">Edit</a>
+                                            <a href="#" class="dropdown-item" data-bs-toggle="modal" onclick="openEditModal('<%= coupon._id %>', '<%= coupon.couponName %>', '<%= coupon.couponCode %>', '<%= coupon.discountAmount %>', '<%= coupon.minimumAmount %>', '<%= coupon.maxAmount %>', <%= index %>)" data-bs-target="#editCouponModal<%= index %>">Edit</a>
                                             <a class="dropdown-item" onclick="deleteCoupon('<%= coupon._id %>')">Delete</a>
                                         </div>
                                     </div>
@@ -115,18 +126,37 @@
                     <!-- Edit Coupon Form -->
                     <form id="couponForm<%= index %>" method="post" action="/admin/editCoupon" onsubmit="handleEditFormSubmit(event, <%= index %>)">
                         <input type="hidden" name="couponId" value="<%= coupon._id %>">
-                        <div class="mb-4">
-                            <label for="edit_coupon_name_<%= index %>" class="form-label">Coupon Name</label>
-                            <input
-                                type="text"
-                                name="couponName"
-                                placeholder="Type here"
-                                class="form-control"
-                                id="edit_coupon_name_<%= index %>"
-                                value="<%= coupon.couponName %>"
-                            />
-                            <p id="edit_couponNameErr_<%= index %>" class="error-message" style="color: red"></p>
+                        <div class="row">
+                            <div class="col-lg-6">
+                            <div class="mb-4">
+                                <label for="edit_coupon_name_<%= index %>" class="form-label">Coupon Name</label>
+                                <input
+                                    type="text"
+                                    name="couponName"
+                                    placeholder="Type here"
+                                    class="form-control"
+                                    id="edit_coupon_name_<%= index %>"
+                                    value="<%= coupon.couponName %>"
+                                />
+                                <p id="edit_couponNameErr_<%= index %>" class="error-message" style="color: red"></p>
+                            </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label for="edit_max_amount_<%= index %>" class="form-label">Maximum discount amount</label>
+                                    <input
+                                        type="text"
+                                        name="maxAmount"
+                                        placeholder="Type here"
+                                        class="form-control"
+                                        id="edit_max_amount_<%= index %>"
+                                        value="<%= coupon.maxAmount %>"
+                                    />
+                                    <p id="edit_maxAmountErr_<%= index %>" class="error-message" style="color: red"></p>
+                                </div>
+                            </div>
                         </div>
+                       
 
                         <div class="row">
                             <div class="col-lg-4">
@@ -180,163 +210,131 @@
 <% }); %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-async function deleteCoupon(couponId) {
-    try {
-        const confirmation = await Swal.fire({
+    function openEditModal(id, name, code, discount, minAmount, maxAmount, index) {
+        document.getElementById('edit_coupon_name_' + index).value = name;
+        document.getElementById('edit_coupon_code_' + index).value = code;
+        document.getElementById('edit_discount_amount_' + index).value = discount;
+        document.getElementById('edit_min_amount_' + index).value = minAmount;
+        document.getElementById('edit_max_amount_' + index).value = maxAmount;
+        $('#editCouponModal' + index).modal('show');
+    }
+
+    function validateEditCouponForm(index) {
+        let valid = true;
+
+        const name = document.getElementById('edit_coupon_name_' + index).value;
+        const code = document.getElementById('edit_coupon_code_' + index).value;
+        const discount = document.getElementById('edit_discount_amount_' + index).value;
+        const minAmount = document.getElementById('edit_min_amount_' + index).value;
+        const maxAmount = document.getElementById('edit_max_amount_' + index).value;
+
+        // Validation checks
+        if (!name) {
+            document.getElementById('edit_couponNameErr_' + index).innerText = 'Coupon name is required';
+            valid = false;
+        } else {
+            document.getElementById('edit_couponNameErr_' + index).innerText = '';
+        }
+
+        if (!code) {
+            document.getElementById('edit_couponCodeErr_' + index).innerText = 'Coupon code is required';
+            valid = false;
+        } else {
+            document.getElementById('edit_couponCodeErr_' + index).innerText = '';
+        }
+
+        if (!discount || isNaN(discount) || discount <= 0) {
+            document.getElementById('edit_discountErr_' + index).innerText = 'Discount amount must be a positive number';
+            valid = false;
+        } else {
+            document.getElementById('edit_discountErr_' + index).innerText = '';
+        }
+
+        if (!minAmount || isNaN(minAmount) || minAmount <= 0) {
+            document.getElementById('edit_minAmountErr_' + index).innerText = 'Minimum amount must be a positive number';
+            valid = false;
+        } else {
+            document.getElementById('edit_minAmountErr_' + index).innerText = '';
+        }
+
+        if (!maxAmount || isNaN(maxAmount) || maxAmount <= 0) {
+            document.getElementById('edit_maxAmountErr_' + index).innerText = 'Maximum discount amount must be a positive number';
+            valid = false;
+        } else {
+            document.getElementById('edit_maxAmountErr_' + index).innerText = '';
+        }
+
+        return valid;
+    }
+
+    function handleEditFormSubmit(event, index) {
+        event.preventDefault();
+        if (validateEditCouponForm(index)) {
+            const form = event.target;
+            const formData = new FormData(form);
+            const formObject = Object.fromEntries(formData.entries());
+
+            $.ajax({
+                url: '/admin/editCoupon',
+                type: 'POST',
+                data: formObject,
+                success: function(response) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        location.reload(); // Reload the page after success
+                    });
+                },
+                error: function(error) {
+                    iziToast.error({
+                        title: 'Error',
+                        message: error.responseJSON.message,
+                        position: 'topRight'
+                    });
+                }
+            });
+        }
+    }
+
+    function deleteCoupon(id) {
+        Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, delete it!'
-        });
-
-        if (confirmation.isConfirmed) {
-            const response = await fetch('/admin/deleteCoupon', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ couponId })
-            });
-
-            if (response.ok) {
-                Swal.fire('Deleted!', 'Your file has been deleted.', 'success').then(() => {
-                    window.location.reload();
-                });
-            } else {
-                const errorData = await response.json();
-                iziToast.error({
-                    title: 'Error',
-                    message: errorData.message
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/deleteCoupon/' + id,
+                    type: 'DELETE',
+                    success: function(response) {
+                        Swal.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        ).then(() => {
+                            location.reload(); // Reload the page after deletion
+                        });
+                    },
+                    error: function(error) {
+                        Swal.fire(
+                            'Error!',
+                            'There was a problem deleting the coupon.',
+                            'error'
+                        );
+                    }
                 });
             }
-        }
-    } catch (error) {
-        console.error('Error deleting coupon:', error);
-        iziToast.error({
-            title: 'Error',
-            message: 'An error occurred while deleting the coupon.'
         });
     }
-}
-
-function validateEditCouponForm(index) {
-    var couponName = document.getElementById(`edit_coupon_name_${index}`).value;
-    var couponCode = document.getElementById(`edit_coupon_code_${index}`).value;
-    var minAmount = document.getElementById(`edit_min_amount_${index}`).value;
-    var discount = document.getElementById(`edit_discount_amount_${index}`).value;
-
-    var isValid = true;
-
-    if (couponName.trim() === "") {
-        document.getElementById(`edit_couponNameErr_${index}`).innerHTML = "Coupon Name is required";
-        isValid = false;
-    } else {
-        document.getElementById(`edit_couponNameErr_${index}`).innerHTML = "";
-    }
-
-    if (couponCode.trim() === "") {
-        document.getElementById(`edit_couponCodeErr_${index}`).innerHTML = "Coupon Code is required";
-        isValid = false;
-    } else {
-        document.getElementById(`edit_couponCodeErr_${index}`).innerHTML = "";
-    }
-
-    if (minAmount.trim() === "") {
-        document.getElementById(`edit_minAmountErr_${index}`).innerHTML = "Minimum Amount is required";
-        isValid = false;
-    } else if (isNaN(minAmount) || minAmount <= 0) {
-        document.getElementById(`edit_minAmountErr_${index}`).innerHTML = "Minimum Amount must be a positive number";
-        isValid = false;
-    } else {
-        document.getElementById(`edit_minAmountErr_${index}`).innerHTML = "";
-    }
-
-    if (discount.trim() === "") {
-        document.getElementById(`edit_discountErr_${index}`).innerHTML = "Discount Amount is required";
-        isValid = false;
-    } else if (isNaN(discount)) {
-        document.getElementById(`edit_discountErr_${index}`).innerHTML = "Discount Amount must be a number";
-        isValid = false;
-    } else if (discount > 60) {
-        document.getElementById(`edit_discountErr_${index}`).innerHTML = "Discount must be less than or equal to 60";
-        isValid = false;
-    } else {
-        document.getElementById(`edit_discountErr_${index}`).innerHTML = "";
-    }
-
-    return isValid;
-}
-
-function handleEditFormSubmit(event, index) {
-    event.preventDefault();
-
-    if (!validateEditCouponForm(index)) {
-        return;
-    }
-
-    var formData = new FormData(document.getElementById(`couponForm${index}`));
-    var jsonObject = {};
-    formData.forEach(function(value, key) {
-        jsonObject[key] = value;
-    });
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', document.getElementById(`couponForm${index}`).action, true);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-
-    xhr.onload = function() {
-        if (xhr.status === 400) {
-            var errors = JSON.parse(xhr.responseText);
-            if (errors.exist) {
-                iziToast.error({
-                    title: 'Error',
-                    message: 'Coupon name already exists.'
-                });
-            }
-            if (errors.existcode) {
-                iziToast.error({
-                    title: 'Error',
-                    message: 'Coupon code already exists.'
-                });
-            }
-            if (errors.discount) {
-                iziToast.error({
-                    title: 'Error',
-                    message: errors.discount
-                });
-            }
-        } else if (xhr.status === 500) {
-            iziToast.error({
-                title: 'Error',
-                message: 'Internal server error. Please try again later.'
-            });
-        } else {
-            window.location.href = '/admin/coupon';
-        }
-    };
-
-    xhr.onerror = function() {
-        iziToast.error({
-            title: 'Error',
-            message: 'An error occurred during the request. Please try again.'
-        });
-    };
-
-    xhr.send(JSON.stringify(jsonObject));
-}
-
-function openEditModal(couponId, couponName, couponCode, discountAmount, minimumAmount, index) {
-    document.getElementById(`edit_coupon_name_${index}`).value = couponName;
-    document.getElementById(`edit_coupon_code_${index}`).value = couponCode;
-    document.getElementById(`edit_min_amount_${index}`).value = minimumAmount;
-    document.getElementById(`edit_discount_amount_${index}`).value = discountAmount;
-    document.getElementById(`edit_coupon_id_${index}`).value = couponId;
-}
 </script>
+
 <%- include('./layouts/footer') %>

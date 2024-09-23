@@ -176,7 +176,7 @@
                                     </div>
                                 </div>
 
-                                <p>your refferal link : http://localhost:7000/sign-up?referral=<%=userData.referral %></p>
+                                <p></p>
 
                             </div>
                             <div class="col-lg-8 col-md-12 mt-2">
@@ -722,7 +722,7 @@
                                                                                     id="editAddress"
                                                                                     type="submit"
                                                                                     class="btn btn-outline-primary">
-                                                                                    <span>Add
+                                                                                    <span>edit
                                                                                         Address</span>
                                                                                     <i
                                                                                         class="icon-long-arrow-right"></i>
@@ -1003,173 +1003,134 @@
                                             </div>
                                         </div>
                                         <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <h5 class="panel-title">
-                                                    <span>3</span>
-                                                    <a data-toggle="collapse"
-                                                        data-parent="#faq"
-                                                        href="#my-account-3">order
-                                                        details </a>
-                                                </h5>
-                                            </div>
-                                            <div id="my-account-3"
-                                                class="panel-collapse collapse">
-                                                <div class="panel-body">
-                                                    <div
-                                                        class="billing-information-wrapper">
-                                                        <div
-                                                            class="account-info-wrapper">
-                                                            <h4>your order
-                                                                details</h4>
-                                                        </div>
-                                                        <div
-                                                            class="entries-wrapper">
-                                                            <div class="row">
-                                                                <div
-                                                                    class="col-lg-12 col-md-6 col-sm-6 col-12 d-flex align-items-center justify-content-center">
-                                                                    <div
-                                                                        class="entries-info text-center">
-                                                                        <table
-                                                                            style="width: 100%; border-collapse: collapse; border-spacing: 0;">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th
-                                                                                        style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width:auto;">No</th>
-                                                                                    <th
-                                                                                        style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Date</th>
-                                                                                    <th
-                                                                                        style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Price</th>
-                                                                                    <th
-                                                                                        style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Payment
-                                                                                        Method</th>
-                                                                                    <th
-                                                                                        style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Details</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <%
-                                                                                let
-                                                                                counter
-                                                                                =
-                                                                                1;
-                                                                                %>
-                                                                                <%
-                                                                                for
-                                                                                (let
-                                                                                orderId
-                                                                                in
-                                                                                orderDetails)
-                                                                                {
-                                                                                %>
-                                                                                <%
-                                                                                let
-                                                                                order
-                                                                                =
-                                                                                orderDetails[orderId];
-                                                                                %>
-                                                                                <tr>
-                                                                                    <td
-                                                                                        style="padding: 10px; border-bottom: 1px solid #ddd;"><%=
-                                                                                        counter
-                                                                                        %>
-                                                                                    </td>
-                                                                                    <td
-                                                                                        style="padding: 10px; border-bottom: 1px solid #ddd;"><%=
-                                                                                        new
-                                                                                        Date(order.date).toLocaleDateString()
-                                                                                        %></td>
-                                                                                    <td
-                                                                                        style="padding: 10px; border-bottom: 1px solid #ddd;">$<%=
-                                                                                        order.totalAmount
-                                                                                        %>.00</td>
-                                                                                    <td
-                                                                                        style="padding: 10px; border-bottom: 1px solid #ddd;"><%=
-                                                                                        order.paymentMethod
-                                                                                        %></td>
-                                                                                    <td
-                                                                                        style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
-                                                                                        <a
-                                                                                            href="/order-details?_id=<%=order._id %>"
-                                                                                            style="display: inline-block; padding: 8px 16px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">View
-                                                                                            Details</a>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <%
-                                                                                counter++;
-                                                                                %>
-                                                                                <%
-                                                                                }
-                                                                                %>
-                                                                            </tbody>
-                                                                        </table>
+    <div class="panel-heading">
+        <h5 class="panel-title">
+            <span>3</span>
+            <a data-toggle="collapse" data-parent="#faq" href="#my-account-3">order details </a>
+        </h5>
+    </div>
+    <div id="my-account-3" class="panel-collapse collapse">
+        <div class="panel-body">
+            <div class="billing-information-wrapper">
+                <div class="account-info-wrapper">
+                    <h4>your order details</h4>
+                </div>
+                <div class="entries-wrapper">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-6 col-sm-6 col-12 d-flex align-items-center justify-content-center">
+                            <div class="entries-info text-center">
+                                <table style="width: 100%; border-collapse: collapse; border-spacing: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width:auto;">No</th>
+                                            <th style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Date</th>
+                                            <th style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Price</th>
+                                            <th style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Payment Method</th>
+                                            <th style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Order Status</th>
+                                            <th style="padding: 10px; background-color: #f2f2f2; border-bottom: 1px solid #ddd; width: auto;">Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% let counter = 1 + (currentPage - 1) * limit; %>
+                                        <% for (let order of orderDetails) { %>
+                                            <tr>
+                                                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><%= counter %></td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><%= new Date(order.date).toLocaleDateString() %></td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">₹<%= order.totalAmount %>.00</td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><%= order.paymentMethod %></td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><%= order.orderStatus%></td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">
+                                                    <% if (order.orderStatus === 'Pending') { %>
+                                                        <% if (order.paymentMethod === 'razorpay') { %>
+                                                            <a onclick="rayNow('<%=order._id %>')"
+                                                                style="display: inline-block; padding: 8px 16px; background-color: #28a745; color: #fff; text-decoration: none; border-radius: 4px;">Pay Now</a>
+                                                        <% } %>
+                                                        <% } else { %>
+                                                    <a href="/order-details?_id=<%= order._id %>" style="display: inline-block; padding: 8px 16px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">View Details</a>
+                                                    <% } %>
+                                                </td>
 
-                                                                    </div>
+                                            </tr>
+                                            <% counter++; %>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                                <div class="pagination">
+                                    <% if (currentPage > 1) { %>
+                                        <a href="/profile?page=<%= currentPage - 1 %>&limit=<%= limit %>" style="margin-right: 10px;">Previous</a>
+                                    <% } %>
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <a href="/profile?page=<%= i %>&limit=<%= limit %>" style="margin-right: 10px;"><%= i %></a>
+                                    <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <a href="/profile?page=<%= currentPage + 1 %>&limit=<%= limit %>">Next</a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                       
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <h5 class="panel-title">
-                                                    <span>5</span>
-                                                    <!-- Make sure the data-toggle and href match the ID of the collapsible div -->
-                                                    <a data-toggle="collapse" data-parent="#faq" href="#wallet">wallet</a>
-                                                </h5>
-                                            </div>
-                                            <div id="wallet" class="panel-collapse collapse">
-                                                <div class="panel-body">
-                                                    <div class="billing-information-wrapper">
-                                                        <div class="account-info-wrapper">
-                                                            <h4>your order details</h4>
-                                                        </div>
-                                                        <div class="entries-wrapper">
-                                                            <h1 style="font-size: 40px;">Wallet History</h1>
-                                                            <div style="display: inline-block; vertical-align: middle;">
-                                                                <span><b>Wallet History:</b></span>
-                                                                    <p style="font-weight: bold; display: inline;">$<%=userData.wallet %>.00</p>
-                                                                </div>
-                                                                
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>si no</th>
-                                                                        <th>Date</th>
-                                                                        <th>Amount</th>
-                                                                        <th>Direction</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <% if (walletData.walletHistory && walletData.walletHistory.length) { %>
-                                                                        <% walletData.walletHistory.forEach((entry, index) => { %>
-                                                                            <tr>
-                                                                                <td><%= index + 1 %></td> 
-                                                                                <td><%= entry.date instanceof Date ? entry.date.toDateString() : 'Not a Date' %></td>
-                                                                                <td>$<%= entry.amount.toFixed(2) %></td>
-                                                                                <td><%= entry.direction %></td>
-                                                                            </tr>
-                                                                        <% }); %>
-                                                                    <% } else { %>
-                                                                        <tr>
-                                                                            <td colspan="4">No wallet history available.</td>
-                                                                        </tr>
-                                                                    <% } %>
-                                                                </tbody>
-                                                                    
-                                                                
-                                                                
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h5 class="panel-title">
+        <span>5</span>
+        <!-- Make sure the data-toggle and href match the ID of the collapsible div -->
+        <a data-toggle="collapse" data-parent="#faq" href="#wallet">Wallet</a>
+      </h5>
+    </div>
+    <div id="wallet" class="panel-collapse collapse">
+      <div class="panel-body">
+        <div class="billing-information-wrapper">
+          <div class="account-info-wrapper">
+            <h4>Your Order Details</h4>
+          </div>
+          <div class="entries-wrapper">
+            <h1 style="font-size: 40px;">Wallet History</h1>
+            <div style="display: inline-block; vertical-align: middle;">
+              <span><b>Wallet Balance:</b></span>
+              <p style="font-weight: bold; display: inline;">₹<%= userData.wallet %>.00</p>
+            </div>
+  
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>SI No</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Direction</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (walletData.walletHistory && walletData.walletHistory.length) { %>
+                  <% walletData.walletHistory.forEach((entry, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <!-- Ensure date is a valid Date object before formatting -->
+                      <td><%= new Date(entry.date).toDateString() %></td>
+                      <td>₹<%= entry.amount.toFixed(2) %></td>
+                      <td><%= entry.direction %></td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4">No wallet history available.</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
                                         
                                     </div>
                                 </div>
@@ -1335,7 +1296,12 @@
                 class="fa fa-close"></i></button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
     <script>
 document.getElementById('edit-btn').addEventListener('click', async (e) => {
@@ -1744,6 +1710,7 @@ function showEditAddressModal(
   });
 
 
+
 </script>
 
     <!-- add address -->
@@ -1880,6 +1847,80 @@ function showEditAddressModal(
             location.reload();
         }
     });
+</script>
+<script>
+    function rayNow(orderId) {
+    fetch('/ray-now', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ orderId: orderId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.razorpay){
+            console.log('data.order:',data.order);
+                            razorpayPayment(data.order);
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+function razorpayPayment(order){
+
+var options = {
+    "key": "rzp_test_lnTkNqNJu0QGWt", 
+    "amount":order.amount, 
+    "currency": "INR",
+    "name": "cozastore", 
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id":order.id, 
+    
+    "handler": function (response){                              
+        console.log('response:',response);
+        verifyPayment(response,order);
+    },
+    "prefill": { 
+        "name": "Afeeda", 
+        "email": "apafeeda@gmail.com", 
+       
+    },
+   
+};
+var rzp1 = new Razorpay(options);
+console.log('rzp1:',rzp1);
+rzp1.on('payment.failed', function (response){
+    window.location.href=`/order-failure`
+
+});
+
+rzp1.open();
+}
+
+function verifyPayment(response,order){
+        fetch('/verify-payment',{
+            method:"POST",
+            headers:{
+                "content-type": "application/json;charset=utf-8"
+            },
+            body:JSON.stringify({
+                response,
+                order
+            })
+        })
+        .then((res)=>res.json())
+        .then((data)=>{
+            console.log('data',data);
+            if(data.statusChanged){
+                console.log('iffididd');
+                window.location.href=`/order-success`
+            }
+        })   
+    }
+
 </script>
 
     <%- include("../layouts/user/footer.ejs") %>

@@ -48,7 +48,7 @@
                                       <% wishlistItem.products.forEach((product) => { %>
                                       <tr>
                                         <td class="pro-thumbnail">
-                                      <a href="#"><img src="/<%= product.product.images[0] %>" alt="<%= product.product.name %>" style="width: 50px;height: 50px; border-radius: 10px;"></a> 
+                                      <a href="#"><img src="/adminAssets/imgs/category/<%= product.product.images[0] %>" alt="<%= product.product.name %>" style="width: 50px;height: 50px; border-radius: 10px;"></a> 
                                       </td> 
                                         
                                         <td class="pro-title"><%= product.product && product.product.name ? product.product.name : 'Product Name Not Available' %></td>

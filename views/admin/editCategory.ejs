@@ -1,9 +1,19 @@
 <%- include('./layouts/header')%>
 
+
+
+
+
+
+
+
+
+
+
 <div class="container">
   <div class="row justify-content-center center-content">
     <div class="col-lg-4">
-      <form action="/admin/updateCategory" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+      <form id="editCategoryForm" action="#" enctype="multipart/form-data" onsubmit="return validateForm()">
 
         <input type="hidden" name="id" value="<%= category._id %>">
 
@@ -11,13 +21,13 @@
           <label for="product_name" class="form-label">Name</label>
           <input
             type="text"
+            name="name"
             placeholder="Type here"
             class="form-control"
             id="product_name"
-            name="name"
             value="<%= category.name %>"
           />
-          <div class="error-message" id="name-error"></div>
+          <div class="error-message alert text-danger" id="name-error"></div>
         </div>
 
         <div class="mb-4">
@@ -26,16 +36,16 @@
             type="file"
             class="form-control"
             id="image"
-            accept="image/*"
+            
             name="image"
           />
-          <div class="error-message" id="image-error"></div>
+          <div class="error-message alert text-danger" id="image-error"></div>
         </div>
 
         <div class="mb-4">
           <label class="form-label">Description</label>
-          <textarea placeholder="Type here" class="form-control" name="description"><%= category.description %></textarea>
-          <div class="error-message" id="description-error"></div>
+          <textarea name="description" id="description" placeholder="Type here" class="form-control" name="description"><%= category.description %></textarea>
+          <div class="error-message alert text-danger" id="description-error"></div>
         </div>
         <div class="d-grid">
           <button type="submit" class="btn btn-primary">Edit category</button>
@@ -45,32 +55,123 @@
   </div>
 </div>
 
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+
+document.getElementById('editCategoryForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      console.log('Form submitted');
+      if (validateForm()) { 
+       
+        const formData = new FormData(this);
+
+let categoryData = {};
+        formData.forEach((value,key)=>{
+          categoryData[key] = value;
+        })
+
+console.log('this is the category data :',categoryData)
+
+try {
+      const response = await fetch("/admin/updateCategory", {
+        method: "PUT",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Error updating category");
+      }
+
+      Swal.fire({
+        title: data.message,
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1000,
+      });
+      setTimeout(() => {
+        window.location.href = '/admin/category';
+      }, 2000);
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      console.error("Error at catgory addition javascript:", error);
+    }
+  }
+});
+
+      
+
+
   function validateForm() {
     // Reset previous error messages
     document.getElementById('name-error').innerHTML = '';
     document.getElementById('image-error').innerHTML = '';
     document.getElementById('description-error').innerHTML = '';
-
+let valid = true;
     // Validate Name
-    var name = document.getElementById('product_name').value.trim();
-    if (name === '') {
+    var name = document.getElementById('product_name');
+    if (name.value === '') {
+      console.log('name is empty')
       document.getElementById('name-error').innerHTML = 'Name is required.';
-      return false;
+     valid = false;
+    }else if(name.value !== name.value.trim()){
+      console.log('trailing spaces')
+      document.getElementById('name-error').innerHTML = "Avoid trailing spaces";
+      valid = false
+    }else{
+      document.getElementById('name-error').innerHTML = ""
     }
 
-    // Validate Image
-    var image = document.getElementById('image').value;
-    if (image === '') {
-      document.getElementById('image-error').innerHTML = 'Image is required.';
-      return false;
+ 
+ //validation part for  image  
+    var image = document.getElementById('image');
+    var file = image.files[0]; 
+   if(file){
+      var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
+      if (!allowedExtensions.exec(file.name)) {
+        console.log('unallowed extension came for image')
+        document.getElementById('image-error').innerHTML = 'Only image files are expected';
+        valid = false;
+      }
+   }
+
+
+    var description = document.getElementById('description');
+    if (description.value === '') {
+      document.getElementById('description-error').innerHTML = 'Description is required.';
+     valid = false;
+    }else{
+      document.getElementById('description-error').innerHTML = ""
     }
 
-    // Add additional validations for other fields if needed
+   console.log('valid value at editCategory after form validation :',valid)
 
-    // Form is valid
-    return true;
+    return valid;
   }
 </script>
 
-<!-- <%- include('./layouts/footer')%> -->
+
+  </main>
+  <script src="/adminAssets/js/vendors/jquery-3.6.0.min.js"></script>
+  <script src="/adminAssets/js/vendors/bootstrap.bundle.min.js"></script>
+  <script src="/adminAssets/js/vendors/select2.min.js"></script>
+  <script src="/adminAssets/js/vendors/perfect-scrollbar.js"></script>
+  <script src="/adminAssets/js/vendors/jquery.fullscreen.min.js"></script>
+  <script src="/adminAssets/js/vendors/chart.js"></script>
+  <!-- Main Script -->
+  <script src="/adminAssets/js/main.js?v=1.1" type="text/javascript"></script>
+  <script src="/adminAssets/js/custom-chart.js" type="text/javascript"></script>
+  <script>
+  
+  </script>
+  </body>
+  </html>

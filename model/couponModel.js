@@ -17,6 +17,11 @@ const couponSchema = mongoose.Schema({
             type: String,
             required: true
         },
+        maxAmount: {
+            type: String,
+            required: true
+        },
+        
         user: {
             type: Array,
             ref: 'User',

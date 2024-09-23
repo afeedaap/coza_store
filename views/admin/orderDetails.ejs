@@ -6,8 +6,8 @@
             <p>Details for Order ID: <%= orderData.orderId %></p>
         </div>
     </div>
-    <div class="card">
-        <header class="card-header">
+    <div class="">
+        <header class="">
             <div class="row align-items-center">
                 <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
                     <span> <i class="material-icons md-calendar_today"></i> <b><%= orderData.date.toDateString() %></b> </span> <br />
@@ -108,7 +108,7 @@
                                             <td>
                                                 <a class="itemside" href="#">
                                                     <% if (product.productId && product.productId.images && product.productId.images.length > 0) { %>
-                                                        <img src="/<%= product.productId.images[0] %>" width="70" height="70" class="img-xs" alt="Item" style="height: 80px" />
+                                                        <img src="/adminAssets/imgs/category/<%= product.productId.images[0] %>" width="50" height="50" class="img-xs" alt="Item" style="height: 80px" />
                                                     <% } else { %>
                                                         <img src="/path/to/default/image.jpg" width="40" height="40" class="img-xs" alt="Default Item" />
                                                     <% } %>
@@ -187,9 +187,7 @@
                                                               onclick="updateOrder('<%= product._id %>','Placed')">Placed</button>
                                                             <button class="dropdown-item" type="button"
                                                               onclick="updateOrder('<%= product._id %>','Shipped')">Shipped</button>
-                                                            <button class="dropdown-item" type="button"
-                                                              onclick="updateOrder('<%= product._id %>','Out for Delivery')">Out
-                                                              for Delivery</button>
+                                                           
                                                             <button class="dropdown-item" type="button"
                                                               onclick="updateOrder('<%= product._id %>','Delivered')">Delivered</button>
                                                           </div>
@@ -206,11 +204,11 @@
                                         <article class="float-end">
                                             <!-- <dl class="dlist">
                                                 <dt>Subtotal:</dt>
-                                                <dd>₹<%#= subtotal.toFixed(2) %></dd>
+                                                <dd>₹<%= subtotal.toFixed(2) %></dd>
                                             </dl> -->
                                             <dl class="dlist">
                                                 <dt>Grand total:</dt>
-                                                <dd><b class="h5">₹<%= orderData.totalAmount %></b></dd>
+                                                <dd><b class="h5">₹<%=subtotal.toFixed(2)%></b></dd>
                                             </dl>
                                         </article>
                                     </td>
@@ -303,9 +301,10 @@ function showReturnModal(productId, count, returnReason, orderId, orderReturnRea
     $('#returnReasonModal').modal('show');
 }
 
-function acceptReturnRequest(id,status) {
-  const data = { orderId: id, status };
-  console.log('dataaaaaaas',data);
+function acceptReturnRequest(id, status) {
+  const data = { orderId: id, status: 'accepted' }; // Changed status to 'accepted'
+  console.log('Accepting request:', data);
+  
   $.ajax({
     url: '/admin/update-order',
     data: JSON.stringify(data),
@@ -317,8 +316,8 @@ function acceptReturnRequest(id,status) {
         $(`#${id}`).text(newStatus);
         if (newStatus === 'accepted') {
           $(`#${id}`).removeClass('btn-primary').addClass('btn-success');
-        } 
-        location.reload()
+        }
+        location.reload();
 
         Swal.mixin({
           toast: true,
@@ -327,11 +326,10 @@ function acceptReturnRequest(id,status) {
           timer: 1500,
         }).fire({
           icon: "success",
-          title: "request accepted ,status changed",
+          title: "Request accepted, status changed",
         });
-        
       } else {
-        console.log('erroooooorororror');
+        console.log('Error');
         swal("Something went wrong", "", "error");
       }
     },
@@ -340,15 +338,13 @@ function acceptReturnRequest(id,status) {
     }
   });
 
-    
-    console.log('Return request accepted.');
-
-    $('#returnReasonModal').modal('hide');
+  console.log('Return request accepted.');
+  $('#returnReasonModal').modal('hide');
 }
-
-function rejectReturnRequest(id,status) {
-  const data = { orderId: id, status };
-
+function rejectReturnRequest(id, status) {
+  const data = { orderId: id, status: 'rejected' }; // Changed status to 'rejected'
+  console.log('Rejecting request:', data);
+  
   $.ajax({
     url: '/admin/update-order',
     data: JSON.stringify(data),
@@ -359,9 +355,9 @@ function rejectReturnRequest(id,status) {
         const newStatus = response.orderData.products.find(product => product._id === id).status;
         $(`#${id}`).text(newStatus);
         if (newStatus === 'rejected') {
-          $(`#${id}`).removeClass('btn-primary').addClass('btn-success');
-        } 
-        location.reload()
+          $(`#${id}`).removeClass('btn-primary').addClass('btn-danger'); // Updated to 'btn-danger'
+        }
+        location.reload();
 
         Swal.mixin({
           toast: true,
@@ -370,10 +366,10 @@ function rejectReturnRequest(id,status) {
           timer: 1500,
         }).fire({
           icon: "success",
-          title: "request rejected , status changed",
+          title: "Request rejected, status changed",
         });
       } else {
-        console.log('erroooooorororror');
+        console.log('Error');
         swal("Something went wrong", "", "error");
       }
     },
@@ -382,12 +378,10 @@ function rejectReturnRequest(id,status) {
     }
   });
 
-  
-    console.log('Return request rejected.');
-
-    $('#returnReasonModal').modal('hide');
+  console.log('Return request rejected.');
+  $('#returnReasonModal').modal('hide');
 }
-      
+
 
 
       </script>

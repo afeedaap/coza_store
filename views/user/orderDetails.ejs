@@ -50,7 +50,7 @@
 
                                                 <td><%= product.productId.name %></td>
                                                 <td><a href="/product-details?_id=<%= product.productId._id %>"></a><img
-                                                        src="/<%= product.productId.images[0] %>"
+                                                        src="/adminAssets/imgs/category/<%= product.productId.images[0] %>"
                                                         alt="Product Image"
                                                         width="50"
                                                         height="50"></td>
@@ -61,20 +61,20 @@
 
                                             </td>
                                                     <% if (product.productId.offerprice === product.productId.productPrice) { %>
-                                                        <td class="column-2" id="productPrice"><%= product.productPrice %> </td>
+                                                        <td class="column-2" id="productPrice">₹<%= product.productPrice %> </td>
                                                     <% } else { %>
                                                         <td class="column-2" id="productPrice">
                                                            
-                                                            <span class=""><%= product.productId.offerprice %></span>
+                                                            <span class="">₹<%= product.productId.offerprice %></span>
                                                         </td>
                                                         <% } %>
                                               
                                                         <% if (product.productId.offerprice === product.productId.productPrice) { %>
-                                                        <td class="column-4" id="pricePerItem"><%= product.productId.productPrice*product.count %></td>
+                                                        <td class="column-4" id="pricePerItem">₹<%= product.productId.productPrice*product.count %></td>
                                                     <% } else { %>
                                                         <td class="column-4" id="pricePerItem">
                                                            
-                                                            <span ><%= product.productId.offerprice * product.count %></span>
+                                                            <span >₹<%= product.productId.offerprice * product.count %></span>
                                                         </td>
                                                     <% } %>
                                                     <td><%= product.productStatus %></td>
@@ -116,11 +116,6 @@
                                                         style="color: blue;">shipped</label>
                         
                                                     <% } else if (product.productStatus
-                                                    
-                                                    == "Out for Delivery") { %>
-                                                    <label
-                                                        style="color: blue;">out of delivery</label>
-                                                    <% } else if (product.productStatus
                                                     == "requested") { %>
                                                     <label
                                                         style="color: rgb(221, 221, 27);">Requested</label>
@@ -145,23 +140,25 @@
                                         <tfoot>
                                             
                                             <tr>
-                                                <th colspan="6"
-                                                    class="text-right">Total
-                                                    :</th>
-                                                <td> ₹<%= order[0].totalAmount
-                                                    %>.00</td>
-
+                                                <th colspan="6" class="text-right">Total:</th>
+                                                <% order.forEach(function(orderItem) { %>
+                                                    <td> ₹<%= orderItem.subtotal%>.00</td>
+                                                   
+                                                <% }); %>
                                             </tr>
+                                          
+                                            <tr><td><%= order.subtotal %></td></tr>
+
                                         </tfoot>
                                      
                                     </table>
                                     <div class="invoice d-flex justify-content-center  mt-5 ">
-                                            <button id="Invoice" onclick="invoice('<%= order[0]._id %>')"
-                                                class="add-review-button btn btn-info">
-                                                <i class="fas fa-download"></i>
-                                                Invoice
-                                            </button>   
-                                    </div>
+                                        <button id="Invoice" onclick="invoice('<%= order[0]._id %>')"
+                                            class="add-review-button btn btn-info">
+                                            <i class="fas fa-download"></i>
+                                            Invoice
+                                        </button>   
+                                </div>
 
                                 </div>
                             </div>
@@ -267,6 +264,7 @@
             src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
 <script>
     function cancelProduct(orderProductId, orderId) {
         console.log('orderProductId',orderProductId,orderId);
@@ -367,9 +365,8 @@
 
 
 
-        <script>
-
-function downloadPDF(url, filename) {
+<script>
+    function downloadPDF(url, filename) {
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
@@ -381,9 +378,7 @@ function downloadPDF(url, filename) {
 function invoice(orderId) {
     console.log('ore', orderId);
     const pdfUrl = `/invoice/pdf?id=${orderId}`;
-    downloadPDF(pdfUrl, 'invoice.pdf');
-
-    // Display a SweetAlert message after the PDF download is initiated
+    downloadPDF(pdfUrl, 'invoice.pdf')
     Swal.fire({
         icon: 'success',
         title: 'Invoice Generated',
@@ -392,11 +387,8 @@ function invoice(orderId) {
     });
 }
 
-
-
-
 </script>
 
-    </script>
+   
 
     <%- include('../layouts/user/footer.ejs') %>
