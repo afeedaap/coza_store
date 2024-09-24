@@ -1,4 +1,6 @@
+require("dotenv").config();
 const Order = require("../model/orderModel");
+
 const Cart = require("../model/cartModel");
 const Product = require("../model/productModel");
 const Address = require("../model/addressModel")
@@ -9,7 +11,7 @@ const PDFDocument = require("pdfkit");
 const path = require("path");
 const crypto = require('crypto');
 const fs = require("fs");
-require("dotenv").config();
+
 const uniqid = require('uniqid');
 const Razorpay = require('razorpay');
 const instance = new Razorpay({
