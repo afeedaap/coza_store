@@ -11,7 +11,7 @@ const PDFDocument = require("pdfkit");
 const path = require("path");
 const crypto = require('crypto');
 const fs = require("fs");
-require("dotenv").config();
+
 const uniqid = require('uniqid');
 const Razorpay = require('razorpay');
 const instance = new Razorpay({
