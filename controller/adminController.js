@@ -1,5 +1,5 @@
 // admin login page not set
-let path = require('path');
+const path = require("path");
 let User = require('../model/userModel');
 let adminAuth = require('../middleware/adminAuth');
 const Order = require("../model/orderModel");
@@ -553,18 +553,9 @@ const salesReportLoad = async (req, res) => {
    
   const pdfDownload = async (req, res) => {
     try {
-      const { startDate, endDate, sort } = req.query;
+      const duration = req.query.sort;
       const currentDate = new Date();
-      let start, end;
-  
-      if (startDate && endDate) {
-        start = new Date(startDate);
-        end = new Date(new Date(endDate).setHours(23, 59, 59, 999));
-      } else {
-        const duration = parseInt(sort);
-        start = new Date(currentDate.getTime() - duration * 24 * 60 * 60 * 1000);
-        end = currentDate;
-      }
+      const startDate = new Date(currentDate - duration * 24 * 60 * 60 * 1000);
   
       const orders = await Order.aggregate([
         {
@@ -573,12 +564,12 @@ const salesReportLoad = async (req, res) => {
         {
           $match: {
             "products.productStatus": "Delivered",
-            date: { $gte: start, $lte: end },
+            date: { $gte: startDate, $lte: currentDate },
           },
         },
         {
           $lookup: {
-            from: "products",
+            from: "Products",
             localField: "products.productId",
             foreignField: "_id",
             as: "products.productDetails",
@@ -597,10 +588,31 @@ const salesReportLoad = async (req, res) => {
       ]);
   
       const totalRevenue = orders.reduce((acc, order) => {
-        return acc + order.products.totalPrice;
+        const orderProductsArray = Array.isArray(order.products)
+          ? order.products
+          : [order.products];
+        return (
+          acc +
+          orderProductsArray.reduce((acc, product) => {
+            return (
+              acc +
+              (product.productStatus === "Delivered" ? product.totalPrice : 0)
+            );
+          }, 0)
+        );
       }, 0);
   
-      const totalDeliveredProductsCount = orders.length;
+      const totalDeliveredProductsCount = orders.reduce((acc, order) => {
+        const orderProductsArray = Array.isArray(order.products)
+          ? order.products
+          : [order.products];
+        return (
+          acc +
+          orderProductsArray.reduce((acc, product) => {
+            return acc + (product.productStatus === "Delivered" ? 1 : 0);
+          }, 0)
+        );
+      }, 0);
   
       const ejsPagePath = path.join(__dirname, "../views/admin/report.ejs");
       const ejsPage = await ejs.renderFile(ejsPagePath, {
@@ -608,19 +620,18 @@ const salesReportLoad = async (req, res) => {
         totalRevenue,
         totalDeliveredProductsCount,
       });
-  
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
       await page.setContent(ejsPage);
-      const pdfBuffer = await page.pdf({ format: 'A4' });
+      const pdfBuffer = await page.pdf();
       await browser.close();
   
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "attachment; filename=sales_report.pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
       res.send(pdfBuffer);
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ error: "Internal server error" });
+      console.log(error.message);
+      res.status(500).render("500");
     }
   };
   // ====graph data ===============//
