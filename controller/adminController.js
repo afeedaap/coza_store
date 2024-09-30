@@ -17,7 +17,6 @@ let adminLogin = async(req,res)=>{
     }catch(err){
       console.log('error adminlogin load', err);
       res.status(200).render("error") 
-
     }
 }
 //===========verify admin=================//
@@ -202,10 +201,10 @@ const userField = async(req,res)=>{
          }
     }
 //=============Blocking the user==================================
-         let userBlock = async(req,res) =>{
-            try{
-                let id = req.query.id;
-                let blockUser = await User.findByIdAndUpdate(id,{is_block:true},{new:true});
+  let userBlock = async(req,res) =>{
+    try{
+        let id = req.query.id;
+        let blockUser = await User.findByIdAndUpdate(id,{is_block:true},{new:true});
                 if(blockUser){
                     res.redirect('/admin/users');
                 }
@@ -451,10 +450,8 @@ const salesReportLoad = async (req, res) => {
     res.status(500).send({ message: "An error occurred while loading the sales report." });
   }
 };
-
-  
-  //========excel load=============================//
-  const excelDownload = async (req, res) => {
+//========excel load=============================//
+const excelDownload = async (req, res) => {
     try {
       const { startDate, endDate, sort } = req.query;
       const currentDate = new Date();
@@ -550,8 +547,8 @@ const salesReportLoad = async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
     }
   };
-   
-  const pdfDownload = async (req, res) => {
+//========pdf Download==================//
+ const pdfDownload = async (req, res) => {
     try {
       const duration = req.query.sort;
       const currentDate = new Date();
@@ -631,11 +628,11 @@ const salesReportLoad = async (req, res) => {
       res.send(pdfBuffer);
     } catch (error) {
       console.log(error.message);
-      res.status(500).render("500");
+      res.status(500).render("error");
     }
   };
-  // ====graph data ===============//
-  const graphData = async (req, res) => {
+// ====graph data ===============//
+ const graphData = async (req, res) => {
     try {
       console.log("Received graph data request", req.body);
   

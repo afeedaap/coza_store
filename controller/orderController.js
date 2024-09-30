@@ -296,46 +296,41 @@ const cancelOrder = async (req, res) => {
     const orderId = req.body.orderId;
     const productId = req.body.productId;
 
+    // Fetch the order data
     const orderedData = await Order.findOne({ _id: orderId });
     console.log("Ordered Data:", orderedData);
 
+    // Find the specific ordered product
     const orderedProduct = orderedData.products.find((product) => {
       return product._id.toString() === productId;
     });
     console.log("Ordered Product:", orderedProduct.totalPrice);
 
-    // Subtract cancelled product price from the total
+    // Calculate the new total amount after cancellation
     const newTotalAmount = orderedData.totalAmount - orderedProduct.totalPrice;
 
-    const updateOrder = await Order.findOneAndUpdate(
-      { _id: orderId, "products._id": productId },
-      { 
-        $set: { 
-          "products.$.productStatus": "Cancelled",
-          totalAmount: newTotalAmount // Update total amount
-        }
-      },
-      { new: true }
-    );
+    // Determine whether to add the total amount or product price to the wallet
+    let amountToAddToWallet;
 
-    const updateProductQuantity = await Product.updateOne(
-      { _id: orderedProduct.productId },
-      { $inc: { quantity: orderedProduct.count } }
-    );
+    if (orderedData.totalAmount < orderedProduct.totalPrice) {
+      // If totalAmount is less than product price, refund the total amount
+      amountToAddToWallet = orderedData.totalAmount;
+    } else {
+      // Otherwise, refund the product price
+      amountToAddToWallet = orderedProduct.totalPrice;
+    }
 
-    if (
-      orderedData.paymentMethod == "wallet" || 
-      orderedData.paymentMethod == "razorpay"
-    ) {
+    // Update the wallet and wallet history for certain payment methods
+    if (orderedData.paymentMethod == "wallet" || orderedData.paymentMethod == "razorpay") {
       const date = new Date();
       const UpdateWallet = await User.findOneAndUpdate(
         { _id: user_Id },
         {
-          $inc: { wallet: orderedProduct.totalPrice },
+          $inc: { wallet: amountToAddToWallet },
           $push: {
             walletHistory: {
               date: date,
-              amount: orderedProduct.totalPrice,
+              amount: amountToAddToWallet,
               direction: "Credit",
             },
           },
@@ -345,6 +340,24 @@ const cancelOrder = async (req, res) => {
       console.log("Updated Wallet:", UpdateWallet);
     }
 
+    // Update the order status and total amount
+    const updateOrder = await Order.findOneAndUpdate(
+      { _id: orderId, "products._id": productId },
+      { 
+        $set: { 
+          "products.$.productStatus": "Cancelled",
+          totalAmount: newTotalAmount 
+        }
+      },
+      { new: true }
+    );
+
+    // Update the product quantity
+    const updateProductQuantity = await Product.updateOne(
+      { _id: orderedProduct.productId },
+      { $inc: { quantity: orderedProduct.count } }
+    );
+
     console.log("Product Quantity Update:", updateProductQuantity);
     return res.json({ success: true });
   } catch (error) {
@@ -353,9 +366,7 @@ const cancelOrder = async (req, res) => {
   }
 };
 
-
-
-
+//======order failure============//
 const orderFailure = async (req,res) => {
   try {
     const query = req.query.id
@@ -409,6 +420,7 @@ const loadOrder = async (req, res) => {
       console.log('error at loadOrder at admin',error);
   }
 };
+//=======order details load===========//
 const orderdetailsLoad = async (req, res) => {
   try {
      const orderId = req.query._id;
@@ -443,6 +455,7 @@ const orderdetailsLoad = async (req, res) => {
      res.status(200).render("error");
   }
  };
+ //=======update order==============//
  const updateOrder = async (req, res) => {
   try {
     const orderId = req.body.orderId;
@@ -510,7 +523,7 @@ const orderdetailsLoad = async (req, res) => {
     res.status(500).render("500")
   }
 };
-
+//============return order=============//
 const returnOrder = async (req, res) => {
   try {
     console.log("body", req.body);
@@ -548,9 +561,10 @@ const returnOrder = async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.log(error.message);
-    res.status(500).render("500");
+    res.status(500).render("error");
   }
 };
+//========generate invoice pdf==========//
 const generateInvoicePDF = async (req, res) => {
   try {
     const orderId = req.query.id;
@@ -569,16 +583,24 @@ const generateInvoicePDF = async (req, res) => {
     function generateHeader(document) {
       document.image("./public/user/images/logo/logo-01.png", 50, 40, { width: 100 });
       const currentDate = new Date();
-      const formattedDate = currentDate.toLocaleDateString();
-      const formattedTime = currentDate.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      document.fontSize(12).text("Date: " + formattedDate, 50, 100, { align: "right" });
-      document.fontSize(12).text("Time: " + formattedTime, 50, 120, { align: "right" });
-      document.fontSize(18).text("Order Details", 50, 120, { align: "left" });
-      document.moveTo(50, y + 20).lineTo(550, y + 20).stroke();
-    }
+  const formattedDate = currentDate.toLocaleDateString("en-IN", { // Use "en-IN" for Indian date format
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+
+  // Format the time as per Indian conventions (HH:MM AM/PM)
+  const formattedTime = currentDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true  // Ensures the time is in 12-hour format with AM/PM
+  });
+
+  document.fontSize(12).text("Date: " + formattedDate, 50, 100, { align: "right" });
+  document.fontSize(12).text("Time: " + formattedTime, 50, 120, { align: "right" });
+  document.fontSize(18).text("Order Details", 50, 120, { align: "left" });
+  document.moveTo(50, y + 20).lineTo(550, y + 20).stroke();
+}
 
     function generateOrderDetails(document, orderDetails) {
       const headers = [
@@ -625,7 +647,7 @@ const generateInvoicePDF = async (req, res) => {
         document.moveTo(50, y + 20).lineTo(550, y + 20).stroke();
       });
 
-      const totalAmountText = "Total Amount: ₹" + orderDetails.totalAmount;
+      const totalAmountText = "Total Amount: ₹" + orderDetails.subtotal;
       document.fontSize(15).text(totalAmountText, 50, y + 40, { align: "right" });
     }
 

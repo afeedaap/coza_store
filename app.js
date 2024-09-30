@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session')
 const flash = require('connect-flash'); 
-
 const nocache = require('nocache')
 const PORT = 7001;
 const cors = require('cors');
@@ -19,7 +18,6 @@ saveUninitialized:true
 }))
 app.use(flash());
 app.use(nocache())
-
 //============import routes==============
 const user_route = require('./routes/userRoute');
 const admin_route = require('./routes/adminRoute');

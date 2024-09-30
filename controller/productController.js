@@ -39,7 +39,7 @@ const productListPage = async (req, res) => {
 //========== Load  the add product page =======================
 let loadAddProduct = async (req, res) => {
   try {
-    let category = await Category.find({});
+    let category = await Category.find({status:"active"});
     let message = req.flash('message');
     
     res.render('addProduct', { category, message });
@@ -125,8 +125,7 @@ const createProduct = async (req, res) => {
      res.redirect('/admin/error');
   }
  };
- 
-//delete product====================
+ //delete product====================
 const deleteProduct = async (req, res) => {
   try {
     const id = req.query.id;
@@ -167,8 +166,6 @@ const editProduct = async (req, res) => {
     res.redirect('/error'); 
   }
 };
-
-
 //after editing the product==============================
 const productEdited = async (req, res) => {
   try {
@@ -240,8 +237,7 @@ const productEdited = async (req, res) => {
     res.redirect("/admin/error");
   }
 };
- 
-//============= deleting a image ==============================
+ //============= deleting a image ==============================
 const deleteimage = async (req, res) => {
   try {
     const index = parseInt(req.query.index, 10);
@@ -281,7 +277,6 @@ const deleteimage = async (req, res) => {
     res.status(500).redirect("/admin/error");
   }
 };
-
 // ==========  toggle to List or unlist the product==================
 const toggleBlockStatusProduct = async (req, res) => {
   try {
@@ -319,7 +314,6 @@ const loadProductSearchQuery = async (req, res) => {
   }
 };
  //==============user part==========================/
-  
 const productview = async (req, res, next) => {
   try {
     let user = req.session.userData;
@@ -371,16 +365,24 @@ const shop = async (req, res) => {
         sortOption = {};
     }
 
+    // Filter products and only show those with active categories
     const productData = await Product.find(filter)
+      .populate({
+        path: 'category',
+        match: { status: "active" }  // Only include products with active categories
+      })
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
       .lean(); 
 
+    // Filter out products without a valid category (i.e., if the category is inactive)
+    const filteredProducts = productData.filter(product => product.category);
+
     let biggestOffer = 0;
 
-
-    for (const product of productData) {
+    // Calculate offers for filtered products
+    for (const product of filteredProducts) {
       const categoryOffer = await CategoryOffer.findOne({ category: product.category._id });
       const categoryDiscountPercentage = categoryOffer ? categoryOffer.discountPercentage : 0;
       const productDiscountPercentage = product.discount;
@@ -392,11 +394,11 @@ const shop = async (req, res) => {
       product.biggestOffer = offer; 
     }
 
-    const totalCount = await Product.countDocuments(filter);
+    const totalCount = filteredProducts.length;  // Count of filtered products
     const totalPages = Math.ceil(totalCount / limit);
 
     res.render('shop', {
-      productData,
+      productData: filteredProducts,  // Only render filtered products
       currentPage: page,
       totalPages,
       searchTerm,
@@ -405,8 +407,10 @@ const shop = async (req, res) => {
 
   } catch (error) {
     console.log(error);
-    res.status(500).send('An error occurred while fetching products.');
-    res.redirect('/error');
+    if (!res.headersSent) {
+      res.status(500).send('An error occurred while fetching products.');
+      return res.redirect('/error');
+    }
   }
 };
 
@@ -415,13 +419,8 @@ const shop = async (req, res) => {
 
 
 
+
  
-
-
-
-
-
-
 
 module.exports = {
  loadAddProduct,

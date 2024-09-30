@@ -41,7 +41,7 @@
     "path": "^0.12.7",
     "pdfkit": "^0.15.0",
     "proxy-agent": "^6.4.0",
-    "puppeteer": "^22.14.0",
+    "puppeteer": "^22.15.0",
     "razorpay": "^2.9.4",
     "request": "^2.88.2",
     "sharp": "^0.33.4",
