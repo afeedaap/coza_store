@@ -336,7 +336,7 @@ const shop = async (req, res) => {
     const searchTerm = req.query.search;
     const sort = req.query.sort;
 
-    let filter = {};
+    let filter = {status: "active"};
     if (searchTerm) {
       filter = { name: { $regex: searchTerm, $options: 'i' } };
     }
