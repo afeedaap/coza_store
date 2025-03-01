@@ -1,5 +1,5 @@
 // admin login page not set
-let path = require('path');
+const path = require("path");
 let User = require('../model/userModel');
 let adminAuth = require('../middleware/adminAuth');
 const Order = require("../model/orderModel");
@@ -17,7 +17,6 @@ let adminLogin = async(req,res)=>{
     }catch(err){
       console.log('error adminlogin load', err);
       res.status(200).render("error") 
-
     }
 }
 //===========verify admin=================//
@@ -43,7 +42,7 @@ const verifyAdminLogin=async(req,res)=>{
 //==================Loading the admin dashboard==============//
 const adminDashboard = async (req, res) => {
   try {
-    
+    // Fetch top 5 selling categories
     const topSellingCategories = await Product.aggregate([
       {
         $group: {
@@ -75,7 +74,7 @@ const adminDashboard = async (req, res) => {
       },
     ]);
 
-  
+    // Fetch top 5 selling products
     const topSellingProducts = await Order.aggregate([
       { $unwind: "$products" },
       {
@@ -107,17 +106,19 @@ const adminDashboard = async (req, res) => {
         },
       },
     ]);
-    const customerIds = await Order.distinct("user"); 
+
+    // Count total number of unique customers
+    const customerIds = await Order.distinct("user");
     const userCount = customerIds.length;
 
-   
+    // Fetch all delivered orders and details
     const orders = await Order.aggregate([
       {
         $unwind: "$products",
       },
       {
         $match: {
-          "products.productStatus": "Delivered", 
+          "products.productStatus": "Delivered",
         },
       },
       {
@@ -140,34 +141,55 @@ const adminDashboard = async (req, res) => {
       },
     ]);
 
-    const sales = await Order.countDocuments({
-      "products.productStatus": { $in: ["Delivered", "Rejected"] },
-    });
-    
-    const totalRevenue = orders.reduce((acc, order) => {
-      return acc + order.products.totalPrice;
-    }, 0);
+    // Count the total number of delivered and rejected products
+    const totalDeliveredProductsCount = await Order.aggregate([
+      { $unwind: "$products" },
+      {
+        $match: {
+          "products.productStatus": { $in: ["Delivered", "Rejected"] },  // Check for both Delivered and Rejected
+        },
+      },
+      {
+        $group: {
+          _id: null,  // Group all together, not by status
+          totalProducts: { $sum: "$products.count" },  // Sum the count of both delivered and rejected products
+        },
+      },
+    ]);
 
+    // Calculate total revenue from delivered orders
+    const totalRevenue = await Order.aggregate([
+      {
+        $match: {
+          "products.productStatus": "Delivered",  // Only include delivered products
+        },
+      },
+      {
+        $group: {
+          _id: null,  // Group everything together
+          totalRevenue: { $sum: "$totalAmount" },  // Sum the totalAmount field for total revenue
+        },
+      },
+    ]);
 
-    const totalDeliveredProductsCount = orders.length;
+    // Extract the revenue from the aggregation result
+    const revenue = totalRevenue[0]?.totalRevenue || 0;
 
-   
+    // Render the admin dashboard with the data
     res.render("dashboard", {
       topSellingCategories,
       topSellingProducts,
-      sales,
       userCount,
-      totalRevenue,
-      totalDeliveredProductsCount,
+      totalRevenue: revenue,  // Use the calculated revenue
+      totalDeliveredProductsCount: totalDeliveredProductsCount[0]?.totalProducts || 0,
     });
   } catch (error) {
-    console.log(
-      "Error occurred in admin controller at adminDashboard function ",
-      error
-    );
+    console.log("Error occurred in admin controller at adminDashboard function", error);
     res.status(500).render("error");
   }
 };
+
+
 //=========logout================//
 const logout = async(req,res)=>{
     try{
@@ -202,10 +224,10 @@ const userField = async(req,res)=>{
          }
     }
 //=============Blocking the user==================================
-         let userBlock = async(req,res) =>{
-            try{
-                let id = req.query.id;
-                let blockUser = await User.findByIdAndUpdate(id,{is_block:true},{new:true});
+  let userBlock = async(req,res) =>{
+    try{
+        let id = req.query.id;
+        let blockUser = await User.findByIdAndUpdate(id,{is_block:true},{new:true});
                 if(blockUser){
                     res.redirect('/admin/users');
                 }
@@ -265,20 +287,19 @@ const salesReportLoad = async (req, res) => {
 
     let orders;
     let totalOrders;
-    const statusFilter = ["Delivered", "rejected"]; // Filter for both Delivered and Rejected
-
     if (req.query.startDate && req.query.endDate) {
+      console.log("heyyyyyy");
       const startDate = new Date(req.query.startDate);
       const endDate = new Date(req.query.endDate);
       totalOrders = await Order.countDocuments({
-        "products.productStatus": { $in: statusFilter },
+        "products.productStatus": "Delivered",
         date: {
           $gte: startDate,
           $lte: endDate,
         },
       });
       const totalPages = Math.ceil(totalOrders / limit);
-
+      console.log("tot", totalPages, req.query.startDate, req.query.endDate);
       try {
         orders = await Order.aggregate([
           {
@@ -286,7 +307,7 @@ const salesReportLoad = async (req, res) => {
           },
           {
             $match: {
-              "products.productStatus": { $in: statusFilter },
+              "products.productStatus": "Delivered",
               date: {
                 $gte: startDate,
                 $lte: endDate,
@@ -321,7 +342,7 @@ const salesReportLoad = async (req, res) => {
       } catch (error) {
         console.error("Aggregation error:", error);
       }
-
+      console.log("ordeee", orders);
       res.render("sales-report", {
         orders,
         date,
@@ -339,7 +360,7 @@ const salesReportLoad = async (req, res) => {
       endOfDay.setHours(23, 59, 59, 999);
 
       totalOrders = await Order.countDocuments({
-        "products.productStatus": { $in: statusFilter },
+        "products.productStatus": "Delivered",
         date: {
           $gte: startOfDay,
           $lte: endOfDay,
@@ -353,7 +374,7 @@ const salesReportLoad = async (req, res) => {
         },
         {
           $match: {
-            "products.productStatus": { $in: statusFilter },
+            "products.productStatus": "Delivered",
             date: {
               $gte: startOfDay,
               $lte: endOfDay,
@@ -396,7 +417,7 @@ const salesReportLoad = async (req, res) => {
       });
     } else {
       totalOrders = await Order.countDocuments({
-        "products.productStatus": { $in: statusFilter },
+        "products.productStatus": "Delivered",
         date: { $gte: startDate, $lte: currentDate },
       });
       const totalPages = Math.ceil(totalOrders / limit);
@@ -407,7 +428,7 @@ const salesReportLoad = async (req, res) => {
         },
         {
           $match: {
-            "products.productStatus": { $in: statusFilter },
+            "products.productStatus": "Delivered",
             date: { $gte: startDate, $lte: currentDate },
           },
         },
@@ -448,13 +469,13 @@ const salesReportLoad = async (req, res) => {
     }
   } catch (error) {
     console.log("while loading sales report", error);
-    res.status(500).send({ message: "An error occurred while loading the sales report." });
+    res
+      .status(500)
+      .send({ message: "An error occurred while loading the sales report." });
   }
 };
-
-  
-  //========excel load=============================//
-  const excelDownload = async (req, res) => {
+//========excel load=============================//
+const excelDownload = async (req, res) => {
     try {
       const { startDate, endDate, sort } = req.query;
       const currentDate = new Date();
@@ -550,21 +571,12 @@ const salesReportLoad = async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
     }
   };
-   
-  const pdfDownload = async (req, res) => {
+//========pdf Download==================//
+ const pdfDownload = async (req, res) => {
     try {
-      const { startDate, endDate, sort } = req.query;
+      const duration = req.query.sort;
       const currentDate = new Date();
-      let start, end;
-  
-      if (startDate && endDate) {
-        start = new Date(startDate);
-        end = new Date(new Date(endDate).setHours(23, 59, 59, 999));
-      } else {
-        const duration = parseInt(sort);
-        start = new Date(currentDate.getTime() - duration * 24 * 60 * 60 * 1000);
-        end = currentDate;
-      }
+      const startDate = new Date(currentDate - duration * 24 * 60 * 60 * 1000);
   
       const orders = await Order.aggregate([
         {
@@ -573,12 +585,12 @@ const salesReportLoad = async (req, res) => {
         {
           $match: {
             "products.productStatus": "Delivered",
-            date: { $gte: start, $lte: end },
+            date: { $gte: startDate, $lte: currentDate },
           },
         },
         {
           $lookup: {
-            from: "products",
+            from: "Products",
             localField: "products.productId",
             foreignField: "_id",
             as: "products.productDetails",
@@ -597,10 +609,31 @@ const salesReportLoad = async (req, res) => {
       ]);
   
       const totalRevenue = orders.reduce((acc, order) => {
-        return acc + order.products.totalPrice;
+        const orderProductsArray = Array.isArray(order.products)
+          ? order.products
+          : [order.products];
+        return (
+          acc +
+          orderProductsArray.reduce((acc, product) => {
+            return (
+              acc +
+              (product.productStatus === "Delivered" ? product.totalPrice : 0)
+            );
+          }, 0)
+        );
       }, 0);
   
-      const totalDeliveredProductsCount = orders.length;
+      const totalDeliveredProductsCount = orders.reduce((acc, order) => {
+        const orderProductsArray = Array.isArray(order.products)
+          ? order.products
+          : [order.products];
+        return (
+          acc +
+          orderProductsArray.reduce((acc, product) => {
+            return acc + (product.productStatus === "Delivered" ? 1 : 0);
+          }, 0)
+        );
+      }, 0);
   
       const ejsPagePath = path.join(__dirname, "../views/admin/report.ejs");
       const ejsPage = await ejs.renderFile(ejsPagePath, {
@@ -608,23 +641,22 @@ const salesReportLoad = async (req, res) => {
         totalRevenue,
         totalDeliveredProductsCount,
       });
-  
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
       await page.setContent(ejsPage);
-      const pdfBuffer = await page.pdf({ format: 'A4' });
+      const pdfBuffer = await page.pdf();
       await browser.close();
   
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "attachment; filename=sales_report.pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
       res.send(pdfBuffer);
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ error: "Internal server error" });
+      console.log(error.message);
+      res.status(500).render("error");
     }
   };
-  // ====graph data ===============//
-  const graphData = async (req, res) => {
+// ====graph data ===============//
+ const graphData = async (req, res) => {
     try {
       console.log("Received graph data request", req.body);
   

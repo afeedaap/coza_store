@@ -1,6 +1,5 @@
 let Category = require('../model/categoryModel');
 let Product = require("../model/productModel");
-
 let moment = require('moment');
 //=============== landing page for category control===================
 const allCategory=async(req,res)=>{
@@ -18,7 +17,7 @@ const allCategory=async(req,res)=>{
         res.redirect('/error')
     }
 }
-
+//===========add categoryy==============//
 const addCategory = async (req, res) => {
     try {
       const { name, description } = req.body;
@@ -51,7 +50,6 @@ const addCategory = async (req, res) => {
       res.status(500).redirect("/error");
     }
   };
-
 //==================Update category==========================
 const updateCategory = async (req, res) => {
   try {
@@ -97,7 +95,6 @@ const updateCategory = async (req, res) => {
     res.status(500).redirect("/error");
   }
 };
-
 //================Editing the category=====================
 const editCategory = async (req, res) => {
     try {
@@ -143,8 +140,6 @@ const categoryUnlist=async(req,res)=>{
         res.status(200).render("error") 
     }
 }
-
-
 //==============Category listing=================
 const categoryList=async(req,res)=>{
     try {

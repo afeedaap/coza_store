@@ -73,7 +73,6 @@ const editCouponLoad = async (req, res) => {
         res.status(200).render("error") 
     }
 };
-
 //====================edit Coupon==================//
 const editCoupon = async (req, res) => {
     try {
